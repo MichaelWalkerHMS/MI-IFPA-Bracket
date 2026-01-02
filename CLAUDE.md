@@ -99,6 +99,11 @@ A web application that allows users to create and save bracket predictions for t
 
 Total predictions per bracket: 24 matches
 
+### Bracket Pairings (24-player format)
+- **Opening Round:** 9v24, 10v23, 11v22, 12v21, 13v20, 14v19, 15v18, 16v17
+- **Round of 16:** 1v(16/17 winner), 2v(15/18 winner), 3v(14/19 winner), 4v(13/20 winner), 5v(12/21 winner), 6v(11/22 winner), 7v(10/23 winner), 8v(9/24 winner)
+- Winners progress following standard bracket flow
+
 ## Scoring System
 
 Points per correct prediction (escalating by round):
@@ -114,6 +119,15 @@ Points per correct prediction (escalating by round):
 1. Correctly predicted the champion
 2. Predicted final match game score (winner_games, loser_games)
 3. Total number of correct predictions
+
+### Bracket Rules
+- Each user may create only one bracket per tournament
+- Brackets are public by default; private brackets are excluded from the leaderboard
+- Predictions lock at tournament start time and cannot be modified afterward
+
+## 2026 Michigan State Championship
+- **Lock Date:** January 17, 2026, 12:00 PM EST
+- **Tournament Dates:** January 17-18, 2026
 
 ## MVP Features (Target: January 17, 2026)
 
