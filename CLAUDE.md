@@ -238,6 +238,7 @@ Next steps:
 ## Notes for Claude
 
 - This is a learning project - explain reasoning, don't just implement
+- Testing is a priority - whether manual or code, testing must be completed before each commit
 - Always wait for explicit approval before making changes
 - Do NOT make any Git commits - the user will handle all version control operations
 - When suggesting code, explain what it does and why
