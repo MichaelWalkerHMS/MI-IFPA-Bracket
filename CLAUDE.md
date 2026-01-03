@@ -251,10 +251,13 @@ npm run lint
 - Project timeline
 - **Next.js project initialized** (manual setup with TypeScript, Tailwind CSS v4, ESLint)
 - Basic homepage displaying at http://localhost:3000
+- **Supabase project configured** with client utilities for browser and server
+- **Database tables created** (tournaments, players, profiles, brackets, picks, results)
+- **Row Level Security policies** implemented for all tables
+- **Auth session handling** via proxy.ts (Next.js 16 convention)
+- Connection tested and verified working
 
 ### Next Steps
-- Set up Supabase project (database, auth)
-- Create database tables with RLS policies
 - Basic auth flow (signup/login/logout)
 - Deploy skeleton to Vercel
 
