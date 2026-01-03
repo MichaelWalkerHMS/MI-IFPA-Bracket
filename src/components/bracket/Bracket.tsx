@@ -157,7 +157,7 @@ export default function BracketView({
     [getMatchWinner, getMatchLoser]
   );
 
-  // Handle picking a winner - clears downstream picks if the old winner was selected elsewhere
+  // Handle picking a winner - clicking the current winner deselects them (toggle)
   const handlePick = useCallback(
     (round: number, position: number, winnerSeed: number) => {
       if (isLocked || !isLoggedIn) return;
@@ -165,18 +165,33 @@ export default function BracketView({
       const key = getPickKey(round, position);
       const oldWinner = picks.get(key);
 
-      if (oldWinner === winnerSeed) return; // No change
-
       const newPicks = new Map(picks);
-      newPicks.set(key, winnerSeed);
 
-      // Clear downstream picks that contained the old winner
-      if (oldWinner !== undefined) {
+      // If clicking the current winner, deselect them (toggle off)
+      if (oldWinner === winnerSeed) {
+        newPicks.delete(key);
+
+        // Clear downstream picks that contained this winner
         for (let r = round + 1; r <= ROUNDS.CONSOLATION; r++) {
           for (let p = 0; p < MATCHES_PER_ROUND[r]; p++) {
             const downstreamKey = getPickKey(r, p);
-            if (newPicks.get(downstreamKey) === oldWinner) {
+            if (newPicks.get(downstreamKey) === winnerSeed) {
               newPicks.delete(downstreamKey);
+            }
+          }
+        }
+      } else {
+        // Selecting a new winner
+        newPicks.set(key, winnerSeed);
+
+        // Clear downstream picks that contained the old winner
+        if (oldWinner !== undefined) {
+          for (let r = round + 1; r <= ROUNDS.CONSOLATION; r++) {
+            for (let p = 0; p < MATCHES_PER_ROUND[r]; p++) {
+              const downstreamKey = getPickKey(r, p);
+              if (newPicks.get(downstreamKey) === oldWinner) {
+                newPicks.delete(downstreamKey);
+              }
             }
           }
         }
