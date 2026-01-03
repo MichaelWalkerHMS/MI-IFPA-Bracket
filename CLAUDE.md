@@ -242,7 +242,7 @@ npm run lint
 
 ## Project Status
 
-**Current Phase:** Phase 1 - Foundation (nearly complete)
+**Current Phase:** Phase 1 - Foundation (COMPLETE)
 
 ### Completed
 - Repository structure
@@ -266,16 +266,22 @@ npm run lint
   - Auth callback route for secure code exchange (`/auth/callback`)
   - Logout functionality on homepage
   - Custom error messages for failed login attempts
+- **Deployed to Vercel:**
+  - Production URL: https://ifpa-bracket-predictor.vercel.app
+  - GitHub integration enabled (auto-deploys on push to main)
+  - Environment variables configured (NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY, NEXT_PUBLIC_SITE_URL)
+  - Supabase redirect URLs updated for production
 
 ### Next Steps
-- Deploy skeleton to Vercel
+- Phase 2: Bracket Core - Build bracket visualization component
 
 ## Notes for Claude
 
 - This is a learning project - explain reasoning, don't just implement
+- Do not over-engineer or deviate from the initial request - we are only trying to solve one thing at a time
 - Plan out everything you intend to do before actually implementing anything; provide that plan to the user for approval
 - Testing is a priority - whether manual or code, testing must be completed before each commit
 - Always wait for explicit approval before making changes
-- Do NOT make any Git commits - the user will handle all version control operations
+- Suggest when a commit is appropriate, but do not actually commit without the user's explicit approval
 - When suggesting code, explain what it does and why
 - Prioritize MVP features over stretch goals given timeline constraints
