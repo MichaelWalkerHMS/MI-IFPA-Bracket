@@ -132,18 +132,31 @@ Points per correct prediction (escalating by round):
 ## MVP Features (Target: January 17, 2026)
 
 1. User authentication (signup, login, logout)
+    Users should be able to sign up with an email address and password and log in/log out of the site.
 2. View seeded bracket (24 players in proper positions)
+    Users should be able to see the starting bracket with all 24 people seeded in their proper place, including those who have byes in the first round.
 3. Make predictions (click player name to advance)
+    For each game in the bracket, users should be able to click on the player who they believe will win that round - this will advance that player to the next game as the winner.
 4. Predict final score (game count for championship match)
+    For the final championship game only, users should additionally be able to predict the number of games each player will win - since it is a best of seven, the highest number for either player should be 4.
 5. Save bracket to database
+    Users should be able to save their bracket (whether complete or in progress) to their profile so it can be retrieved later.
 6. View own bracket
+    Users should be able to see their bracket once it is saved to their profile. If it is marked public, they should also be able to view it with a static link.
 7. Public/private toggle (default public)
+    Users should be able to set their bracket to either public or private (default public). If it is marked private, it will not appear in the public leaderboard nor will it be accessible via a link unless the owner is logged in.
 8. Shareable link for any public bracket
+    If the bracket is public, users should be able to provide a link to share it to friends.
 9. Browse public brackets
+    Users should be able to see all submitted public brackets on the leaderboard, even before the tournament begins.
 10. Lock predictions at deadline (Jan 17, 12:00 EST)
+    Users should no longer be able to change a submitted bracket nor submit a new bracket after the lock date for the tournament.
 11. Admin: Enter match results
+    As an administrator, I should have a very simple UI to quickly enter the winners of each match.
 12. View actual vs predicted comparison
+    Once actual results begin coming in, users should see real-time updates on their bracket, including their score.
 13. Leaderboard with scoring and tiebreakers
+    A public leaderboard should be visible tracking the scoring of all brackets marked as public, including tiebreaker logic.
 
 ## Stretch Goals
 
@@ -238,6 +251,7 @@ Next steps:
 ## Notes for Claude
 
 - This is a learning project - explain reasoning, don't just implement
+- Plan out everything you intend to do before actually implementing anything; provide that plan to the user for approval
 - Testing is a priority - whether manual or code, testing must be completed before each commit
 - Always wait for explicit approval before making changes
 - Do NOT make any Git commits - the user will handle all version control operations
