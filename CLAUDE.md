@@ -352,14 +352,14 @@ npx supabase migration list
   - Lock detection (disables editing after tournament lock_date)
   - Seed script for dev database (`npm run seed`)
   - Real Michigan player data from IFPA standings
+  - FinalScoreInput component for championship match game prediction (`src/components/bracket/FinalScoreInput.tsx`)
 
 ### In Progress
-- Testing bracket functionality
-- Final score prediction input (championship match game count)
+- Phase 3: Social Features
 
 ### Next Steps
-- Complete FinalScoreInput component for championship match prediction
-- Phase 3: Social Features (shareable URLs, browse public brackets)
+- Shareable bracket URLs (public link to view any bracket)
+- Browse public brackets page
 - Phase 4: Results & Scoring (admin interface, leaderboard)
 
 ### Backlog
