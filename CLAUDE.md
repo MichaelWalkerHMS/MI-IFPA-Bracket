@@ -362,6 +362,7 @@ npx supabase migration list
 
 ### Backlog
 - Admin UI to dynamically update player seeding (add/remove/reorder players)
+- Fix seed script output URL (currently shows localhost, should show appropriate URL based on env)
    
 
 ## Notes for Claude
