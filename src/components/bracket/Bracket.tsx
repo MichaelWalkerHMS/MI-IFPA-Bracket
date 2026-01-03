@@ -16,6 +16,7 @@ import {
   getPickKey,
 } from "@/lib/bracket/constants";
 import Round from "./Round";
+import FinalScoreInput from "./FinalScoreInput";
 
 interface BracketViewProps {
   tournament: Tournament;
@@ -227,9 +228,20 @@ export default function BracketView({
     return matches;
   };
 
-  // Get champion (winner of finals)
+  // Get champion (winner of finals) and runner-up (loser of finals)
   const champion = getMatchWinner(ROUNDS.FINALS, 0);
   const championPlayer = champion ? playerMap.get(champion) : null;
+  const runnerUp = getMatchLoser(ROUNDS.FINALS, 0);
+  const runnerUpPlayer = runnerUp ? playerMap.get(runnerUp) : null;
+
+  // Handle final score change
+  const handleFinalScoreChange = (winnerGames: number, loserGames: number) => {
+    if (isLocked || !isLoggedIn) return;
+    setFinalWinnerGames(winnerGames);
+    setFinalLoserGames(loserGames);
+    setIsDirty(true);
+    setSaveMessage(null);
+  };
 
   return (
     <div className="w-full">
@@ -300,6 +312,19 @@ export default function BracketView({
                 </div>
                 <div className="font-bold text-lg">{championPlayer.name}</div>
               </div>
+            )}
+
+            {/* Final score prediction */}
+            {championPlayer && runnerUpPlayer && (
+              <FinalScoreInput
+                championName={championPlayer.name}
+                runnerUpName={runnerUpPlayer.name}
+                winnerGames={finalWinnerGames}
+                loserGames={finalLoserGames}
+                onScoreChange={handleFinalScoreChange}
+                isLocked={isLocked}
+                isLoggedIn={isLoggedIn}
+              />
             )}
 
             {/* Consolation (3rd place) */}
