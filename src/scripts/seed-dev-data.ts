@@ -92,12 +92,11 @@ const TOURNAMENT_DATA = {
   },
 };
 
-// 2025 NACS Michigan standings (top 24)
-// Source: https://www.ifpapinball.com/series/nacs/2025/standingsView.php?l=MI
+// 2025 NACS Michigan qualifying (Attending/Unknown only, excludes "Not Attending")
+// Source: https://www.ifpapinball.com/series/nacs/2025/qualifying.php?year=2025&s=MI
 const PLAYER_NAMES = [
   'Dominic Labella',
   'Matthew Stacks',
-  'Sterling Mitoska',
   'Rodney Minch',
   'Tyrus Eagle',
   'Daniel Overbeek',
@@ -119,6 +118,7 @@ const PLAYER_NAMES = [
   'Evan Williams',
   'Nick Campbell',
   'Alex Darling',
+  'Arthur Ruple',
 ];
 
 async function seed() {
