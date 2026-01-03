@@ -15,6 +15,22 @@
 import { createClient } from '@supabase/supabase-js';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as readline from 'readline';
+
+// Prompt user for confirmation
+function confirm(question: string): Promise<boolean> {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+
+  return new Promise((resolve) => {
+    rl.question(question, (answer) => {
+      rl.close();
+      resolve(answer.toLowerCase() === 'y' || answer.toLowerCase() === 'yes');
+    });
+  });
+}
 
 // Load .env.local manually since we're not running through Next.js
 function loadEnv() {
@@ -76,32 +92,33 @@ const TOURNAMENT_DATA = {
   },
 };
 
-// 24 test players (mix of real IFPA pros and fictional names)
+// 2025 NACS Michigan standings (top 24)
+// Source: https://www.ifpapinball.com/series/nacs/2025/standingsView.php?l=MI
 const PLAYER_NAMES = [
-  'Zach Sharpe',
-  'Keith Elwin',
-  'Raymond Davidson',
-  'Bowen Kerins',
-  'Escher Lefkoff',
-  'Colin MacAlpine',
-  'Josh Sharpe',
-  'Steven Bowden',
-  'Robert Gagno',
-  'Daniele Celestino',
-  'Adam Becker',
-  'Jim Belsito',
-  'Trent Augenstein',
-  'Karl DeAngelo',
-  'David Emmerson',
-  'Eric Stone',
-  'Greg Dunlap',
-  'Rob Wintler',
-  'Joe Said',
-  'Mark Steinman',
-  'Cayle George',
-  'Johannes Ostermeier',
-  'Sunshine Bon',
-  'Franck Bona',
+  'Dominic Labella',
+  'Matthew Stacks',
+  'Sterling Mitoska',
+  'Rodney Minch',
+  'Tyrus Eagle',
+  'Daniel Overbeek',
+  'Michael Walker',
+  'Andy Rosa',
+  'Justin Stone',
+  'Ethan Magnum',
+  'Jared August',
+  'Aaron Niemi',
+  'Jason Humphrey',
+  'Meredith Walton',
+  'Chris Tabaka',
+  'Phil Harmon',
+  'Alex Harmon',
+  'Philip Salminen',
+  'Stacey Siegel',
+  'Jim Droski',
+  'Tom Deemter',
+  'Evan Williams',
+  'Nick Campbell',
+  'Alex Darling',
 ];
 
 async function seed() {
@@ -115,9 +132,29 @@ async function seed() {
     .single();
 
   if (existingTournament) {
-    console.log('Tournament already exists. Skipping seed.');
+    console.log('Tournament already exists:', TOURNAMENT_DATA.name);
     console.log('Tournament ID:', existingTournament.id);
-    return;
+    console.log('\nWARNING: This will delete the existing tournament and ALL associated data');
+    console.log('(players, brackets, picks). This cannot be undone.\n');
+
+    const confirmed = await confirm('Delete existing tournament and re-seed? (y/n): ');
+
+    if (!confirmed) {
+      console.log('Aborted. No changes made.');
+      process.exit(0);
+    }
+
+    // Delete existing tournament (cascades to players, brackets, picks)
+    const { error: deleteError } = await supabase
+      .from('tournaments')
+      .delete()
+      .eq('id', existingTournament.id);
+
+    if (deleteError) {
+      console.error('Failed to delete existing tournament:', deleteError.message);
+      process.exit(1);
+    }
+    console.log('Deleted existing tournament.\n');
   }
 
   // Insert tournament
