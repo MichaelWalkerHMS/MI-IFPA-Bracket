@@ -303,7 +303,7 @@ npx supabase migration list
 
 ## Project Status
 
-**Current Phase:** Phase 1 - Foundation (COMPLETE)
+**Current Phase:** Phase 2 - Bracket Core (IN PROGRESS)
 
 ### Completed
 - Repository structure
@@ -338,10 +338,27 @@ npx supabase migration list
   - Vercel Preview deployments use dev database
   - Vercel Production uses production database
   - Supabase CLI configured for migration management
+- **Phase 2: Bracket visualization:**
+  - TypeScript types for Tournament, Player, Bracket, Pick (`src/lib/types/index.ts`)
+  - Bracket structure constants with 24-player format pairings (`src/lib/bracket/constants.ts`)
+  - Tournament page with bracket display (`src/app/tournament/[id]/page.tsx`)
+  - Bracket components: Bracket, Round, Match, PlayerSlot (`src/components/bracket/`)
+  - Click-to-advance interaction with cascade clearing
+  - Toggle to deselect picks (click selected winner to clear)
+  - Server actions for save/load bracket (`src/app/tournament/[id]/actions.ts`)
+  - Public/private toggle for brackets
+  - Lock detection (disables editing after tournament lock_date)
+  - Seed script for dev database (`npm run seed`)
+  - Real Michigan player data from IFPA standings
+
+### In Progress
+- Testing bracket functionality
+- Final score prediction input (championship match game count)
 
 ### Next Steps
-- Phase 2: Bracket Core - Build bracket visualization component
-    Start by generating a full plan for how we intend to do this, using Claude Plan mode
+- Complete FinalScoreInput component for championship match prediction
+- Phase 3: Social Features (shareable URLs, browse public brackets)
+- Phase 4: Results & Scoring (admin interface, leaderboard)
    
 
 ## Notes for Claude
