@@ -233,6 +233,67 @@ npm run start
 npm run lint
 ```
 
+## Environment Setup
+
+### Supabase Projects
+| Environment | Project | URL |
+|-------------|---------|-----|
+| **Development** | ifpa-bracket-dev | `https://nsmositomvtlhxkghchr.supabase.co` |
+| **Production** | ifpa-bracket-predictor | `https://ynxmkbpdnucrbjyvovpq.supabase.co` |
+
+### Local Development
+- Uses `.env.local` pointing to DEV Supabase
+- Run with `npm run dev`
+
+### Vercel Environments
+| Environment | Trigger | Database |
+|-------------|---------|----------|
+| **Production** | Push to `main` | Prod Supabase |
+| **Preview** | Pull requests | Dev Supabase |
+
+## Dev-to-Prod Workflow
+
+### Code Changes (no database changes)
+1. Create feature branch from `main`
+2. Develop and test locally (uses dev database)
+3. Push branch and open PR
+4. Vercel creates preview deployment (uses dev database)
+5. Review and test on preview URL
+6. Merge to `main` → auto-deploys to production
+
+### Database Schema Changes
+1. Make changes in DEV Supabase first (via Dashboard or SQL)
+2. Test thoroughly with your code locally
+3. Create a migration file:
+   ```bash
+   npx supabase migration new <descriptive_name>
+   ```
+4. Write SQL in the generated file (`supabase/migrations/`)
+5. Commit migration file with your code
+6. After PR merges, apply to production:
+   ```bash
+   npx supabase link --project-ref ynxmkbpdnucrbjyvovpq
+   npx supabase db push
+   ```
+
+### Useful Supabase CLI Commands
+```bash
+# Link to a project
+npx supabase link --project-ref <project-ref>
+
+# Pull schema from remote (creates migration file)
+npx supabase db pull
+
+# Push migrations to remote
+npx supabase db push
+
+# Create new migration
+npx supabase migration new <name>
+
+# Check migration status
+npx supabase migration list
+```
+
 ## Code Conventions
 
 - Prioritize readable, simple code over clever solutions
@@ -271,6 +332,12 @@ npm run lint
   - GitHub integration enabled (auto-deploys on push to main)
   - Environment variables configured (NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY, NEXT_PUBLIC_SITE_URL)
   - Supabase redirect URLs updated for production
+- **Dev/Prod environment separation:**
+  - Separate Supabase projects for dev and production
+  - Local development uses dev database via `.env.local`
+  - Vercel Preview deployments use dev database
+  - Vercel Production uses production database
+  - Supabase CLI configured for migration management
 
 ### Next Steps
 - Phase 2: Bracket Core - Build bracket visualization component
