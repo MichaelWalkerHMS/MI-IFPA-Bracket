@@ -359,6 +359,9 @@ npx supabase migration list
 - Complete FinalScoreInput component for championship match prediction
 - Phase 3: Social Features (shareable URLs, browse public brackets)
 - Phase 4: Results & Scoring (admin interface, leaderboard)
+
+### Backlog
+- Admin UI to dynamically update player seeding (add/remove/reorder players)
    
 
 ## Notes for Claude

@@ -1,10 +1,11 @@
 /**
- * Seed script for development database
+ * Seed script for database
  *
  * Usage:
- *   npx tsx src/scripts/seed-dev-data.ts
+ *   npm run seed           # Uses .env.local (dev)
+ *   npm run seed:prod      # Uses .env.prod (production)
  *
- * Requires environment variables (reads from .env.local):
+ * Requires environment variables:
  *   NEXT_PUBLIC_SUPABASE_URL
  *   SUPABASE_SERVICE_KEY (service role key, not the publishable key)
  *
@@ -32,13 +33,15 @@ function confirm(question: string): Promise<boolean> {
   });
 }
 
-// Load .env.local manually since we're not running through Next.js
-function loadEnv() {
-  const envPath = path.join(process.cwd(), '.env.local');
+// Load environment file
+function loadEnv(envFile: string) {
+  const envPath = path.join(process.cwd(), envFile);
   if (!fs.existsSync(envPath)) {
-    console.error('Error: .env.local file not found');
+    console.error(`Error: ${envFile} file not found`);
     process.exit(1);
   }
+
+  console.log(`Loading environment from: ${envFile}\n`);
 
   const content = fs.readFileSync(envPath, 'utf-8');
   for (const line of content.split('\n')) {
@@ -53,7 +56,10 @@ function loadEnv() {
   }
 }
 
-loadEnv();
+// Determine which env file to use based on command line argument
+const envFile = process.argv[2] || '.env.local';
+
+loadEnv(envFile);
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const serviceKey = process.env.SUPABASE_SERVICE_KEY;

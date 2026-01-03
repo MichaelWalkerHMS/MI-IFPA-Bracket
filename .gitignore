@@ -9,6 +9,7 @@ Thumbs.db
 .env
 .env.local
 .env*.local
+.env.prod
 
 # Miscellaneous Files
 IFPA State Championship Rules.md
