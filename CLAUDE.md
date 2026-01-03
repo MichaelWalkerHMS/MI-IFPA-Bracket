@@ -4,8 +4,9 @@ A web application that allows users to create and save bracket predictions for t
 
 ## Tech Stack
 
-- **Frontend:** Next.js with React
-- **Styling:** Tailwind CSS
+- **Frontend:** Next.js 16 with React 19
+- **Styling:** Tailwind CSS v4
+- **Language:** TypeScript 5.9
 - **Backend/Database:** Supabase (PostgreSQL + Auth + Row Level Security)
 - **Deployment:** Vercel
 - **Domain:** TBD (using Vercel URL initially)
@@ -213,16 +214,21 @@ Points per correct prediction (escalating by round):
 
 ## Development Commands
 
-Commands will be added once project is initialized:
-```
+```bash
 # Install dependencies
 npm install
 
-# Run development server
+# Run development server (http://localhost:3000)
 npm run dev
 
 # Build for production
 npm run build
+
+# Run production build locally
+npm run start
+
+# Check code quality
+npm run lint
 ```
 
 ## Code Conventions
@@ -234,19 +240,23 @@ npm run build
 
 ## Project Status
 
-**Current Phase:** Planning complete, ready to begin Phase 1
+**Current Phase:** Phase 1 - Foundation (in progress)
 
-Completed:
+### Completed
 - Repository structure
 - Architecture design
 - Tech stack selection
 - Data model design
 - MVP feature list
 - Project timeline
+- **Next.js project initialized** (manual setup with TypeScript, Tailwind CSS v4, ESLint)
+- Basic homepage displaying at http://localhost:3000
 
-Next steps:
-- Initialize Next.js project
-- Set up Supabase
+### Next Steps
+- Set up Supabase project (database, auth)
+- Create database tables with RLS policies
+- Basic auth flow (signup/login/logout)
+- Deploy skeleton to Vercel
 
 ## Notes for Claude
 

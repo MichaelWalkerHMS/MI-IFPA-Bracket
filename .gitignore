@@ -14,12 +14,25 @@ Thumbs.db
 IFPA State Championship Rules.md
 
 # ===========================================
-# Add more patterns below as we choose a tech stack
+# Node.js / Next.js
 # ===========================================
 
-# Dependencies (uncomment when using Node.js)
-# node_modules/
+# Dependencies
+node_modules/
 
-# Build Output (uncomment as needed)
-# dist/
-# build/
+# Next.js build output
+.next/
+out/
+
+# Production build
+build/
+dist/
+
+# Debug logs
+npm-debug.log*
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Vercel
+.vercel/
