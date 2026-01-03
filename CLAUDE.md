@@ -256,10 +256,12 @@ npm run lint
 ### Code Changes (no database changes)
 1. Create feature branch from `main`
 2. Develop and test locally (uses dev database)
-3. Push branch and open PR
-4. Vercel creates preview deployment (uses dev database)
-5. Review and test on preview URL
-6. Merge to `main` → auto-deploys to production
+3. Push branch to origin
+4. Open PR via `gh pr create`
+5. Vercel creates preview deployment (uses dev database)
+6. **User reviews PR and tests on preview URL**
+7. **User approves and requests merge**
+8. Merge to `main` → auto-deploys to production
 
 ### Database Schema Changes
 1. Make changes in DEV Supabase first (via Dashboard or SQL)
@@ -374,6 +376,8 @@ npx supabase migration list
 - Testing is a priority - whether manual or code, testing must be completed before each commit
 - Always wait for explicit approval before making changes
 - Suggest when a commit is appropriate, but do not actually commit without the user's explicit approval
+- Never push directly to `main` - always use feature branches and PRs
+- Never merge PRs without explicit user approval - wait for user to review and approve first
 - When suggesting code, explain what it does and why
 - Prioritize MVP features over stretch goals given timeline constraints
 - Focus on small features at a time, and stay focused on exactly what we're trying to do - don't go down rabbit holes or try to solve for endless edge cases.
