@@ -166,6 +166,8 @@ Points per correct prediction (escalating by round):
 - Bracket export as image
 - Email notifications for results
 - MatchPlay API integration for seeds/results
+- Custom SMTP for branded auth emails (sender name, from address)
+- Lock out users after too many failed login attempts
 
 ## Project Phases
 
@@ -240,7 +242,7 @@ npm run lint
 
 ## Project Status
 
-**Current Phase:** Phase 1 - Foundation (in progress)
+**Current Phase:** Phase 1 - Foundation (nearly complete)
 
 ### Completed
 - Repository structure
@@ -256,9 +258,16 @@ npm run lint
 - **Row Level Security policies** implemented for all tables
 - **Auth session handling** via proxy.ts (Next.js 16 convention)
 - Connection tested and verified working
+- **Auth flow implemented:**
+  - Signup page (`/signup`)
+  - Login page (`/login`) with email persistence on error
+  - Forgot password page (`/forgot-password`)
+  - Reset password page (`/reset-password`)
+  - Auth callback route for secure code exchange (`/auth/callback`)
+  - Logout functionality on homepage
+  - Custom error messages for failed login attempts
 
 ### Next Steps
-- Basic auth flow (signup/login/logout)
 - Deploy skeleton to Vercel
 
 ## Notes for Claude

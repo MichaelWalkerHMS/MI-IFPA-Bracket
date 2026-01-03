@@ -36,3 +36,6 @@ npm-debug.log*
 
 # Vercel
 .vercel/
+
+# Manual testing screenshots
+testing/
