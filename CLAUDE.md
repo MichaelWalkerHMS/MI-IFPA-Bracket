@@ -341,10 +341,13 @@ npx supabase migration list
 
 ### Next Steps
 - Phase 2: Bracket Core - Build bracket visualization component
+    Start by generating a full plan for how we intend to do this, using Claude Plan mode
+   
 
 ## Notes for Claude
 
 - This is a learning project - explain reasoning, don't just implement
+- Follow our dev-to-prod pipeline always
 - Do not over-engineer or deviate from the initial request - we are only trying to solve one thing at a time
 - Plan out everything you intend to do before actually implementing anything; provide that plan to the user for approval
 - Testing is a priority - whether manual or code, testing must be completed before each commit
@@ -352,3 +355,4 @@ npx supabase migration list
 - Suggest when a commit is appropriate, but do not actually commit without the user's explicit approval
 - When suggesting code, explain what it does and why
 - Prioritize MVP features over stretch goals given timeline constraints
+- Focus on small features at a time, and stay focused on exactly what we're trying to do - don't go down rabbit holes or try to solve for endless edge cases.

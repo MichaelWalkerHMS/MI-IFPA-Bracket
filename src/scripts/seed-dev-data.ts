@@ -1,0 +1,167 @@
+/**
+ * Seed script for development database
+ *
+ * Usage:
+ *   npx tsx src/scripts/seed-dev-data.ts
+ *
+ * Requires environment variables (reads from .env.local):
+ *   NEXT_PUBLIC_SUPABASE_URL
+ *   SUPABASE_SERVICE_KEY (service role key, not the publishable key)
+ *
+ * Get your service key from:
+ *   Supabase Dashboard → Project Settings → API → service_role (secret)
+ */
+
+import { createClient } from '@supabase/supabase-js';
+import * as fs from 'fs';
+import * as path from 'path';
+
+// Load .env.local manually since we're not running through Next.js
+function loadEnv() {
+  const envPath = path.join(process.cwd(), '.env.local');
+  if (!fs.existsSync(envPath)) {
+    console.error('Error: .env.local file not found');
+    process.exit(1);
+  }
+
+  const content = fs.readFileSync(envPath, 'utf-8');
+  for (const line of content.split('\n')) {
+    const trimmed = line.trim();
+    if (trimmed && !trimmed.startsWith('#')) {
+      const [key, ...valueParts] = trimmed.split('=');
+      const value = valueParts.join('=');
+      if (key && value) {
+        process.env[key] = value;
+      }
+    }
+  }
+}
+
+loadEnv();
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const serviceKey = process.env.SUPABASE_SERVICE_KEY;
+
+if (!supabaseUrl) {
+  console.error('Error: NEXT_PUBLIC_SUPABASE_URL not set in .env.local');
+  process.exit(1);
+}
+
+if (!serviceKey) {
+  console.error('Error: SUPABASE_SERVICE_KEY not set in .env.local');
+  console.error('Add your service role key from Supabase Dashboard → Project Settings → API');
+  process.exit(1);
+}
+
+const supabase = createClient(supabaseUrl, serviceKey);
+
+// Tournament data for 2026 Michigan State Championship
+const TOURNAMENT_DATA = {
+  name: '2026 Michigan State Championship',
+  state: 'MI',
+  year: 2026,
+  lock_date: '2026-01-17T12:00:00-05:00',
+  start_date: '2026-01-17T13:00:00-05:00',
+  end_date: '2026-01-18T20:00:00-05:00',
+  player_count: 24,
+  status: 'upcoming' as const,
+  is_active: true,
+  timezone: 'America/New_York',
+  scoring_config: {
+    opening: 1,
+    round_of_16: 2,
+    quarters: 3,
+    semis: 4,
+    finals: 5,
+  },
+};
+
+// 24 test players (mix of real IFPA pros and fictional names)
+const PLAYER_NAMES = [
+  'Zach Sharpe',
+  'Keith Elwin',
+  'Raymond Davidson',
+  'Bowen Kerins',
+  'Escher Lefkoff',
+  'Colin MacAlpine',
+  'Josh Sharpe',
+  'Steven Bowden',
+  'Robert Gagno',
+  'Daniele Celestino',
+  'Adam Becker',
+  'Jim Belsito',
+  'Trent Augenstein',
+  'Karl DeAngelo',
+  'David Emmerson',
+  'Eric Stone',
+  'Greg Dunlap',
+  'Rob Wintler',
+  'Joe Said',
+  'Mark Steinman',
+  'Cayle George',
+  'Johannes Ostermeier',
+  'Sunshine Bon',
+  'Franck Bona',
+];
+
+async function seed() {
+  console.log('Seeding development database...\n');
+
+  // Check if tournament already exists
+  const { data: existingTournament } = await supabase
+    .from('tournaments')
+    .select('id')
+    .eq('name', TOURNAMENT_DATA.name)
+    .single();
+
+  if (existingTournament) {
+    console.log('Tournament already exists. Skipping seed.');
+    console.log('Tournament ID:', existingTournament.id);
+    return;
+  }
+
+  // Insert tournament
+  const { data: tournament, error: tournamentError } = await supabase
+    .from('tournaments')
+    .insert(TOURNAMENT_DATA)
+    .select()
+    .single();
+
+  if (tournamentError) {
+    console.error('Failed to create tournament:', tournamentError.message);
+    process.exit(1);
+  }
+
+  console.log('Created tournament:', tournament.name);
+  console.log('Tournament ID:', tournament.id);
+
+  // Insert players
+  const playersToInsert = PLAYER_NAMES.map((name, index) => ({
+    tournament_id: tournament.id,
+    name,
+    seed: index + 1,
+  }));
+
+  const { error: playersError } = await supabase
+    .from('players')
+    .insert(playersToInsert);
+
+  if (playersError) {
+    console.error('Failed to create players:', playersError.message);
+    process.exit(1);
+  }
+
+  console.log(`Created ${PLAYER_NAMES.length} players (seeds 1-24)\n`);
+
+  // Display seeding
+  console.log('Player Seeding:');
+  console.log('---------------');
+  PLAYER_NAMES.forEach((name, i) => {
+    console.log(`${(i + 1).toString().padStart(2)}. ${name}`);
+  });
+
+  console.log('\nSeed complete!');
+  console.log('\nYou can now visit: http://localhost:3000/tournament/' + tournament.id);
+}
+
+seed().catch(console.error);

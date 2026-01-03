@@ -77,11 +77,16 @@ export default async function Home() {
         ) : tournaments && tournaments.length > 0 ? (
           <ul className="space-y-2">
             {tournaments.map((t) => (
-              <li key={t.id} className="p-3 bg-gray-50 rounded-lg">
-                <p className="font-medium">{t.name}</p>
-                <p className="text-sm text-gray-600">
-                  {t.status} • {t.player_count} players
-                </p>
+              <li key={t.id}>
+                <Link
+                  href={`/tournament/${t.id}`}
+                  className="block p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                >
+                  <p className="font-medium">{t.name}</p>
+                  <p className="text-sm text-gray-600">
+                    {t.status} • {t.player_count} players
+                  </p>
+                </Link>
               </li>
             ))}
           </ul>
