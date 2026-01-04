@@ -58,10 +58,10 @@ When starting the dev server, first kill any existing process on port 3000:
 ## Current Status
 
 **Phase 3: Social Features** (in progress)
-- 🔄 Leaderboard with tiebreakers
-- 🔄 Bracket lock logic (time-based)
+- ✅ Public leaderboard (scoring/tiebreakers pending Phase 4)
+- ✅ Bracket lock logic (time-based)
 
-**Next:** Phase 4 - Results & Scoring (admin interface)
+**Next:** Phase 4 - Results & Scoring (admin interface, leaderboard scoring)
 
 **Backlog:**
 - Admin UI for player seeding
