@@ -16,17 +16,19 @@ npm run test:coverage # Run tests with coverage report
 ```
 __tests__/
 ├── setup.ts              # Global test setup (MSW, matchers)
+├── test-utils.tsx        # Common test utilities and helpers
 ├── README.md             # This file
 ├── mocks/
 │   ├── handlers.ts       # MSW request handlers for Supabase
 │   └── server.ts         # MSW server configuration
 ├── fixtures/
+│   ├── index.ts          # Central export for all fixtures
 │   ├── tournaments.ts    # Sample tournament data
 │   ├── players.ts        # Sample player data
 │   └── brackets.ts       # Sample bracket data
 └── unit/
-    └── lib/
-        └── bracket-constants.test.ts
+    ├── lib/              # Pure function tests
+    └── components/       # Component tests
 ```
 
 ## Writing Tests
@@ -101,14 +103,45 @@ describe('saveBracket', () => {
 
 ## Using Fixtures
 
+Import from the central index for cleaner imports:
+
 ```typescript
-import { mockTournament, mockLockedTournament } from '../fixtures/tournaments'
-import { mockPlayers, mockPlayerMap } from '../fixtures/players'
-import { mockBracket, mockPicks, createPicksMap } from '../fixtures/brackets'
+import {
+  mockTournament,
+  mockPlayers,
+  mockBracket,
+  createPicksMap,
+} from '../fixtures'
 
 // Use in tests
 const picks = createPicksMap(mockPicks)
 expect(picks.get('0-0')).toBe(9)
+```
+
+## Test Utilities
+
+Import helpers from `test-utils.tsx`:
+
+```typescript
+import {
+  renderWithUser,    // Render + userEvent.setup() in one call
+  createPicksFromArray,
+  expectClasses,
+  waitForCondition,
+} from '../test-utils'
+
+// Example: renderWithUser
+const { user, getByRole } = renderWithUser(<MyComponent />)
+await user.click(getByRole('button'))
+
+// Example: createPicksFromArray
+const picks = createPicksFromArray([
+  [0, 0, 9],   // Opening round, position 0, seed 9 wins
+  [0, 1, 10],  // Opening round, position 1, seed 10 wins
+])
+
+// Example: expectClasses
+expectClasses(button, ['bg-blue-600', 'text-white'])
 ```
 
 ## MSW Handlers
@@ -138,6 +171,51 @@ server.use(
 ```
 
 Handlers reset after each test automatically.
+
+### Pre-built Error Handlers
+
+Use `errorHandlers` for common error scenarios:
+
+```typescript
+import { server } from '../mocks/server'
+import { errorHandlers } from '../mocks/handlers'
+
+// Simulate database error
+server.use(errorHandlers.databaseError)
+
+// Simulate unauthorized (JWT expired)
+server.use(errorHandlers.unauthorized)
+
+// Simulate RLS policy violation
+server.use(errorHandlers.forbidden)
+
+// Simulate bracket save failure
+server.use(errorHandlers.bracketSaveFailed)
+
+// Simulate tournament not found
+server.use(errorHandlers.tournamentNotFound)
+```
+
+### Handler Factories
+
+Create custom handlers with specific data:
+
+```typescript
+import {
+  createTournamentHandler,
+  createPlayersHandler,
+  createBracketsHandler,
+} from '../mocks/handlers'
+
+// Return specific tournaments
+server.use(createTournamentHandler([myCustomTournament]))
+
+// Return 16 players instead of 24
+server.use(createPlayersHandler('tournament-id', 16))
+
+// Return existing brackets
+server.use(createBracketsHandler([existingBracket]))
+```
 
 ## Coverage
 
