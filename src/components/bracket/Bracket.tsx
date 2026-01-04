@@ -14,15 +14,15 @@ import {
   ROUNDS,
   ROUND_NAMES,
   MATCHES_PER_ROUND,
-  OPENING_ROUND_MATCHES,
-  ROUND_OF_16_MATCHES,
-  QUARTERS_MATCHES,
-  SEMIS_MATCHES,
-  FINALS_MATCH,
-  CONSOLATION_MATCH,
   OPENING_DISPLAY_ORDER,
   getPickKey,
 } from "@/lib/bracket/constants";
+import {
+  getMatchWinner as getWinner,
+  getMatchLoser as getLoser,
+  getMatchParticipants as getParticipants,
+  applyPick,
+} from "@/lib/bracket/logic";
 import Round from "./Round";
 import FinalScoreInput from "./FinalScoreInput";
 
@@ -96,148 +96,37 @@ export default function BracketView({
     }
   };
 
-  // Get the winner of a specific match
+  // Wrapper functions that pass current picks state to pure logic functions
   const getMatchWinner = useCallback(
     (round: number, position: number): number | null => {
-      return picks.get(getPickKey(round, position)) ?? null;
+      return getWinner(picks, round, position);
     },
     [picks]
   );
 
-  // Get the loser of a specific match (for consolation)
   const getMatchLoser = useCallback(
     (round: number, position: number): number | null => {
-      const winner = getMatchWinner(round, position);
-      if (winner === null) return null;
-
-      // Find who was in that match
-      const participants = getMatchParticipants(round, position);
-      if (participants.topSeed === winner) return participants.bottomSeed;
-      if (participants.bottomSeed === winner) return participants.topSeed;
-      return null;
+      return getLoser(picks, round, position);
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [picks]
   );
 
-  // Get the two participants for a match based on round and position
   const getMatchParticipants = useCallback(
     (
       round: number,
       position: number
     ): { topSeed: number | null; bottomSeed: number | null } => {
-      switch (round) {
-        case ROUNDS.OPENING: {
-          const match = OPENING_ROUND_MATCHES[position];
-          return { topSeed: match.topSeed, bottomSeed: match.bottomSeed };
-        }
-
-        case ROUNDS.ROUND_OF_16: {
-          const match = ROUND_OF_16_MATCHES[position];
-          const openingWinner = getMatchWinner(
-            ROUNDS.OPENING,
-            match.openingWinnerPosition
-          );
-          return { topSeed: match.byeSeed, bottomSeed: openingWinner };
-        }
-
-        case ROUNDS.QUARTERS: {
-          const match = QUARTERS_MATCHES[position];
-          const topWinner = getMatchWinner(
-            ROUNDS.ROUND_OF_16,
-            match.topSourcePosition
-          );
-          const bottomWinner = getMatchWinner(
-            ROUNDS.ROUND_OF_16,
-            match.bottomSourcePosition
-          );
-          return { topSeed: topWinner, bottomSeed: bottomWinner };
-        }
-
-        case ROUNDS.SEMIS: {
-          const match = SEMIS_MATCHES[position];
-          const topWinner = getMatchWinner(
-            ROUNDS.QUARTERS,
-            match.topSourcePosition
-          );
-          const bottomWinner = getMatchWinner(
-            ROUNDS.QUARTERS,
-            match.bottomSourcePosition
-          );
-          return { topSeed: topWinner, bottomSeed: bottomWinner };
-        }
-
-        case ROUNDS.FINALS: {
-          const topWinner = getMatchWinner(
-            ROUNDS.SEMIS,
-            FINALS_MATCH.topSourcePosition
-          );
-          const bottomWinner = getMatchWinner(
-            ROUNDS.SEMIS,
-            FINALS_MATCH.bottomSourcePosition
-          );
-          return { topSeed: topWinner, bottomSeed: bottomWinner };
-        }
-
-        case ROUNDS.CONSOLATION: {
-          const topLoser = getMatchLoser(
-            ROUNDS.SEMIS,
-            CONSOLATION_MATCH.topSourcePosition
-          );
-          const bottomLoser = getMatchLoser(
-            ROUNDS.SEMIS,
-            CONSOLATION_MATCH.bottomSourcePosition
-          );
-          return { topSeed: topLoser, bottomSeed: bottomLoser };
-        }
-
-        default:
-          return { topSeed: null, bottomSeed: null };
-      }
+      return getParticipants(picks, round, position);
     },
-    [getMatchWinner, getMatchLoser]
+    [picks]
   );
 
-  // Handle picking a winner - clicking the current winner deselects them (toggle)
+  // Handle picking a winner - uses pure logic function for cascade behavior
   const handlePick = useCallback(
     (round: number, position: number, winnerSeed: number) => {
       if (isLocked || !isLoggedIn) return;
 
-      const key = getPickKey(round, position);
-      const oldWinner = picks.get(key);
-
-      const newPicks = new Map(picks);
-
-      // If clicking the current winner, deselect them (toggle off)
-      if (oldWinner === winnerSeed) {
-        newPicks.delete(key);
-
-        // Clear downstream picks that contained this winner
-        for (let r = round + 1; r <= ROUNDS.CONSOLATION; r++) {
-          for (let p = 0; p < MATCHES_PER_ROUND[r]; p++) {
-            const downstreamKey = getPickKey(r, p);
-            if (newPicks.get(downstreamKey) === winnerSeed) {
-              newPicks.delete(downstreamKey);
-            }
-          }
-        }
-      } else {
-        // Selecting a new winner
-        newPicks.set(key, winnerSeed);
-
-        // Clear downstream picks that contained the old winner
-        if (oldWinner !== undefined) {
-          for (let r = round + 1; r <= ROUNDS.CONSOLATION; r++) {
-            for (let p = 0; p < MATCHES_PER_ROUND[r]; p++) {
-              const downstreamKey = getPickKey(r, p);
-              if (newPicks.get(downstreamKey) === oldWinner) {
-                newPicks.delete(downstreamKey);
-              }
-            }
-          }
-        }
-      }
-
+      const newPicks = applyPick(picks, round, position, winnerSeed);
       setPicks(newPicks);
       setIsDirty(true);
       setSaveMessage(null);
