@@ -305,7 +305,7 @@ npx supabase migration list
 
 ## Project Status
 
-**Current Phase:** Phase 2 - Bracket Core (IN PROGRESS)
+**Current Phase:** Phase 3 - Social Features (IN PROGRESS)
 
 ### Completed
 - Repository structure
@@ -353,13 +353,18 @@ npx supabase migration list
   - Seed script for dev database (`npm run seed`)
   - Real Michigan player data from IFPA standings
   - FinalScoreInput component for championship match game prediction (`src/components/bracket/FinalScoreInput.tsx`)
+- **Phase 3: Social Features:**
+  - "Your Name" field on signup with tooltip explaining leaderboard visibility (`src/app/signup/page.tsx`)
+  - Display name saved to profile on signup (`src/app/auth/actions.ts`)
+  - Shareable bracket URLs via `/bracket/[id]` route (`src/app/bracket/[id]/page.tsx`)
+  - Share URL section with copy-to-clipboard button (`src/components/bracket/Bracket.tsx`)
+  - Owner can edit from share link; non-owners see read-only view
 
 ### In Progress
-- Phase 3: Social Features
+- Browse public brackets page
+- Bracket lock logic (time-based)
 
 ### Next Steps
-- Shareable bracket URLs (public link to view any bracket)
-- Browse public brackets page
 - Phase 4: Results & Scoring (admin interface, leaderboard)
 
 ### Backlog
