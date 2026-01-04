@@ -1,9 +1,10 @@
 import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import type { Tournament, Player } from "@/lib/types";
+import type { Tournament, Player, Result } from "@/lib/types";
 import TournamentOverview from "./TournamentOverview";
 import PlayerManagement from "./PlayerManagement";
+import ResultsEntry from "./ResultsEntry";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -43,8 +44,17 @@ export default async function TournamentAdminPage({
     .select("*", { count: "exact", head: true })
     .eq("tournament_id", id);
 
+  // Fetch results
+  const { data: results } = await supabase
+    .from("results")
+    .select("*")
+    .eq("tournament_id", id)
+    .order("round", { ascending: true })
+    .order("match_position", { ascending: true });
+
   const typedTournament = tournament as Tournament;
   const typedPlayers = (players || []) as Player[];
+  const typedResults = (results || []) as Result[];
 
   const tabs = [
     { id: "overview", label: "Overview" },
@@ -115,9 +125,11 @@ export default async function TournamentAdminPage({
       )}
 
       {tab === "results" && (
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <p className="text-gray-500">Results entry coming soon...</p>
-        </div>
+        <ResultsEntry
+          tournament={typedTournament}
+          players={typedPlayers}
+          results={typedResults}
+        />
       )}
     </div>
   );
