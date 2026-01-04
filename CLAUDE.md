@@ -72,7 +72,8 @@ When starting the dev server, first kill any existing process on port 3000:
 **Next:** Phase 4 - Results & Scoring (admin interface, leaderboard scoring)
 
 **Backlog:**
-- Admin UI for player seeding
+- Admin button on homepage (visible only to admins)
+- Add single player UI in admin (without bulk import)
 - Fix seed script URL output
 - Accommodate 16 player tournaments
 - Improve UI for selecting which tournament you want to create a bracket for
