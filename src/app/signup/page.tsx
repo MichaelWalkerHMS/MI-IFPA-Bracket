@@ -31,6 +31,28 @@ export default function SignUpPage() {
 
         <form action={handleSubmit} className="space-y-4">
           <div>
+            <label htmlFor="displayName" className="block text-sm font-medium mb-1">
+              <span className="flex items-center gap-1">
+                Your Name
+                <span
+                  className="inline-flex items-center justify-center w-4 h-4 text-xs text-gray-500 bg-gray-200 rounded-full cursor-help"
+                  title="This is how your bracket will be identified on the public leaderboard if your bracket is made public."
+                >
+                  ?
+                </span>
+              </span>
+            </label>
+            <input
+              id="displayName"
+              name="displayName"
+              type="text"
+              required
+              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="John Smith"
+            />
+          </div>
+
+          <div>
             <label htmlFor="email" className="block text-sm font-medium mb-1">
               Email
             </label>
