@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import type { SaveBracketInput, LoadBracketResult, Bracket, Pick } from "@/lib/types";
+import type { SaveBracketInput, LoadBracketResult, Bracket, Pick, LeaderboardEntry } from "@/lib/types";
 
 /**
  * Load the current user's bracket and picks for a tournament
@@ -177,4 +177,63 @@ export async function checkLockStatus(
 
   const isLocked = new Date(tournament.lock_date) <= new Date();
   return { locked: isLocked, lockDate: tournament.lock_date };
+}
+
+/**
+ * Fetch leaderboard data for a tournament
+ * Returns all public brackets + current user's bracket (even if private)
+ */
+export async function getLeaderboard(
+  tournamentId: string
+): Promise<{ entries: LeaderboardEntry[]; userBracketId: string | null }> {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  // Query brackets with owner profile info
+  // RLS will automatically filter: public brackets + user's own
+  const { data: brackets, error } = await supabase
+    .from("brackets")
+    .select(
+      `
+      id,
+      name,
+      user_id,
+      is_public,
+      created_at,
+      profiles!brackets_user_id_fkey (
+        display_name
+      )
+    `
+    )
+    .eq("tournament_id", tournamentId)
+    .order("created_at", { ascending: true });
+
+  if (error || !brackets) {
+    return { entries: [], userBracketId: null };
+  }
+
+  // Transform to LeaderboardEntry format
+  const entries: LeaderboardEntry[] = brackets.map((b) => {
+    // Supabase join can return object or array depending on relationship
+    const profile = Array.isArray(b.profiles) ? b.profiles[0] : b.profiles;
+    return {
+      id: b.id,
+      name: b.name,
+      owner_id: b.user_id,
+      owner_display_name: profile?.display_name || "Anonymous",
+      is_public: b.is_public,
+      score: null, // Placeholder for future scoring
+      created_at: b.created_at,
+    };
+  });
+
+  // Find current user's bracket ID
+  const userBracketId = user
+    ? entries.find((e) => e.owner_id === user.id)?.id || null
+    : null;
+
+  return { entries, userBracketId };
 }

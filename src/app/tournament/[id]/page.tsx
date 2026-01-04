@@ -2,14 +2,14 @@ import { createClient } from "@/lib/supabase/server";
 import { signOut } from "@/app/auth/actions";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import type { Tournament, Player, Bracket, Pick } from "@/lib/types";
-import BracketView from "@/components/bracket/Bracket";
+import { getLeaderboard } from "./actions";
+import Leaderboard from "@/components/leaderboard/Leaderboard";
 
 interface PageProps {
   params: Promise<{ id: string }>;
 }
 
-export default async function TournamentPage({ params }: PageProps) {
+export default async function TournamentHubPage({ params }: PageProps) {
   const { id } = await params;
   const supabase = await createClient();
 
@@ -29,37 +29,6 @@ export default async function TournamentPage({ params }: PageProps) {
     notFound();
   }
 
-  // Fetch players for this tournament
-  const { data: players } = await supabase
-    .from("players")
-    .select("*")
-    .eq("tournament_id", id)
-    .order("seed", { ascending: true });
-
-  // Fetch user's bracket and picks if logged in
-  let userBracket: Bracket | null = null;
-  let userPicks: Pick[] = [];
-
-  if (user) {
-    const { data: bracket } = await supabase
-      .from("brackets")
-      .select("*")
-      .eq("tournament_id", id)
-      .eq("user_id", user.id)
-      .single();
-
-    if (bracket) {
-      userBracket = bracket as Bracket;
-
-      const { data: picks } = await supabase
-        .from("picks")
-        .select("*")
-        .eq("bracket_id", bracket.id);
-
-      userPicks = (picks || []) as Pick[];
-    }
-  }
-
   // Check if predictions are locked
   const isLocked = new Date(tournament.lock_date) <= new Date();
 
@@ -74,6 +43,9 @@ export default async function TournamentPage({ params }: PageProps) {
     minute: "2-digit",
     timeZoneName: "short",
   });
+
+  // Fetch leaderboard data
+  const { entries, userBracketId } = await getLeaderboard(id);
 
   return (
     <main className="min-h-screen p-4 md:p-8">
@@ -137,31 +109,58 @@ export default async function TournamentPage({ params }: PageProps) {
         </div>
       </div>
 
-      {/* Login prompt for guests */}
-      {!user && (
-        <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-          <p className="text-blue-800">
-            <Link href="/login" className="font-medium hover:underline">
-              Log in
-            </Link>{" "}
-            or{" "}
-            <Link href="/signup" className="font-medium hover:underline">
-              sign up
-            </Link>{" "}
-            to create your bracket prediction!
-          </p>
-        </div>
-      )}
+      {/* User CTA Section */}
+      <div className="mb-6">
+        {user ? (
+          <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+            {userBracketId ? (
+              <div className="flex items-center justify-between">
+                <p className="text-gray-700">
+                  You have a bracket for this tournament.
+                </p>
+                <Link
+                  href={`/tournament/${id}/edit`}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+                >
+                  View/Edit Your Bracket
+                </Link>
+              </div>
+            ) : (
+              <div className="flex items-center justify-between">
+                <p className="text-gray-700">
+                  {isLocked
+                    ? "Predictions are locked for this tournament."
+                    : "You haven't created a bracket yet."}
+                </p>
+                {!isLocked && (
+                  <Link
+                    href={`/tournament/${id}/edit`}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+                  >
+                    Create Your Bracket
+                  </Link>
+                )}
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <p className="text-blue-800">
+              <Link href="/login" className="font-medium hover:underline">
+                Log in
+              </Link>{" "}
+              or{" "}
+              <Link href="/signup" className="font-medium hover:underline">
+                sign up
+              </Link>{" "}
+              to create your bracket prediction!
+            </p>
+          </div>
+        )}
+      </div>
 
-      {/* Bracket */}
-      <BracketView
-        tournament={tournament as Tournament}
-        players={(players || []) as Player[]}
-        existingBracket={userBracket}
-        existingPicks={userPicks}
-        isLocked={isLocked}
-        isLoggedIn={!!user}
-      />
+      {/* Leaderboard */}
+      <Leaderboard entries={entries} currentUserId={user?.id || null} />
     </main>
   );
 }
