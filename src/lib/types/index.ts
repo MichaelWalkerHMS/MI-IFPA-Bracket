@@ -110,3 +110,14 @@ export interface LoadBracketResult {
   bracket: Bracket | null;
   picks: Pick[];
 }
+
+// Leaderboard entry - bracket with owner info for display
+export interface LeaderboardEntry {
+  id: string;
+  name: string | null;
+  owner_id: string;
+  owner_display_name: string;
+  is_public: boolean;
+  score: number | null;
+  created_at: string;
+}

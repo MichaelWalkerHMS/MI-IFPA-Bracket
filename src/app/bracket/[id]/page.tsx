@@ -39,10 +39,10 @@ export default async function BracketPage({ params }: PageProps) {
             This bracket is private and can only be viewed by its owner.
           </p>
           <Link
-            href="/"
+            href={`/tournament/${bracket.tournament_id}`}
             className="text-blue-600 hover:underline"
           >
-            &larr; Back to Tournaments
+            &larr; Back to Tournament
           </Link>
         </div>
       </main>
@@ -91,10 +91,10 @@ export default async function BracketPage({ params }: PageProps) {
       {/* Header */}
       <div className="mb-6">
         <Link
-          href="/"
+          href={`/tournament/${bracket.tournament_id}`}
           className="text-blue-600 hover:underline text-sm mb-2 inline-block"
         >
-          &larr; Back to Tournaments
+          &larr; Back to Tournament
         </Link>
 
         {/* Bracket title */}

@@ -47,6 +47,14 @@ Feature branch → PR → Preview deployment (dev DB) → User reviews → Merge
 4. Commit migration file with code
 5. After merge: `npx supabase link --project-ref ynxmkbpdnucrbjyvovpq && npx supabase db push`
 
+## Development Notes
+
+### Restarting Dev Server (Windows)
+When starting the dev server, first kill any existing process on port 3000:
+1. `netstat -ano | findstr :3000 | findstr LISTENING` (get PID)
+2. `powershell -Command "Stop-Process -Id <PID> -Force"`
+3. `npm run dev`
+
 ## Current Status
 
 **Phase 3: Social Features** (in progress)
@@ -62,9 +70,12 @@ Feature branch → PR → Preview deployment (dev DB) → User reviews → Merge
 - Improve UI for selecting which tournament you want to create a bracket for
 - User dashboard for the tournaments they have predicted
 - Allow for multiple brackets per user
+- Add ability to name/rename brackets during creation and editing
+- Show "(private)" indicator next to user's private brackets in leaderboard
 
 ## Working with Me
 
+- Always follow the Dev-to-Prod Workflow for every change
 - This is a learning project — explain reasoning, don't just implement
 - Plan before implementing; get approval before changes
 - One small feature at a time; don't over-engineer or go down rabbit holes
