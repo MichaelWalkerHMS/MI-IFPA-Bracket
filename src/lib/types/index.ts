@@ -121,3 +121,36 @@ export interface LeaderboardEntry {
   score: number | null;
   created_at: string;
 }
+
+// Admin types
+
+export interface TournamentFormData {
+  name: string;
+  state: string;
+  year: number;
+  lock_date: string;
+  start_date: string;
+  end_date: string;
+  player_count: 16 | 24;
+  timezone: string;
+  matchplay_id?: string;
+}
+
+export interface ResultInput {
+  round: number;
+  match_position: number;
+  winner_seed: number;
+  loser_seed: number;
+  winner_games?: number;
+  loser_games?: number;
+}
+
+export interface SeedingChangeLog {
+  id: string;
+  tournament_id: string;
+  changed_by: string;
+  change_type: 'reorder' | 'add' | 'delete' | 'rename' | 'bulk_import';
+  affected_seeds: number[];
+  description: string | null;
+  created_at: string;
+}
