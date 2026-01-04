@@ -12,12 +12,13 @@ import { redirect } from "next/navigation";
  */
 
 export async function signUp(formData: FormData) {
+  const displayName = formData.get("displayName") as string;
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
 
   const supabase = await createClient();
 
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
   });
@@ -25,6 +26,20 @@ export async function signUp(formData: FormData) {
   if (error) {
     // Return error to be displayed on the form
     return { error: error.message };
+  }
+
+  // Update the profile with display_name
+  // (Profile row is auto-created by Supabase trigger on user signup)
+  if (data.user) {
+    const { error: profileError } = await supabase
+      .from("profiles")
+      .update({ display_name: displayName })
+      .eq("id", data.user.id);
+
+    if (profileError) {
+      // Log but don't fail signup - user can update name later
+      console.error("Failed to update display name:", profileError.message);
+    }
   }
 
   // Success - redirect to homepage

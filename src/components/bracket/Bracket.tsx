@@ -2,6 +2,14 @@
 
 import { useState, useCallback } from "react";
 import type { Tournament, Player, Bracket, Pick, PlayerMap } from "@/lib/types";
+
+// Get base URL for share links
+function getBaseUrl() {
+  if (typeof window !== "undefined") {
+    return window.location.origin;
+  }
+  return process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+}
 import {
   ROUNDS,
   ROUND_NAMES,
@@ -25,6 +33,9 @@ interface BracketViewProps {
   existingPicks: Pick[];
   isLocked: boolean;
   isLoggedIn: boolean;
+  // Optional props for shared bracket view
+  bracketName?: string | null;
+  ownerName?: string;
 }
 
 export default function BracketView({
@@ -34,6 +45,8 @@ export default function BracketView({
   existingPicks,
   isLocked,
   isLoggedIn,
+  bracketName,
+  ownerName,
 }: BracketViewProps) {
   // Create player lookup map (seed -> Player)
   const playerMap: PlayerMap = new Map(players.map((p) => [p.seed, p]));
@@ -55,6 +68,33 @@ export default function BracketView({
   const [isDirty, setIsDirty] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+  // Track bracket ID in state so it updates after first save
+  const [bracketId, setBracketId] = useState<string | null>(existingBracket?.id ?? null);
+
+  // Share URL (available when bracket is saved - uses state to update after first save)
+  const shareUrl = bracketId
+    ? `${getBaseUrl()}/bracket/${bracketId}`
+    : null;
+
+  const handleCopyUrl = async () => {
+    if (!shareUrl) return;
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Fallback for older browsers
+      const textArea = document.createElement("textarea");
+      textArea.value = shareUrl;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textArea);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
 
   // Get the winner of a specific match
   const getMatchWinner = useCallback(
@@ -399,6 +439,10 @@ export default function BracketView({
               } else {
                 setSaveMessage("Bracket saved!");
                 setIsDirty(false);
+                // Update bracket ID so share URL appears after first save
+                if (result.bracket?.id) {
+                  setBracketId(result.bracket.id);
+                }
               }
             }}
             disabled={isLocked || isSaving}
@@ -430,6 +474,38 @@ export default function BracketView({
             <span className="text-sm text-red-600">
               Predictions are locked
             </span>
+          )}
+        </div>
+      )}
+
+      {/* Share URL - only for logged in users with saved brackets */}
+      {isLoggedIn && bracketId && (
+        <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+          <div className="text-sm font-medium mb-2">Share Your Bracket</div>
+          {isPublic ? (
+            <div className="flex gap-2">
+              <input
+                type="text"
+                readOnly
+                value={shareUrl || ""}
+                className="flex-1 px-3 py-2 border rounded-lg bg-white text-sm text-gray-700"
+                onClick={(e) => (e.target as HTMLInputElement).select()}
+              />
+              <button
+                onClick={handleCopyUrl}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  copied
+                    ? "bg-green-600 text-white"
+                    : "bg-blue-600 text-white hover:bg-blue-700"
+                }`}
+              >
+                {copied ? "Copied!" : "Copy"}
+              </button>
+            </div>
+          ) : (
+            <p className="text-sm text-gray-500">
+              Make your bracket public to share it with others.
+            </p>
           )}
         </div>
       )}
