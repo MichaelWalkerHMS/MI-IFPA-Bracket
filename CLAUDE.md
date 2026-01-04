@@ -55,6 +55,14 @@ When starting the dev server, first kill any existing process on port 3000:
 2. `powershell -Command "Stop-Process -Id <PID> -Force"`
 3. `npm run dev`
 
+## Testing
+
+- **Stack:** Vitest + React Testing Library + MSW
+- **Run tests:** `npm test` | `npm run test:watch` | `npm run test:coverage`
+- **Structure:** `__tests__/unit/`, `__tests__/mocks/`, `__tests__/fixtures/`
+- **Mocking:** MSW intercepts Supabase HTTP calls (see `__tests__/mocks/handlers.ts`)
+- **Docs:** See `__tests__/README.md` for patterns and examples
+
 ## Current Status
 
 **Phase 3: Social Features** (in progress)
