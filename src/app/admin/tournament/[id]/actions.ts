@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { recalculateScores } from "@/lib/scoring";
 
 /**
  * Verify the current user is an admin.
@@ -477,6 +478,9 @@ export async function saveResult(
     return { error: "Failed to save result" };
   }
 
+  // Recalculate scores for all brackets in this tournament
+  await recalculateScores(tournamentId);
+
   revalidatePath(`/admin/tournament/${tournamentId}`);
   return { success: true };
 }
@@ -508,6 +512,9 @@ export async function deleteResult(
     return { error: "Failed to delete result" };
   }
 
+  // Recalculate scores for all brackets in this tournament
+  await recalculateScores(tournamentId);
+
   revalidatePath(`/admin/tournament/${tournamentId}`);
   return { success: true };
 }
@@ -538,6 +545,30 @@ export async function clearDownstreamResults(
     return { error: "Failed to clear downstream results" };
   }
 
+  // Recalculate scores for all brackets in this tournament
+  await recalculateScores(tournamentId);
+
   revalidatePath(`/admin/tournament/${tournamentId}`);
   return { success: true };
+}
+
+/**
+ * Manually recalculate all bracket scores for a tournament
+ * (Emergency recovery function for admins)
+ */
+export async function manualRecalculateScores(tournamentId: string) {
+  const auth = await requireAdmin();
+  if ("error" in auth) {
+    return { error: auth.error };
+  }
+
+  const result = await recalculateScores(tournamentId);
+
+  if (!result.success) {
+    return { error: result.error || "Failed to recalculate scores" };
+  }
+
+  revalidatePath(`/admin/tournament/${tournamentId}`);
+  revalidatePath(`/tournament/${tournamentId}`);
+  return { success: true, count: result.count };
 }

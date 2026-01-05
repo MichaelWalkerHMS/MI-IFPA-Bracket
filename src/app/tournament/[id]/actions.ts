@@ -192,7 +192,7 @@ export async function getLeaderboard(
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Query brackets with owner profile info
+  // Query brackets with owner profile info and scoring columns
   // RLS will automatically filter: public brackets + user's own
   const { data: brackets, error } = await supabase
     .from("brackets")
@@ -202,6 +202,10 @@ export async function getLeaderboard(
       name,
       user_id,
       is_public,
+      score,
+      correct_champion,
+      game_score_diff,
+      total_correct,
       created_at,
       profiles!brackets_user_id_fkey (
         display_name
@@ -209,6 +213,11 @@ export async function getLeaderboard(
     `
     )
     .eq("tournament_id", tournamentId)
+    // Tiebreaker ordering: score DESC, correct_champion DESC, game_score_diff ASC (nulls last), total_correct DESC
+    .order("score", { ascending: false, nullsFirst: false })
+    .order("correct_champion", { ascending: false, nullsFirst: false })
+    .order("game_score_diff", { ascending: true, nullsFirst: false })
+    .order("total_correct", { ascending: false, nullsFirst: false })
     .order("created_at", { ascending: true });
 
   if (error || !brackets) {
@@ -225,7 +234,10 @@ export async function getLeaderboard(
       owner_id: b.user_id,
       owner_display_name: profile?.display_name || "Anonymous",
       is_public: b.is_public,
-      score: null, // Placeholder for future scoring
+      score: b.score,
+      correct_champion: b.correct_champion,
+      game_score_diff: b.game_score_diff,
+      total_correct: b.total_correct,
       created_at: b.created_at,
     };
   });

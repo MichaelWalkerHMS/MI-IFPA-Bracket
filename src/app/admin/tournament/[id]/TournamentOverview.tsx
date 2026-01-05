@@ -10,6 +10,7 @@ import {
   toggleTournamentVisibility,
   deleteTournament,
 } from "@/app/admin/actions";
+import { manualRecalculateScores } from "./actions";
 
 interface TournamentOverviewProps {
   tournament: Tournament;
@@ -23,6 +24,8 @@ export default function TournamentOverview({
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isRecalculating, setIsRecalculating] = useState(false);
+  const [recalculateSuccess, setRecalculateSuccess] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   // Format dates for display
@@ -69,6 +72,21 @@ export default function TournamentOverview({
     }
   }
 
+  async function handleRecalculateScores() {
+    setIsRecalculating(true);
+    setError(null);
+    setRecalculateSuccess(null);
+
+    const result = await manualRecalculateScores(tournament.id);
+    if (result.error) {
+      setError(result.error);
+    } else {
+      setRecalculateSuccess(`Recalculated scores for ${result.count} bracket(s)`);
+      router.refresh();
+    }
+    setIsRecalculating(false);
+  }
+
   async function handleDelete() {
     if (
       !confirm(
@@ -110,6 +128,12 @@ export default function TournamentOverview({
       {error && (
         <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
           {error}
+        </div>
+      )}
+
+      {recalculateSuccess && (
+        <div className="p-4 bg-green-50 border border-green-200 rounded-lg text-green-700">
+          {recalculateSuccess}
         </div>
       )}
 
@@ -209,6 +233,23 @@ export default function TournamentOverview({
             >
               {tournament.is_active ? "Visible to Public" : "Hidden from Public"}
             </button>
+          </div>
+
+          {/* Recalculate Scores */}
+          <div>
+            <label className="text-sm text-gray-500 block mb-2">
+              Leaderboard Scores
+            </label>
+            <button
+              onClick={handleRecalculateScores}
+              disabled={isRecalculating || bracketCount === 0}
+              className="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isRecalculating ? "Recalculating..." : "Recalculate All Scores"}
+            </button>
+            <p className="text-xs text-gray-500 mt-1">
+              Scores update automatically when results change. Use this only if scores appear incorrect.
+            </p>
           </div>
         </div>
       </div>
