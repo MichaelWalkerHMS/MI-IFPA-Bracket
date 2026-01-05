@@ -65,11 +65,28 @@ When starting the dev server, first kill any existing process on port 3000:
 
 ## Current Status
 
-**Phase 3: Social Features** (in progress)
-- ✅ Public leaderboard (scoring/tiebreakers pending Phase 4)
-- ✅ Bracket lock logic (time-based)
+**Phase 4: Admin Interface & Results** (in progress)
+- ✅ Phase 4A-C: Admin interface (`/admin`) with tournament/player management
+- ✅ Phase 4D: Results entry interface (PR #10 pending merge)
+- 🔲 Phase 4E: Bracket warning banner for seeding changes
 
-**Next:** Phase 4 - Results & Scoring (admin interface, leaderboard scoring)
+**Phase 4E Requirements:**
+When viewing a bracket, if seeding changed after the bracket was created:
+1. Query `seeding_change_log` for changes where `created_at > bracket.created_at`
+2. If changes found, show warning banner: "Seeding changed on [date]. Review your picks."
+3. Collect all `affected_seeds` from the log entries
+4. Pass affected seeds to bracket components
+5. Highlight matches involving affected seeds (yellow border or ⚠️ icon)
+
+Key files:
+- `src/components/bracket/Bracket.tsx` - main bracket component to update
+- `src/app/bracket/[id]/page.tsx` - bracket view page
+- `supabase/migrations/20260104100000_add_seeding_change_log.sql` - the log table
+
+**Completed phases:**
+- Phase 1: Core bracket UI
+- Phase 2: Bracket persistence
+- Phase 3: Social features (leaderboard, lock logic)
 
 **Backlog:**
 - Admin button on homepage (visible only to admins)
