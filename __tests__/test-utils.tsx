@@ -33,7 +33,8 @@ export function renderWithUser(
  * Create a mock function that tracks calls and can be asserted on.
  * Wrapper around vi.fn() for convenience.
  */
-export { vi } from 'vitest'
+import { vi, expect } from 'vitest'
+export { vi, expect }
 
 /**
  * Wait for a condition to be true, with timeout.

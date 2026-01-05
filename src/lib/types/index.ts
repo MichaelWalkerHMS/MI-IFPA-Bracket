@@ -44,6 +44,11 @@ export interface Bracket {
   is_public: boolean;
   final_winner_games: number | null;
   final_loser_games: number | null;
+  // Cached scoring fields (updated when results change)
+  score: number;
+  correct_champion: boolean | null;
+  game_score_diff: number | null;
+  total_correct: number;
   created_at: string;
   updated_at: string;
 }
@@ -119,6 +124,9 @@ export interface LeaderboardEntry {
   owner_display_name: string;
   is_public: boolean;
   score: number | null;
+  correct_champion: boolean | null;
+  game_score_diff: number | null;
+  total_correct: number | null;
   created_at: string;
 }
 

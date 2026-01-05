@@ -8,6 +8,10 @@ export const mockBracket: Bracket = {
   is_public: true,
   final_winner_games: null,
   final_loser_games: null,
+  score: 0,
+  correct_champion: null,
+  game_score_diff: null,
+  total_correct: 0,
   created_at: '2026-01-04T00:00:00Z',
   updated_at: '2026-01-04T00:00:00Z',
 }

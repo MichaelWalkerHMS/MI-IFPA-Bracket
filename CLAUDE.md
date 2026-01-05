@@ -13,16 +13,26 @@ Bracket prediction app for IFPA pinball tournaments.
 - **Opening Round:** 9v24, 10v23, 11v22, 12v21, 13v20, 14v19, 15v18, 16v17
 - **Round of 16:** 1v(16/17 winner), 2v(15/18 winner), etc.
 
-### Scoring (54 points max)
-## 24 Player Bracket
-- Opening: 1pt | Round of 16: 2pt | Quarters: 3pt | Semis: 4pt | Finals: 5pt
-## 16 Player Bracket
-- Round of 16: 1pt | Quarters: 2pt | Semis: 3pt | Finals: 4pt
+### Scoring
+**24-player bracket (53 points max):**
+- Opening: 1pt (8 matches = 8pts)
+- Round of 16: 2pt (8 matches = 16pts)
+- Quarters: 3pt (4 matches = 12pts)
+- Semis: 4pt (2 matches = 8pts)
+- Finals: 5pt (1 match = 5pts)
+- Consolation: 4pt (1 match = 4pts) ← same as semis
+
+**16-player bracket (35 points max):**
+- Round of 16: 1pt (8 matches = 8pts)
+- Quarters: 2pt (4 matches = 8pts)
+- Semis: 3pt (2 matches = 6pts)
+- Finals: 4pt (1 match = 4pts)
+- Consolation: 3pt (1 match = 3pts) ← same as semis
 
 ### Tiebreakers (in order)
-1. Correctly predicted champion
-2. Predicted final match game score
-3. Total correct predictions
+1. Correctly predicted champion (true > false)
+2. Game score difference: sum of |predicted - actual| for winner_games + loser_games (lower is better)
+3. Total correct predictions (higher is better)
 
 ### Data Encoding
 - `round`: 0=opening, 1=round of 16, 2=quarters, 3=semis, 4=final, 5=consolation
@@ -65,28 +75,20 @@ When starting the dev server, first kill any existing process on port 3000:
 
 ## Current Status
 
-**Phase 4: Admin Interface & Results** (in progress)
-- ✅ Phase 4A-C: Admin interface (`/admin`) with tournament/player management
-- ✅ Phase 4D: Results entry interface (PR #10 pending merge)
-- 🔲 Phase 4E: Bracket warning banner for seeding changes
-
-**Phase 4E Requirements:**
-When viewing a bracket, if seeding changed after the bracket was created:
-1. Query `seeding_change_log` for changes where `created_at > bracket.created_at`
-2. If changes found, show warning banner: "Seeding changed on [date]. Review your picks."
-3. Collect all `affected_seeds` from the log entries
-4. Pass affected seeds to bracket components
-5. Highlight matches involving affected seeds (yellow border or ⚠️ icon)
-
-Key files:
-- `src/components/bracket/Bracket.tsx` - main bracket component to update
-- `src/app/bracket/[id]/page.tsx` - bracket view page
-- `supabase/migrations/20260104100000_add_seeding_change_log.sql` - the log table
+**Phase 5: Leaderboard Scoring** (in progress)
+- Cached scores in `brackets` table (score, correct_champion, game_score_diff, total_correct)
+- Auto-recalculates when admin saves/deletes/clears results
+- Admin "Recalculate All Scores" button for emergency recovery
+- Key files:
+  - `src/lib/scoring/calculateScore.ts` - pure scoring logic
+  - `src/lib/scoring/recalculateScores.ts` - batch update function
+  - `src/app/admin/tournament/[id]/actions.ts` - result mutation triggers
 
 **Completed phases:**
 - Phase 1: Core bracket UI
 - Phase 2: Bracket persistence
 - Phase 3: Social features (leaderboard, lock logic)
+- Phase 4: Admin interface & results (including seeding change warnings)
 
 **Backlog:**
 - Admin button on homepage (visible only to admins)
@@ -100,6 +102,14 @@ Key files:
 - Add ability to name/rename brackets during creation and editing
 - Show "(private)" indicator next to user's private brackets in leaderboard
 - Remove ability to manually add more than 4 wins on final match results page
+- Add earned score indicator (✓/✗) for every match on bracket view
+- Add round score subtotals to bracket UI (e.g., "Opening: 6/8")
+
+## PR Requirements
+
+Code review checklist for maintaining code quality:
+
+- **Results mutations**: Any PR touching result save/delete/clear must verify `recalculateScores()` is called
 
 ## Working with Me
 
