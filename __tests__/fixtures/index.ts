@@ -27,3 +27,16 @@ export {
   mockPicks,
   createPicksMap,
 } from './brackets'
+
+// Results
+export {
+  createMockResult,
+  createOpeningRoundResults,
+  createRoundOf16Results,
+  createQuartersResults,
+  createSemisResults,
+  createFinalsResult,
+  createConsolationResult,
+  createCompleteTournamentResults,
+  createPartialResults,
+} from './results'

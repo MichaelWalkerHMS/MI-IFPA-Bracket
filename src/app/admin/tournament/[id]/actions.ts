@@ -402,3 +402,108 @@ export async function reorderPlayers(
   revalidatePath(`/admin/tournament/${tournamentId}`);
   return { success: true };
 }
+
+/**
+ * Save a match result
+ */
+export async function saveResult(
+  tournamentId: string,
+  round: number,
+  matchPosition: number,
+  winnerSeed: number,
+  loserSeed: number,
+  winnerGames?: number,
+  loserGames?: number
+) {
+  const auth = await requireAdmin();
+  if ("error" in auth) {
+    return { error: auth.error };
+  }
+
+  const supabase = await createClient();
+
+  // Upsert the result (insert or update if exists)
+  const { error } = await supabase.from("results").upsert(
+    {
+      tournament_id: tournamentId,
+      round,
+      match_position: matchPosition,
+      winner_seed: winnerSeed,
+      loser_seed: loserSeed,
+      winner_games: winnerGames,
+      loser_games: loserGames,
+    },
+    {
+      onConflict: "tournament_id,round,match_position",
+    }
+  );
+
+  if (error) {
+    console.error("Error saving result:", error);
+    return { error: "Failed to save result" };
+  }
+
+  revalidatePath(`/admin/tournament/${tournamentId}`);
+  return { success: true };
+}
+
+/**
+ * Delete a match result
+ */
+export async function deleteResult(
+  tournamentId: string,
+  round: number,
+  matchPosition: number
+) {
+  const auth = await requireAdmin();
+  if ("error" in auth) {
+    return { error: auth.error };
+  }
+
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("results")
+    .delete()
+    .eq("tournament_id", tournamentId)
+    .eq("round", round)
+    .eq("match_position", matchPosition);
+
+  if (error) {
+    console.error("Error deleting result:", error);
+    return { error: "Failed to delete result" };
+  }
+
+  revalidatePath(`/admin/tournament/${tournamentId}`);
+  return { success: true };
+}
+
+/**
+ * Clear all results for rounds after a specific round
+ * (Used when changing an earlier result that invalidates later rounds)
+ */
+export async function clearDownstreamResults(
+  tournamentId: string,
+  fromRound: number
+) {
+  const auth = await requireAdmin();
+  if ("error" in auth) {
+    return { error: auth.error };
+  }
+
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("results")
+    .delete()
+    .eq("tournament_id", tournamentId)
+    .gt("round", fromRound);
+
+  if (error) {
+    console.error("Error clearing downstream results:", error);
+    return { error: "Failed to clear downstream results" };
+  }
+
+  revalidatePath(`/admin/tournament/${tournamentId}`);
+  return { success: true };
+}
