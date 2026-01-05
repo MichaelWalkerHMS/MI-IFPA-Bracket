@@ -67,11 +67,30 @@ When starting the dev server, first kill any existing process on port 3000:
 
 ## Testing
 
+### Unit Tests
 - **Stack:** Vitest + React Testing Library + MSW
 - **Run tests:** `npm test` | `npm run test:watch` | `npm run test:coverage`
 - **Structure:** `__tests__/unit/`, `__tests__/mocks/`, `__tests__/fixtures/`
 - **Mocking:** MSW intercepts Supabase HTTP calls (see `__tests__/mocks/handlers.ts`)
 - **Docs:** See `__tests__/README.md` for patterns and examples
+
+### E2E Tests
+- **Stack:** Playwright (Chrome, Firefox, Safari + mobile emulation)
+- **Location:** `e2e/` directory
+- **Run:** `npm run test:e2e` | `npm run test:e2e:ui` (visual debugger)
+- **CI:** Runs automatically on PRs via GitHub Actions
+- **Docs:** See `feature-plans/e2e-tests/implementation-plan.md` for setup details
+
+### E2E Test Requirements
+- **New features:** Must include E2E test for the user journey
+- **Bug fixes:** Add regression test if the bug was user-facing
+- **UI changes:** Update affected E2E tests
+- **When to skip E2E:** Pure refactoring, backend-only changes covered by unit tests, documentation updates
+
+### E2E Test User
+- Tests use dedicated `e2e-test@` user (credentials in `.env.test`)
+- Never commit test credentials
+- Tests clean up their own data (brackets, picks)
 
 ## Current Status
 
@@ -104,6 +123,7 @@ When starting the dev server, first kill any existing process on port 3000:
 - Remove ability to manually add more than 4 wins on final match results page
 - Add earned score indicator (✓/✗) for every match on bracket view
 - Add round score subtotals to bracket UI (e.g., "Opening: 6/8")
+- Improve Leaderboard UI - at minimum, Score needs better highlighting or visibility
 
 ## PR Requirements
 
