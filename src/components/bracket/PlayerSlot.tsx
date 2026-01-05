@@ -9,6 +9,7 @@ interface PlayerSlotProps {
   isClickable: boolean;
   onClick: () => void;
   position: "top" | "bottom";
+  isAffected?: boolean;
 }
 
 export default function PlayerSlot({
@@ -17,6 +18,7 @@ export default function PlayerSlot({
   isWinner,
   isClickable,
   onClick,
+  isAffected,
 }: PlayerSlotProps) {
   const player = seed !== null ? playerMap.get(seed) : null;
 
@@ -57,6 +59,9 @@ export default function PlayerSlot({
       <span className="text-gray-500 font-mono text-xs w-5">
         {seed}
       </span>
+      {isAffected && (
+        <span className="text-yellow-500 text-xs" title="Seeding changed">&#9888;</span>
+      )}
       <span className={isWinner ? "text-green-800" : "text-gray-900"}>
         {player?.name || `Seed ${seed}`}
       </span>

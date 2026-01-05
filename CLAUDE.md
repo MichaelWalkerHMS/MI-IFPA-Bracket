@@ -91,6 +91,7 @@ Key files:
 **Backlog:**
 - Admin button on homepage (visible only to admins)
 - Add single player UI in admin (without bulk import)
+- Add rename/edit player function in admin (to change name without delete+reimport)
 - Fix seed script URL output
 - Accommodate 16 player tournaments
 - Improve UI for selecting which tournament you want to create a bracket for
@@ -98,6 +99,7 @@ Key files:
 - Allow for multiple brackets per user
 - Add ability to name/rename brackets during creation and editing
 - Show "(private)" indicator next to user's private brackets in leaderboard
+- Remove ability to manually add more than 4 wins on final match results page
 
 ## Working with Me
 

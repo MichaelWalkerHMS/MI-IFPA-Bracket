@@ -36,6 +36,9 @@ interface BracketViewProps {
   // Optional props for shared bracket view
   bracketName?: string | null;
   ownerName?: string;
+  // Seeding change warning props
+  affectedSeeds?: number[];
+  seedingChangeCount?: number;
 }
 
 export default function BracketView({
@@ -47,6 +50,8 @@ export default function BracketView({
   isLoggedIn,
   bracketName,
   ownerName,
+  affectedSeeds,
+  seedingChangeCount,
 }: BracketViewProps) {
   // Create player lookup map (seed -> Player)
   const playerMap: PlayerMap = new Map(players.map((p) => [p.seed, p]));
@@ -174,6 +179,16 @@ export default function BracketView({
 
   return (
     <div className="w-full">
+      {/* Seeding change warning banner */}
+      {(seedingChangeCount ?? 0) > 0 && (
+        <div className="bg-yellow-50 border border-yellow-400 rounded-lg p-3 mb-4 flex items-center gap-2">
+          <span className="text-yellow-600 text-lg">&#9888;</span>
+          <span className="text-yellow-800">
+            Seeding changed {seedingChangeCount} {seedingChangeCount === 1 ? 'time' : 'times'} since you last saved. Review your picks.
+          </span>
+        </div>
+      )}
+
       {/* Bracket container with horizontal scroll */}
       <div className="overflow-x-auto pb-4">
         <div className="flex gap-2 min-w-max">
@@ -186,6 +201,7 @@ export default function BracketView({
             onPick={handlePick}
             isLocked={isLocked}
             isLoggedIn={isLoggedIn}
+            affectedSeeds={affectedSeeds}
           />
 
           {/* Round of 16 */}
@@ -197,6 +213,7 @@ export default function BracketView({
             onPick={handlePick}
             isLocked={isLocked}
             isLoggedIn={isLoggedIn}
+            affectedSeeds={affectedSeeds}
           />
 
           {/* Quarterfinals */}
@@ -208,6 +225,7 @@ export default function BracketView({
             onPick={handlePick}
             isLocked={isLocked}
             isLoggedIn={isLoggedIn}
+            affectedSeeds={affectedSeeds}
           />
 
           {/* Semifinals */}
@@ -219,6 +237,7 @@ export default function BracketView({
             onPick={handlePick}
             isLocked={isLocked}
             isLoggedIn={isLoggedIn}
+            affectedSeeds={affectedSeeds}
           />
 
           {/* Finals + Champion */}
@@ -231,6 +250,7 @@ export default function BracketView({
               onPick={handlePick}
               isLocked={isLocked}
               isLoggedIn={isLoggedIn}
+              affectedSeeds={affectedSeeds}
             />
 
             {/* Champion display */}
@@ -266,6 +286,7 @@ export default function BracketView({
                 onPick={handlePick}
                 isLocked={isLocked}
                 isLoggedIn={isLoggedIn}
+                affectedSeeds={affectedSeeds}
               />
             </div>
           </div>
