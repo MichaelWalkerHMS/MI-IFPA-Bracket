@@ -69,6 +69,21 @@ export async function bulkImportPlayers(
     .select("*", { count: "exact", head: true })
     .eq("tournament_id", tournamentId);
 
+  // Get existing players BEFORE deleting (to compare for change detection)
+  const { data: existingPlayers } = await supabase
+    .from("players")
+    .select("seed, name")
+    .eq("tournament_id", tournamentId)
+    .order("seed", { ascending: true });
+
+  // Build a map of existing seed -> name for comparison
+  const existingNamesBySeed = new Map<number, string>();
+  if (existingPlayers) {
+    for (const p of existingPlayers) {
+      existingNamesBySeed.set(p.seed, p.name);
+    }
+  }
+
   // Delete existing players
   const { error: deleteError } = await supabase
     .from("players")
@@ -96,16 +111,35 @@ export async function bulkImportPlayers(
     return { error: "Failed to insert players" };
   }
 
-  // Log seeding change if brackets exist
+  // Log seeding change if brackets exist AND something actually changed
   if (bracketCount && bracketCount > 0) {
-    const affectedSeeds = names.map((_, i) => i + 1);
-    await supabase.from("seeding_change_log").insert({
-      tournament_id: tournamentId,
-      changed_by: auth.user.id,
-      change_type: "bulk_import",
-      affected_seeds: affectedSeeds,
-      description: `Bulk imported ${names.length} players`,
-    });
+    // Only log seeds where the name actually changed
+    const affectedSeeds: number[] = [];
+    for (let i = 0; i < names.length; i++) {
+      const seed = i + 1;
+      const newName = names[i].trim();
+      const oldName = existingNamesBySeed.get(seed);
+      if (oldName !== newName) {
+        affectedSeeds.push(seed);
+      }
+    }
+    // Also check for seeds that were removed (existed before but not now)
+    for (const oldSeed of existingNamesBySeed.keys()) {
+      if (oldSeed > names.length && !affectedSeeds.includes(oldSeed)) {
+        affectedSeeds.push(oldSeed);
+      }
+    }
+
+    // Only log if something actually changed
+    if (affectedSeeds.length > 0) {
+      await supabase.from("seeding_change_log").insert({
+        tournament_id: tournamentId,
+        changed_by: auth.user.id,
+        change_type: "bulk_import",
+        affected_seeds: affectedSeeds,
+        description: `Bulk imported ${names.length} players (${affectedSeeds.length} changed)`,
+      });
+    }
   }
 
   revalidatePath(`/admin/tournament/${tournamentId}`);

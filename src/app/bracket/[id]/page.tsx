@@ -73,6 +73,20 @@ export default async function BracketPage({ params }: PageProps) {
     .select("*")
     .eq("bracket_id", bracket.id);
 
+  // Query seeding changes AFTER the bracket was last saved
+  const { data: seedingChanges } = await supabase
+    .from("seeding_change_log")
+    .select("affected_seeds, created_at")
+    .eq("tournament_id", bracket.tournament_id)
+    .gt("created_at", bracket.updated_at)
+    .order("created_at", { ascending: false });
+
+  // Collect unique affected seeds and count changes
+  const affectedSeeds = seedingChanges
+    ? [...new Set(seedingChanges.flatMap((c) => c.affected_seeds))]
+    : [];
+  const seedingChangeCount = seedingChanges?.length || 0;
+
   // Fetch owner's profile for display name
   const { data: ownerProfile } = await supabase
     .from("profiles")
@@ -121,6 +135,8 @@ export default async function BracketPage({ params }: PageProps) {
         isLoggedIn={isOwner}
         bracketName={bracketName}
         ownerName={ownerName}
+        affectedSeeds={affectedSeeds}
+        seedingChangeCount={seedingChangeCount}
       />
     </main>
   );

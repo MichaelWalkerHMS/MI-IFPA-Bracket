@@ -19,6 +19,7 @@ interface RoundProps {
   onPick: (round: number, position: number, winnerSeed: number) => void;
   isLocked: boolean;
   isLoggedIn: boolean;
+  affectedSeeds?: number[];
 }
 
 // Match height + gap = spacing unit
@@ -33,6 +34,7 @@ export default function Round({
   onPick,
   isLocked,
   isLoggedIn,
+  affectedSeeds,
 }: RoundProps) {
   // Calculate gap between matches based on round
   // Each round doubles the gap to center between pairs from previous round
@@ -109,6 +111,7 @@ export default function Round({
             onPick={onPick}
             isLocked={isLocked}
             isLoggedIn={isLoggedIn}
+            affectedSeeds={affectedSeeds}
           />
         ))}
       </div>

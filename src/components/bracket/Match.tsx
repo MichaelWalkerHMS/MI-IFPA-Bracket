@@ -13,6 +13,7 @@ interface MatchProps {
   onPick: (round: number, position: number, winnerSeed: number) => void;
   isLocked: boolean;
   isLoggedIn: boolean;
+  affectedSeeds?: number[];
 }
 
 export default function Match({
@@ -25,6 +26,7 @@ export default function Match({
   onPick,
   isLocked,
   isLoggedIn,
+  affectedSeeds,
 }: MatchProps) {
   const handlePickTop = () => {
     if (topSeed !== null) {
@@ -38,8 +40,15 @@ export default function Match({
     }
   };
 
+  // Check if this match involves any affected seeds
+  const isAffected = affectedSeeds?.some(
+    (seed) => seed === topSeed || seed === bottomSeed
+  );
+
   return (
-    <div className="border border-gray-300 rounded-lg overflow-hidden bg-white shadow-sm">
+    <div className={`rounded-lg overflow-hidden bg-white shadow-sm ${
+      isAffected ? 'border-2 border-yellow-400' : 'border border-gray-300'
+    }`}>
       <PlayerSlot
         seed={topSeed}
         playerMap={playerMap}
@@ -47,6 +56,7 @@ export default function Match({
         isClickable={!isLocked && isLoggedIn && topSeed !== null}
         onClick={handlePickTop}
         position="top"
+        isAffected={topSeed !== null && affectedSeeds?.includes(topSeed)}
       />
       <div className="border-t border-gray-200" />
       <PlayerSlot
@@ -56,6 +66,7 @@ export default function Match({
         isClickable={!isLocked && isLoggedIn && bottomSeed !== null}
         onClick={handlePickBottom}
         position="bottom"
+        isAffected={bottomSeed !== null && affectedSeeds?.includes(bottomSeed)}
       />
     </div>
   );
