@@ -1,6 +1,7 @@
 # Operating System Files
 .DS_Store
 Thumbs.db
+nul
 
 # Claude Code Local Settings
 .claude/
@@ -10,6 +11,7 @@ Thumbs.db
 .env.local
 .env*.local
 .env.prod
+.env.test
 
 # Miscellaneous Files
 IFPA State Championship Rules.md
@@ -40,3 +42,11 @@ npm-debug.log*
 
 # Manual testing screenshots
 testing/
+
+# Future Feature Plans
+feature-plans/
+
+# Playwright
+test-results/
+playwright-report/
+playwright/.cache/
