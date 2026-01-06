@@ -221,9 +221,7 @@ export default function BracketView({
               disabled={isLocked}
               className="w-4 h-4"
             />
-            <span className="text-sm">
-              {isPublic ? "Public" : "Private"}
-            </span>
+            <span className="text-sm">Public</span>
           </label>
 
           {/* Save button */}
