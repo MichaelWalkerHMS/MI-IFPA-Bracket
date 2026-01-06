@@ -33,16 +33,16 @@ export default async function AuthHeader() {
         {isAdmin && (
           <Link
             href="/admin"
-            className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            className="px-4 py-2 text-sm bg-[rgb(var(--color-accent-primary))] text-white rounded-lg hover:bg-[rgb(var(--color-accent-hover))]"
           >
             Admin
           </Link>
         )}
-        <span className="text-sm text-gray-600">{user.email}</span>
+        <span className="text-sm text-[rgb(var(--color-text-secondary))]">{user.email}</span>
         <form action={signOut}>
           <button
             type="submit"
-            className="px-4 py-2 text-sm bg-gray-200 rounded-lg hover:bg-gray-300"
+            className="px-4 py-2 text-sm bg-[rgb(var(--color-bg-tertiary))] rounded-lg hover:bg-[rgb(var(--color-border-secondary))]"
           >
             Log Out
           </button>
@@ -55,13 +55,13 @@ export default async function AuthHeader() {
     <div className="flex gap-2">
       <Link
         href="/login"
-        className="px-4 py-2 text-sm bg-gray-200 rounded-lg hover:bg-gray-300"
+        className="px-4 py-2 text-sm bg-[rgb(var(--color-bg-tertiary))] rounded-lg hover:bg-[rgb(var(--color-border-secondary))]"
       >
         Log In
       </Link>
       <Link
         href="/signup"
-        className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+        className="px-4 py-2 text-sm bg-[rgb(var(--color-accent-primary))] text-white rounded-lg hover:bg-[rgb(var(--color-accent-hover))]"
       >
         Sign Up
       </Link>

@@ -27,14 +27,14 @@ export default async function AdminDashboard() {
       {/* Page Header */}
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Tournaments</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="text-2xl font-bold text-[rgb(var(--color-text-primary))]">Tournaments</h1>
+          <p className="text-[rgb(var(--color-text-secondary))] mt-1">
             Manage tournaments, players, and results
           </p>
         </div>
         <Link
           href="/admin/tournament/new"
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+          className="px-4 py-2 bg-[rgb(var(--color-accent-primary))] text-white rounded-lg hover:bg-[rgb(var(--color-accent-hover))] font-medium"
         >
           + New Tournament
         </Link>
@@ -45,7 +45,7 @@ export default async function AdminDashboard() {
         <TournamentSection
           title="In Progress"
           tournaments={inProgress}
-          badgeColor="bg-yellow-100 text-yellow-800"
+          badgeColor="bg-[rgb(var(--color-warning-bg))] text-[rgb(var(--color-warning-text))]"
         />
       )}
 
@@ -53,7 +53,7 @@ export default async function AdminDashboard() {
         <TournamentSection
           title="Upcoming"
           tournaments={upcoming}
-          badgeColor="bg-blue-100 text-blue-800"
+          badgeColor="bg-[rgb(var(--color-accent-light))] text-[rgb(var(--color-accent-text))]"
         />
       )}
 
@@ -61,16 +61,16 @@ export default async function AdminDashboard() {
         <TournamentSection
           title="Completed"
           tournaments={completed}
-          badgeColor="bg-green-100 text-green-800"
+          badgeColor="bg-[rgb(var(--color-success-bg))] text-[rgb(var(--color-success-text))]"
         />
       )}
 
       {tournamentList.length === 0 && (
-        <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
-          <p className="text-gray-500">No tournaments yet.</p>
+        <div className="text-center py-12 bg-[rgb(var(--color-bg-primary))] rounded-lg border border-[rgb(var(--color-border-primary))]">
+          <p className="text-[rgb(var(--color-text-muted))]">No tournaments yet.</p>
           <Link
             href="/admin/tournament/new"
-            className="text-blue-600 hover:underline mt-2 inline-block"
+            className="text-[rgb(var(--color-accent-primary))] hover:underline mt-2 inline-block"
           >
             Create your first tournament
           </Link>
@@ -91,8 +91,8 @@ function TournamentSection({
 }) {
   return (
     <div className="mb-8">
-      <h2 className="text-lg font-semibold text-gray-900 mb-4">{title}</h2>
-      <div className="bg-white rounded-lg border border-gray-200 divide-y divide-gray-200">
+      <h2 className="text-lg font-semibold text-[rgb(var(--color-text-primary))] mb-4">{title}</h2>
+      <div className="bg-[rgb(var(--color-bg-primary))] rounded-lg border border-[rgb(var(--color-border-primary))] divide-y divide-[rgb(var(--color-border-primary))]">
         {tournaments.map((tournament) => (
           <TournamentRow
             key={tournament.id}
@@ -122,12 +122,12 @@ function TournamentRow({
   return (
     <Link
       href={`/admin/tournament/${tournament.id}`}
-      className="flex items-center justify-between p-4 hover:bg-gray-50 transition-colors"
+      className="flex items-center justify-between p-4 hover:bg-[rgb(var(--color-bg-secondary))] transition-colors"
     >
       <div className="flex items-center gap-4">
         <div>
-          <h3 className="font-medium text-gray-900">{tournament.name}</h3>
-          <p className="text-sm text-gray-500">
+          <h3 className="font-medium text-[rgb(var(--color-text-primary))]">{tournament.name}</h3>
+          <p className="text-sm text-[rgb(var(--color-text-muted))]">
             {formattedDate} &bull; {tournament.player_count} players
           </p>
         </div>
@@ -137,11 +137,11 @@ function TournamentRow({
           {tournament.status.replace("_", " ")}
         </span>
         {!tournament.is_active && (
-          <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+          <span className="px-2 py-1 rounded-full text-xs font-medium bg-[rgb(var(--color-bg-tertiary))] text-[rgb(var(--color-text-secondary))]">
             Hidden
           </span>
         )}
-        <span className="text-gray-400">&rarr;</span>
+        <span className="text-[rgb(var(--color-text-muted))]">&rarr;</span>
       </div>
     </Link>
   );

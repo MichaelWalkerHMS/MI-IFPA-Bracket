@@ -75,7 +75,7 @@ describe('FinalScoreInput', () => {
       )
 
       const selectedButton = screen.getByRole('button', { name: '4-2' })
-      expect(selectedButton).toHaveClass('bg-blue-600')
+      expect(selectedButton).toHaveClass('bg-[rgb(var(--color-accent-primary))]')
       expect(selectedButton).toHaveClass('text-white')
     })
 
@@ -89,7 +89,7 @@ describe('FinalScoreInput', () => {
       )
 
       const unselectedButton = screen.getByRole('button', { name: '4-0' })
-      expect(unselectedButton).not.toHaveClass('bg-blue-600')
+      expect(unselectedButton).not.toHaveClass('bg-[rgb(var(--color-accent-primary))]')
     })
   })
 
@@ -134,7 +134,7 @@ describe('FinalScoreInput', () => {
 
       const button = screen.getByRole('button', { name: '4-0' })
       expect(button).toHaveClass('cursor-not-allowed')
-      expect(button).toHaveClass('text-gray-400')
+      expect(button).toHaveClass('text-[rgb(var(--color-text-muted))]')
     })
 
     it('enables buttons when isLocked is false and isLoggedIn is true', () => {
@@ -166,7 +166,7 @@ describe('FinalScoreInput', () => {
       const buttons = screen.getAllByRole('button')
       buttons.forEach((button) => {
         // None should have the selected styling
-        expect(button).not.toHaveClass('bg-blue-600')
+        expect(button).not.toHaveClass('bg-[rgb(var(--color-accent-primary))]')
       })
     })
 

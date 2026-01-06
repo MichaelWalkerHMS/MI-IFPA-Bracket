@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { signIn } from "@/app/auth/actions";
 import Link from "next/link";
+import SettingsButton from "@/components/SettingsButton";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -25,6 +26,10 @@ export default function LoginPage() {
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center p-8">
+      <div className="absolute top-4 right-4">
+        <SettingsButton />
+      </div>
+
       <div className="w-full max-w-md">
         <h1 className="text-3xl font-bold text-center mb-8">
           Log In
@@ -42,7 +47,7 @@ export default function LoginPage() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-[rgb(var(--color-border-secondary))] rounded-lg focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-accent-primary))] bg-[rgb(var(--color-bg-primary))]"
               placeholder="you@example.com"
             />
           </div>
@@ -56,13 +61,13 @@ export default function LoginPage() {
               name="password"
               type="password"
               required
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-[rgb(var(--color-border-secondary))] rounded-lg focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-accent-primary))] bg-[rgb(var(--color-bg-primary))]"
               placeholder="Your password"
             />
           </div>
 
           {error && (
-            <div className="p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm">
+            <div className="p-3 bg-[rgb(var(--color-error-bg))] border border-[rgb(var(--color-error-border))] text-[rgb(var(--color-error-text))] rounded-lg text-sm">
               {error}
             </div>
           )}
@@ -70,7 +75,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full py-2 px-4 bg-[rgb(var(--color-accent-primary))] text-white rounded-lg hover:bg-[rgb(var(--color-accent-hover))] disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? "Logging in..." : "Log In"}
           </button>
@@ -79,15 +84,15 @@ export default function LoginPage() {
         <div className="mt-4 text-center">
           <Link
             href="/forgot-password"
-            className="text-sm text-blue-600 hover:underline"
+            className="text-sm text-[rgb(var(--color-accent-primary))] hover:underline"
           >
             Forgot your password?
           </Link>
         </div>
 
-        <p className="mt-6 text-center text-sm text-gray-600">
+        <p className="mt-6 text-center text-sm text-[rgb(var(--color-text-secondary))]">
           Don&apos;t have an account?{" "}
-          <Link href="/signup" className="text-blue-600 hover:underline">
+          <Link href="/signup" className="text-[rgb(var(--color-accent-primary))] hover:underline">
             Sign up
           </Link>
         </p>

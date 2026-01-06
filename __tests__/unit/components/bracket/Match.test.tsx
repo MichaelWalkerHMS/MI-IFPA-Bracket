@@ -21,16 +21,16 @@ describe('Match', () => {
       const { container } = render(<Match {...defaultProps} />)
 
       const matchDiv = container.firstChild as HTMLElement
-      expect(matchDiv).toHaveClass('border-gray-300')
-      expect(matchDiv).not.toHaveClass('border-yellow-400')
+      expect(matchDiv).toHaveClass('border-[rgb(var(--color-border-secondary))]')
+      expect(matchDiv).not.toHaveClass('border-[rgb(var(--color-warning-border))]')
     })
 
     it('renders with normal border when affectedSeeds is empty', () => {
       const { container } = render(<Match {...defaultProps} affectedSeeds={[]} />)
 
       const matchDiv = container.firstChild as HTMLElement
-      expect(matchDiv).toHaveClass('border-gray-300')
-      expect(matchDiv).not.toHaveClass('border-yellow-400')
+      expect(matchDiv).toHaveClass('border-[rgb(var(--color-border-secondary))]')
+      expect(matchDiv).not.toHaveClass('border-[rgb(var(--color-warning-border))]')
     })
 
     it('renders with yellow border when topSeed is affected', () => {
@@ -39,9 +39,9 @@ describe('Match', () => {
       )
 
       const matchDiv = container.firstChild as HTMLElement
-      expect(matchDiv).toHaveClass('border-yellow-400')
+      expect(matchDiv).toHaveClass('border-[rgb(var(--color-warning-border))]')
       expect(matchDiv).toHaveClass('border-2')
-      expect(matchDiv).not.toHaveClass('border-gray-300')
+      expect(matchDiv).not.toHaveClass('border-[rgb(var(--color-border-secondary))]')
     })
 
     it('renders with yellow border when bottomSeed is affected', () => {
@@ -50,7 +50,7 @@ describe('Match', () => {
       )
 
       const matchDiv = container.firstChild as HTMLElement
-      expect(matchDiv).toHaveClass('border-yellow-400')
+      expect(matchDiv).toHaveClass('border-[rgb(var(--color-warning-border))]')
       expect(matchDiv).toHaveClass('border-2')
     })
 
@@ -60,7 +60,7 @@ describe('Match', () => {
       )
 
       const matchDiv = container.firstChild as HTMLElement
-      expect(matchDiv).toHaveClass('border-yellow-400')
+      expect(matchDiv).toHaveClass('border-[rgb(var(--color-warning-border))]')
     })
 
     it('renders with normal border when affectedSeeds does not include match seeds', () => {
@@ -69,8 +69,8 @@ describe('Match', () => {
       )
 
       const matchDiv = container.firstChild as HTMLElement
-      expect(matchDiv).toHaveClass('border-gray-300')
-      expect(matchDiv).not.toHaveClass('border-yellow-400')
+      expect(matchDiv).toHaveClass('border-[rgb(var(--color-border-secondary))]')
+      expect(matchDiv).not.toHaveClass('border-[rgb(var(--color-warning-border))]')
     })
 
     it('handles null seeds correctly with affectedSeeds', () => {
@@ -85,7 +85,7 @@ describe('Match', () => {
 
       // Should not be affected when both seeds are null (TBD match)
       const matchDiv = container.firstChild as HTMLElement
-      expect(matchDiv).toHaveClass('border-gray-300')
+      expect(matchDiv).toHaveClass('border-[rgb(var(--color-border-secondary))]')
     })
   })
 

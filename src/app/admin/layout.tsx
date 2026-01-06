@@ -1,6 +1,7 @@
 import { requireAdmin } from "@/components/admin/AdminGuard";
 import { signOut } from "@/app/auth/actions";
 import Link from "next/link";
+import SettingsButton from "@/components/SettingsButton";
 
 export default async function AdminLayout({
   children,
@@ -11,22 +12,22 @@ export default async function AdminLayout({
   const { profile } = await requireAdmin();
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[rgb(var(--color-bg-secondary))]">
       {/* Admin Header */}
-      <header className="bg-white border-b border-gray-200 shadow-sm">
+      <header className="bg-[rgb(var(--color-bg-primary))] border-b border-[rgb(var(--color-border-primary))] shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Left side - Logo/Title */}
             <div className="flex items-center gap-6">
               <Link href="/admin" className="flex items-center gap-2">
-                <span className="text-xl font-bold text-gray-900">
+                <span className="text-xl font-bold">
                   Admin Panel
                 </span>
               </Link>
               <nav className="hidden md:flex items-center gap-4">
                 <Link
                   href="/admin"
-                  className="text-gray-600 hover:text-gray-900 text-sm font-medium"
+                  className="text-[rgb(var(--color-text-secondary))] hover:text-[rgb(var(--color-text-primary))] text-sm font-medium"
                 >
                   Tournaments
                 </Link>
@@ -35,19 +36,20 @@ export default async function AdminLayout({
 
             {/* Right side - User info & logout */}
             <div className="flex items-center gap-4">
-              <span className="text-sm text-gray-600">
+              <span className="text-sm text-[rgb(var(--color-text-secondary))]">
                 {profile.display_name || profile.email}
               </span>
               <Link
                 href="/"
-                className="text-sm text-blue-600 hover:text-blue-800"
+                className="text-sm text-[rgb(var(--color-accent-primary))] hover:text-[rgb(var(--color-accent-hover))]"
               >
                 View Site
               </Link>
+              <SettingsButton />
               <form action={signOut}>
                 <button
                   type="submit"
-                  className="px-3 py-1.5 text-sm bg-gray-200 rounded-lg hover:bg-gray-300"
+                  className="px-3 py-1.5 text-sm bg-[rgb(var(--color-bg-tertiary))] rounded-lg hover:bg-[rgb(var(--color-border-secondary))]"
                 >
                   Log Out
                 </button>

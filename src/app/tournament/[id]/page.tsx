@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { getLeaderboard } from "./actions";
 import Leaderboard from "@/components/leaderboard/Leaderboard";
 import AuthHeader from "@/components/AuthHeader";
+import SettingsButton from "@/components/SettingsButton";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -54,51 +55,54 @@ export default async function TournamentHubPage({ params }: PageProps) {
         <div>
           <Link
             href="/"
-            className="text-blue-600 hover:underline text-sm mb-2 inline-block"
+            className="text-[rgb(var(--color-accent-primary))] hover:underline text-sm mb-2 inline-block"
           >
             &larr; Back to Tournaments
           </Link>
           <h1 className="text-2xl md:text-3xl font-bold">{tournament.name}</h1>
-          <p className="text-gray-600">
+          <p className="text-[rgb(var(--color-text-secondary))]">
             {tournament.player_count} players &bull;{" "}
             <span
               className={
-                isLocked ? "text-red-600 font-medium" : "text-green-600"
+                isLocked ? "text-[rgb(var(--color-error-icon))] font-medium" : "text-[rgb(var(--color-success-icon))]"
               }
             >
               {isLocked ? "Predictions Locked" : "Predictions Open"}
             </span>
           </p>
           {!isLocked && (
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="text-sm text-[rgb(var(--color-text-muted))] mt-1">
               Lock date: {formattedLockDate}
             </p>
           )}
         </div>
 
         {/* Auth status */}
-        <AuthHeader />
+        <div className="flex items-center gap-2">
+          <SettingsButton />
+          <AuthHeader />
+        </div>
       </div>
 
       {/* User CTA Section */}
       <div className="mb-6">
         {user ? (
-          <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+          <div className="p-4 bg-[rgb(var(--color-bg-secondary))] border border-[rgb(var(--color-border-primary))] rounded-lg">
             {userBracketId ? (
               <div className="flex items-center justify-between">
-                <p className="text-gray-700">
+                <p className="text-[rgb(var(--color-text-primary))]">
                   You have a bracket for this tournament.
                 </p>
                 <Link
                   href={`/tournament/${id}/edit`}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+                  className="px-4 py-2 bg-[rgb(var(--color-accent-primary))] text-white rounded-lg hover:bg-[rgb(var(--color-accent-hover))] font-medium"
                 >
                   View/Edit Your Bracket
                 </Link>
               </div>
             ) : (
               <div className="flex items-center justify-between">
-                <p className="text-gray-700">
+                <p className="text-[rgb(var(--color-text-primary))]">
                   {isLocked
                     ? "Predictions are locked for this tournament."
                     : "You haven't created a bracket yet."}
@@ -106,7 +110,7 @@ export default async function TournamentHubPage({ params }: PageProps) {
                 {!isLocked && (
                   <Link
                     href={`/tournament/${id}/edit`}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+                    className="px-4 py-2 bg-[rgb(var(--color-accent-primary))] text-white rounded-lg hover:bg-[rgb(var(--color-accent-hover))] font-medium"
                   >
                     Create Your Bracket
                   </Link>
@@ -115,8 +119,8 @@ export default async function TournamentHubPage({ params }: PageProps) {
             )}
           </div>
         ) : (
-          <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <p className="text-blue-800">
+          <div className="p-4 bg-[rgb(var(--color-accent-light))] border border-[rgb(var(--color-accent-primary))] rounded-lg">
+            <p className="text-[rgb(var(--color-accent-text))]">
               <Link href="/login" className="font-medium hover:underline">
                 Log in
               </Link>{" "}

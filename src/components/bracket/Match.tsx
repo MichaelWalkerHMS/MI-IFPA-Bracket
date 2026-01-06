@@ -46,8 +46,8 @@ export default function Match({
   );
 
   return (
-    <div className={`rounded-lg overflow-hidden bg-white shadow-sm ${
-      isAffected ? 'border-2 border-yellow-400' : 'border border-gray-300'
+    <div className={`rounded-lg overflow-hidden bg-[rgb(var(--color-bg-primary))] shadow-sm ${
+      isAffected ? 'border-2 border-[rgb(var(--color-warning-border))]' : 'border border-[rgb(var(--color-border-secondary))]'
     }`}>
       <PlayerSlot
         seed={topSeed}
@@ -58,7 +58,7 @@ export default function Match({
         position="top"
         isAffected={topSeed !== null && affectedSeeds?.includes(topSeed)}
       />
-      <div className="border-t border-gray-200" />
+      <div className="border-t border-[rgb(var(--color-border-primary))]" />
       <PlayerSlot
         seed={bottomSeed}
         playerMap={playerMap}

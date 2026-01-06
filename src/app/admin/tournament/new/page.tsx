@@ -34,7 +34,7 @@ export default function NewTournamentPage() {
       <div className="mb-6">
         <Link
           href="/admin"
-          className="text-blue-600 hover:underline text-sm"
+          className="text-[rgb(var(--color-accent-primary))] hover:underline text-sm"
         >
           &larr; Back to Tournaments
         </Link>
@@ -42,14 +42,14 @@ export default function NewTournamentPage() {
 
       {/* Page Header */}
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">New Tournament</h1>
-        <p className="text-gray-600 mt-1">
+        <h1 className="text-2xl font-bold text-[rgb(var(--color-text-primary))]">New Tournament</h1>
+        <p className="text-[rgb(var(--color-text-secondary))] mt-1">
           Create a new tournament for bracket predictions
         </p>
       </div>
 
       {/* Form */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6 max-w-2xl">
+      <div className="bg-[rgb(var(--color-bg-primary))] rounded-lg border border-[rgb(var(--color-border-primary))] p-6 max-w-2xl">
         <TournamentForm onSubmit={handleSubmit} onCancel={handleCancel} />
       </div>
     </div>

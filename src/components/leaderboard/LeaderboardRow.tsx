@@ -33,33 +33,33 @@ export default function LeaderboardRow({
   return (
     <Link
       href={`/bracket/${entry.id}`}
-      className={`block border-b border-gray-200 last:border-b-0 hover:bg-gray-50 transition-colors ${
-        isCurrentUser ? "bg-blue-50 hover:bg-blue-100" : ""
+      className={`block border-b border-[rgb(var(--color-border-primary))] last:border-b-0 hover:bg-[rgb(var(--color-bg-secondary))] transition-colors bg-[rgb(var(--color-bg-primary))] ${
+        isCurrentUser ? "bg-[rgb(var(--color-accent-light))] hover:bg-[rgb(var(--color-accent-light))]" : ""
       }`}
     >
       <div className="flex items-center justify-between py-3 px-4">
         <div className="flex items-center gap-3">
-          <span className="text-gray-400 text-sm w-6">{rank}</span>
+          <span className="text-[rgb(var(--color-text-muted))] text-sm w-6">{rank}</span>
           <div>
             <div className="flex items-center gap-2">
               {isCurrentUser && (
-                <span className="text-blue-600 text-sm">★</span>
+                <span className="text-[rgb(var(--color-accent-primary))] text-sm">★</span>
               )}
               <span
-                className={`font-medium ${isCurrentUser ? "text-blue-800" : "text-gray-900"}`}
+                className={`font-medium ${isCurrentUser ? "text-[rgb(var(--color-accent-text))]" : "text-[rgb(var(--color-text-primary))]"}`}
               >
                 {displayName.primary}
                 {isCurrentUser && !entry.is_public && (
-                  <span className="ml-2 text-xs font-normal text-gray-500">(private)</span>
+                  <span className="ml-2 text-xs font-normal text-[rgb(var(--color-text-muted))]">(private)</span>
                 )}
               </span>
             </div>
             {displayName.secondary && (
-              <p className="text-sm text-gray-500">{displayName.secondary}</p>
+              <p className="text-sm text-[rgb(var(--color-text-muted))]">{displayName.secondary}</p>
             )}
           </div>
         </div>
-        <div className="text-gray-400 font-mono">
+        <div className="text-[rgb(var(--color-text-muted))] font-mono">
           {entry.score !== null ? entry.score : "--"}
         </div>
       </div>

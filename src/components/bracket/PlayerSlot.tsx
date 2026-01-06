@@ -25,7 +25,7 @@ export default function PlayerSlot({
   if (seed === null) {
     // TBD slot - waiting for previous match result
     return (
-      <div className="px-3 py-2 h-9 flex items-center text-gray-400 text-sm italic bg-gray-50">
+      <div className="px-3 py-2 h-9 flex items-center text-[rgb(var(--color-text-muted))] text-sm italic bg-[rgb(var(--color-bg-secondary))]">
         TBD
       </div>
     );
@@ -33,10 +33,10 @@ export default function PlayerSlot({
 
   const baseClasses = "px-3 py-2 h-9 flex items-center gap-2 text-sm transition-colors";
   const winnerClasses = isWinner
-    ? "bg-green-100 font-semibold"
-    : "bg-white";
+    ? "bg-[rgb(var(--color-success-bg))] font-semibold"
+    : "bg-[rgb(var(--color-bg-primary))]";
   const clickableClasses = isClickable
-    ? "cursor-pointer hover:bg-blue-50"
+    ? "cursor-pointer hover:bg-[rgb(var(--color-accent-light))]"
     : "";
 
   return (
@@ -56,17 +56,17 @@ export default function PlayerSlot({
           : undefined
       }
     >
-      <span className="text-gray-500 font-mono text-xs w-5">
+      <span className="text-[rgb(var(--color-text-muted))] font-mono text-xs w-5">
         {seed}
       </span>
       {isAffected && (
-        <span className="text-yellow-500 text-xs" title="Seeding changed">&#9888;</span>
+        <span className="text-[rgb(var(--color-warning-icon))] text-xs" title="Seeding changed">&#9888;</span>
       )}
-      <span className={isWinner ? "text-green-800" : "text-gray-900"}>
+      <span className={isWinner ? "text-[rgb(var(--color-success-text))]" : "text-[rgb(var(--color-text-primary))]"}>
         {player?.name || `Seed ${seed}`}
       </span>
       {isWinner && (
-        <span className="ml-auto text-green-600 text-xs">&#10003;</span>
+        <span className="ml-auto text-[rgb(var(--color-success-icon))] text-xs">&#10003;</span>
       )}
     </div>
   );

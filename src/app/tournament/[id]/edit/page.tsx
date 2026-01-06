@@ -4,6 +4,7 @@ import { notFound, redirect } from "next/navigation";
 import type { Tournament, Player, Bracket, Pick } from "@/lib/types";
 import BracketView from "@/components/bracket/Bracket";
 import AuthHeader from "@/components/AuthHeader";
+import SettingsButton from "@/components/SettingsButton";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -84,30 +85,33 @@ export default async function BracketEditorPage({ params }: PageProps) {
         <div>
           <Link
             href={`/tournament/${id}`}
-            className="text-blue-600 hover:underline text-sm mb-2 inline-block"
+            className="text-[rgb(var(--color-accent-primary))] hover:underline text-sm mb-2 inline-block"
           >
             &larr; Back to Tournament
           </Link>
           <h1 className="text-2xl md:text-3xl font-bold">{tournament.name}</h1>
-          <p className="text-gray-600">
+          <p className="text-[rgb(var(--color-text-secondary))]">
             {tournament.player_count} players &bull;{" "}
             <span
               className={
-                isLocked ? "text-red-600 font-medium" : "text-green-600"
+                isLocked ? "text-[rgb(var(--color-error-icon))] font-medium" : "text-[rgb(var(--color-success-icon))]"
               }
             >
               {isLocked ? "Predictions Locked" : "Predictions Open"}
             </span>
           </p>
           {!isLocked && (
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="text-sm text-[rgb(var(--color-text-muted))] mt-1">
               Lock date: {formattedLockDate}
             </p>
           )}
         </div>
 
         {/* Auth status */}
-        <AuthHeader />
+        <div className="flex items-center gap-2">
+          <SettingsButton />
+          <AuthHeader />
+        </div>
       </div>
 
       {/* Bracket Editor */}

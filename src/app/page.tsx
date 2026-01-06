@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import AuthHeader from "@/components/AuthHeader";
+import SettingsButton from "@/components/SettingsButton";
 
 export default async function Home() {
   const supabase = await createClient();
@@ -16,32 +17,33 @@ export default async function Home() {
   return (
     <main className="min-h-screen flex flex-col items-center justify-center p-8">
       {/* Auth status bar */}
-      <div className="absolute top-4 right-4">
+      <div className="absolute top-4 right-4 flex items-center gap-2">
+        <SettingsButton />
         <AuthHeader />
       </div>
 
       <h1 className="text-4xl font-bold mb-4">
         IFPA Bracket Predictor
       </h1>
-      <p className="text-lg text-gray-600 mb-8">
+      <p className="text-lg text-[rgb(var(--color-text-secondary))] mb-8">
         Predict the outcomes of IFPA Pinball State Championships
       </p>
 
       {/* Welcome message for logged in users */}
       {user && (
-        <div className="mb-8 p-4 bg-green-50 border border-green-200 rounded-lg">
-          <p className="text-green-800">
+        <div className="mb-8 p-4 bg-[rgb(var(--color-success-bg))] border border-[rgb(var(--color-success-icon))] rounded-lg">
+          <p className="text-[rgb(var(--color-success-text))]">
             Welcome! You&apos;re logged in as <strong>{user.email}</strong>
           </p>
         </div>
       )}
 
       {/* Tournament list */}
-      <div className="mt-4 p-6 border rounded-lg max-w-md w-full">
+      <div className="mt-4 p-6 border border-[rgb(var(--color-border-primary))] rounded-lg max-w-md w-full bg-[rgb(var(--color-bg-primary))]">
         <h2 className="text-xl font-semibold mb-4">Tournaments</h2>
 
         {error ? (
-          <div className="text-red-600">
+          <div className="text-[rgb(var(--color-error-icon))]">
             <p className="font-medium">Error loading tournaments:</p>
             <p className="text-sm">{error.message}</p>
           </div>
@@ -51,10 +53,10 @@ export default async function Home() {
               <li key={t.id}>
                 <Link
                   href={`/tournament/${t.id}`}
-                  className="block p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                  className="block p-3 bg-[rgb(var(--color-bg-secondary))] rounded-lg hover:bg-[rgb(var(--color-bg-tertiary))] transition-colors"
                 >
                   <p className="font-medium">{t.name}</p>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-[rgb(var(--color-text-secondary))]">
                     {t.status} • {t.player_count} players
                   </p>
                 </Link>
@@ -62,7 +64,7 @@ export default async function Home() {
             ))}
           </ul>
         ) : (
-          <p className="text-gray-600">No tournaments available yet.</p>
+          <p className="text-[rgb(var(--color-text-secondary))]">No tournaments available yet.</p>
         )}
       </div>
     </main>

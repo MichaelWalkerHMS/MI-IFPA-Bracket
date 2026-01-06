@@ -70,7 +70,7 @@ export default function TournamentForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {error && (
-        <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
+        <div className="p-4 bg-[rgb(var(--color-error-bg-light))] border border-[rgb(var(--color-error-border))] rounded-lg text-[rgb(var(--color-error-text))]">
           {error}
         </div>
       )}
@@ -79,7 +79,7 @@ export default function TournamentForm({
       <div>
         <label
           htmlFor="name"
-          className="block text-sm font-medium text-gray-700 mb-1"
+          className="block text-sm font-medium text-[rgb(var(--color-text-secondary))] mb-1"
         >
           Tournament Name
         </label>
@@ -88,7 +88,7 @@ export default function TournamentForm({
           id="name"
           value={formData.name}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 border border-[rgb(var(--color-border-secondary))] rounded-lg focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-accent-primary))] bg-[rgb(var(--color-bg-primary))] text-[rgb(var(--color-text-primary))]"
           placeholder="2026 Michigan State Championship"
           required
         />
@@ -99,7 +99,7 @@ export default function TournamentForm({
         <div>
           <label
             htmlFor="state"
-            className="block text-sm font-medium text-gray-700 mb-1"
+            className="block text-sm font-medium text-[rgb(var(--color-text-secondary))] mb-1"
           >
             State
           </label>
@@ -110,7 +110,7 @@ export default function TournamentForm({
             onChange={(e) =>
               setFormData({ ...formData, state: e.target.value.toUpperCase() })
             }
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-[rgb(var(--color-border-secondary))] rounded-lg focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-accent-primary))] bg-[rgb(var(--color-bg-primary))] text-[rgb(var(--color-text-primary))]"
             placeholder="MI"
             maxLength={2}
             required
@@ -119,7 +119,7 @@ export default function TournamentForm({
         <div>
           <label
             htmlFor="year"
-            className="block text-sm font-medium text-gray-700 mb-1"
+            className="block text-sm font-medium text-[rgb(var(--color-text-secondary))] mb-1"
           >
             Year
           </label>
@@ -130,7 +130,7 @@ export default function TournamentForm({
             onChange={(e) =>
               setFormData({ ...formData, year: parseInt(e.target.value) })
             }
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-[rgb(var(--color-border-secondary))] rounded-lg focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-accent-primary))] bg-[rgb(var(--color-bg-primary))] text-[rgb(var(--color-text-primary))]"
             min={2020}
             max={2030}
             required
@@ -140,11 +140,11 @@ export default function TournamentForm({
 
       {/* Player Count */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))] mb-1">
           Player Count
         </label>
         <div className="flex gap-4">
-          <label className="flex items-center gap-2">
+          <label className="flex items-center gap-2 text-[rgb(var(--color-text-primary))]">
             <input
               type="radio"
               name="player_count"
@@ -155,7 +155,7 @@ export default function TournamentForm({
             />
             <span>24 players</span>
           </label>
-          <label className="flex items-center gap-2">
+          <label className="flex items-center gap-2 text-[rgb(var(--color-text-primary))]">
             <input
               type="radio"
               name="player_count"
@@ -174,7 +174,7 @@ export default function TournamentForm({
         <div>
           <label
             htmlFor="lock_date"
-            className="block text-sm font-medium text-gray-700 mb-1"
+            className="block text-sm font-medium text-[rgb(var(--color-text-secondary))] mb-1"
           >
             Predictions Lock
           </label>
@@ -185,14 +185,14 @@ export default function TournamentForm({
             onChange={(e) =>
               setFormData({ ...formData, lock_date: e.target.value })
             }
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-[rgb(var(--color-border-secondary))] rounded-lg focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-accent-primary))] bg-[rgb(var(--color-bg-primary))] text-[rgb(var(--color-text-primary))]"
             required
           />
         </div>
         <div>
           <label
             htmlFor="start_date"
-            className="block text-sm font-medium text-gray-700 mb-1"
+            className="block text-sm font-medium text-[rgb(var(--color-text-secondary))] mb-1"
           >
             Start Date
           </label>
@@ -203,14 +203,14 @@ export default function TournamentForm({
             onChange={(e) =>
               setFormData({ ...formData, start_date: e.target.value })
             }
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-[rgb(var(--color-border-secondary))] rounded-lg focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-accent-primary))] bg-[rgb(var(--color-bg-primary))] text-[rgb(var(--color-text-primary))]"
             required
           />
         </div>
         <div>
           <label
             htmlFor="end_date"
-            className="block text-sm font-medium text-gray-700 mb-1"
+            className="block text-sm font-medium text-[rgb(var(--color-text-secondary))] mb-1"
           >
             End Date
           </label>
@@ -221,7 +221,7 @@ export default function TournamentForm({
             onChange={(e) =>
               setFormData({ ...formData, end_date: e.target.value })
             }
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-[rgb(var(--color-border-secondary))] rounded-lg focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-accent-primary))] bg-[rgb(var(--color-bg-primary))] text-[rgb(var(--color-text-primary))]"
             required
           />
         </div>
@@ -231,7 +231,7 @@ export default function TournamentForm({
       <div>
         <label
           htmlFor="timezone"
-          className="block text-sm font-medium text-gray-700 mb-1"
+          className="block text-sm font-medium text-[rgb(var(--color-text-secondary))] mb-1"
         >
           Timezone
         </label>
@@ -241,7 +241,7 @@ export default function TournamentForm({
           onChange={(e) =>
             setFormData({ ...formData, timezone: e.target.value })
           }
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 border border-[rgb(var(--color-border-secondary))] rounded-lg focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-accent-primary))] bg-[rgb(var(--color-bg-primary))] text-[rgb(var(--color-text-primary))]"
         >
           <option value="America/New_York">Eastern Time</option>
           <option value="America/Chicago">Central Time</option>
@@ -254,10 +254,10 @@ export default function TournamentForm({
       <div>
         <label
           htmlFor="matchplay_id"
-          className="block text-sm font-medium text-gray-700 mb-1"
+          className="block text-sm font-medium text-[rgb(var(--color-text-secondary))] mb-1"
         >
           MatchPlay ID{" "}
-          <span className="text-gray-400 font-normal">(optional)</span>
+          <span className="text-[rgb(var(--color-text-muted))] font-normal">(optional)</span>
         </label>
         <input
           type="text"
@@ -266,7 +266,7 @@ export default function TournamentForm({
           onChange={(e) =>
             setFormData({ ...formData, matchplay_id: e.target.value })
           }
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 border border-[rgb(var(--color-border-secondary))] rounded-lg focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-accent-primary))] bg-[rgb(var(--color-bg-primary))] text-[rgb(var(--color-text-primary))]"
           placeholder="e.g., 12345"
         />
       </div>
@@ -276,7 +276,7 @@ export default function TournamentForm({
         <button
           type="submit"
           disabled={isSubmitting}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-4 py-2 bg-[rgb(var(--color-accent-primary))] text-white rounded-lg hover:bg-[rgb(var(--color-accent-hover))] font-medium disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isSubmitting
             ? "Saving..."
@@ -288,7 +288,7 @@ export default function TournamentForm({
           type="button"
           onClick={onCancel}
           disabled={isSubmitting}
-          className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 font-medium disabled:opacity-50"
+          className="px-4 py-2 bg-[rgb(var(--color-bg-tertiary))] text-[rgb(var(--color-text-secondary))] rounded-lg hover:bg-[rgb(var(--color-border-secondary))] font-medium disabled:opacity-50"
         >
           Cancel
         </button>

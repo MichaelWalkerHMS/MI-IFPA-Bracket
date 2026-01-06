@@ -29,11 +29,11 @@ export default function FinalScoreInput({
   const isDisabled = isLocked || !isLoggedIn;
 
   return (
-    <div className="mt-3 p-3 bg-gray-50 border border-gray-200 rounded-lg">
-      <div className="text-xs text-gray-600 mb-2 font-medium">
+    <div className="mt-3 p-3 bg-[rgb(var(--color-bg-secondary))] border border-[rgb(var(--color-border-primary))] rounded-lg">
+      <div className="text-xs text-[rgb(var(--color-text-secondary))] mb-2 font-medium">
         Predict final score (Best of 7)
       </div>
-      <div className="text-xs text-gray-500 mb-2">
+      <div className="text-xs text-[rgb(var(--color-text-muted))] mb-2">
         {championName} vs {runnerUpName}
       </div>
       <div className="flex gap-2">
@@ -49,10 +49,10 @@ export default function FinalScoreInput({
               disabled={isDisabled}
               className={`px-3 py-1.5 text-sm font-medium rounded transition-colors ${
                 isSelected
-                  ? "bg-blue-600 text-white"
+                  ? "bg-[rgb(var(--color-accent-primary))] text-white"
                   : isDisabled
-                  ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                  : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-100"
+                  ? "bg-[rgb(var(--color-bg-tertiary))] text-[rgb(var(--color-text-muted))] cursor-not-allowed"
+                  : "bg-[rgb(var(--color-bg-primary))] border border-[rgb(var(--color-border-secondary))] text-[rgb(var(--color-text-primary))] hover:bg-[rgb(var(--color-bg-tertiary))]"
               }`}
             >
               {option.label}

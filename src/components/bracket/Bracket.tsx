@@ -182,9 +182,9 @@ export default function BracketView({
     <div className="w-full">
       {/* Seeding change warning banner */}
       {(seedingChangeCount ?? 0) > 0 && (
-        <div className="bg-yellow-50 border border-yellow-400 rounded-lg p-3 mb-4 flex items-center gap-2">
-          <span className="text-yellow-600 text-lg">&#9888;</span>
-          <span className="text-yellow-800">
+        <div className="bg-[rgb(var(--color-warning-bg-light))] border border-[rgb(var(--color-warning-border))] rounded-lg p-3 mb-4 flex items-center gap-2">
+          <span className="text-[rgb(var(--color-warning-icon))] text-lg">&#9888;</span>
+          <span className="text-[rgb(var(--color-warning-text))]">
             Seeding changed {seedingChangeCount} {seedingChangeCount === 1 ? 'time' : 'times'} since you last saved. Review your picks.
           </span>
         </div>
@@ -192,7 +192,7 @@ export default function BracketView({
 
       {/* Controls bar - only for logged in users */}
       {isLoggedIn && (
-        <div className="mb-4 p-3 bg-gray-50 rounded-lg flex flex-wrap items-center gap-3">
+        <div className="mb-4 p-3 bg-[rgb(var(--color-bg-secondary))] rounded-lg flex flex-wrap items-center gap-3">
           {/* Bracket name input */}
           <input
             type="text"
@@ -205,7 +205,7 @@ export default function BracketView({
             placeholder="Bracket name (optional)"
             maxLength={50}
             disabled={isLocked}
-            className="flex-1 min-w-[200px] max-w-sm px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+            className="flex-1 min-w-[200px] max-w-sm px-3 py-2 border border-[rgb(var(--color-border-secondary))] rounded-md focus:ring-2 focus:ring-[rgb(var(--color-accent-primary))] focus:border-[rgb(var(--color-accent-primary))] text-sm bg-[rgb(var(--color-bg-primary))]"
           />
 
           {/* Public/Private toggle */}
@@ -266,10 +266,10 @@ export default function BracketView({
             disabled={isLocked || isSaving}
             className={`px-4 py-2 rounded-lg font-medium text-sm ${
               isLocked
-                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                ? "bg-[rgb(var(--color-border-secondary))] text-[rgb(var(--color-text-muted))] cursor-not-allowed"
                 : isDirty
-                ? "bg-blue-600 text-white hover:bg-blue-700"
-                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                ? "bg-[rgb(var(--color-accent-primary))] text-white hover:bg-[rgb(var(--color-accent-hover))]"
+                : "bg-[rgb(var(--color-bg-tertiary))] text-[rgb(var(--color-text-primary))] hover:bg-[rgb(var(--color-border-secondary))]"
             }`}
           >
             {isSaving ? "Saving..." : "Save"}
@@ -280,8 +280,8 @@ export default function BracketView({
             <span
               className={`text-sm ${
                 saveMessage.startsWith("Error")
-                  ? "text-red-600"
-                  : "text-green-600"
+                  ? "text-[rgb(var(--color-error-icon))]"
+                  : "text-[rgb(var(--color-success-icon))]"
               }`}
             >
               {saveMessage}
@@ -289,7 +289,7 @@ export default function BracketView({
           )}
 
           {isLocked && (
-            <span className="text-sm text-red-600">Locked</span>
+            <span className="text-sm text-[rgb(var(--color-error-icon))]">Locked</span>
           )}
         </div>
       )}
@@ -360,8 +360,8 @@ export default function BracketView({
 
             {/* Champion display */}
             {championPlayer && (
-              <div className="mt-4 p-3 bg-yellow-100 border-2 border-yellow-400 rounded-lg text-center">
-                <div className="text-xs text-yellow-700 font-medium">
+              <div className="mt-4 p-3 bg-[rgb(var(--color-warning-bg))] border-2 border-[rgb(var(--color-warning-border))] rounded-lg text-center">
+                <div className="text-xs text-[rgb(var(--color-warning-text))] font-medium">
                   CHAMPION
                 </div>
                 <div className="font-bold text-lg">{championPlayer.name}</div>
@@ -400,7 +400,7 @@ export default function BracketView({
 
       {/* Share URL - only for logged in users with saved brackets */}
       {isLoggedIn && bracketId && (
-        <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+        <div className="mt-4 p-4 bg-[rgb(var(--color-bg-secondary))] rounded-lg">
           <div className="text-sm font-medium mb-2">Share Your Bracket</div>
           {isPublic ? (
             <div className="flex gap-2">
@@ -408,22 +408,22 @@ export default function BracketView({
                 type="text"
                 readOnly
                 value={shareUrl || ""}
-                className="flex-1 px-3 py-2 border rounded-lg bg-white text-sm text-gray-700"
+                className="flex-1 px-3 py-2 border border-[rgb(var(--color-border-primary))] rounded-lg bg-[rgb(var(--color-bg-primary))] text-sm text-[rgb(var(--color-text-primary))]"
                 onClick={(e) => (e.target as HTMLInputElement).select()}
               />
               <button
                 onClick={handleCopyUrl}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                   copied
-                    ? "bg-green-600 text-white"
-                    : "bg-blue-600 text-white hover:bg-blue-700"
+                    ? "bg-[rgb(var(--color-success-icon))] text-white"
+                    : "bg-[rgb(var(--color-accent-primary))] text-white hover:bg-[rgb(var(--color-accent-hover))]"
                 }`}
               >
                 {copied ? "Copied!" : "Copy"}
               </button>
             </div>
           ) : (
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-[rgb(var(--color-text-muted))]">
               Make your bracket public to share it with others.
             </p>
           )}

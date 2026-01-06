@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Tournament, Player, Bracket, Pick } from "@/lib/types";
 import BracketView from "@/components/bracket/Bracket";
+import SettingsButton from "@/components/SettingsButton";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -33,14 +34,17 @@ export default async function BracketPage({ params }: PageProps) {
   if (!bracket.is_public && !isOwner) {
     return (
       <main className="min-h-screen flex flex-col items-center justify-center p-8">
+        <div className="absolute top-4 right-4">
+          <SettingsButton />
+        </div>
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-4">Private Bracket</h1>
-          <p className="text-gray-600 mb-6">
+          <p className="text-[rgb(var(--color-text-secondary))] mb-6">
             This bracket is private and can only be viewed by its owner.
           </p>
           <Link
             href={`/tournament/${bracket.tournament_id}`}
-            className="text-blue-600 hover:underline"
+            className="text-[rgb(var(--color-accent-primary))] hover:underline"
           >
             &larr; Back to Tournament
           </Link>
@@ -102,11 +106,16 @@ export default async function BracketPage({ params }: PageProps) {
 
   return (
     <main className="min-h-screen p-4 md:p-8">
+      {/* Settings button */}
+      <div className="absolute top-4 right-4">
+        <SettingsButton />
+      </div>
+
       {/* Header */}
       <div className="mb-6">
         <Link
           href={`/tournament/${bracket.tournament_id}`}
-          className="text-blue-600 hover:underline text-sm mb-2 inline-block"
+          className="text-[rgb(var(--color-accent-primary))] hover:underline text-sm mb-2 inline-block"
         >
           &larr; Back to Tournament
         </Link>
@@ -116,11 +125,11 @@ export default async function BracketPage({ params }: PageProps) {
           {bracketName || `${ownerName}'s Bracket`}
         </h1>
         {bracketName && (
-          <p className="text-gray-600">by {ownerName}</p>
+          <p className="text-[rgb(var(--color-text-secondary))]">by {ownerName}</p>
         )}
 
         {/* Tournament info */}
-        <p className="text-gray-500 text-sm mt-1">
+        <p className="text-[rgb(var(--color-text-muted))] text-sm mt-1">
           {tournament.name}
         </p>
       </div>

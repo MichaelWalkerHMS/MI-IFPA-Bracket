@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { forgotPassword } from "@/app/auth/actions";
 import Link from "next/link";
+import SettingsButton from "@/components/SettingsButton";
 
 export default function ForgotPasswordPage() {
   const [error, setError] = useState<string | null>(null);
@@ -27,11 +28,15 @@ export default function ForgotPasswordPage() {
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center p-8">
+      <div className="absolute top-4 right-4">
+        <SettingsButton />
+      </div>
+
       <div className="w-full max-w-md">
         <h1 className="text-3xl font-bold text-center mb-4">
           Reset Password
         </h1>
-        <p className="text-center text-gray-600 mb-8">
+        <p className="text-center text-[rgb(var(--color-text-secondary))] mb-8">
           Enter your email and we&apos;ll send you a link to reset your password.
         </p>
 
@@ -45,19 +50,19 @@ export default function ForgotPasswordPage() {
               name="email"
               type="email"
               required
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-[rgb(var(--color-border-secondary))] rounded-lg focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-accent-primary))] bg-[rgb(var(--color-bg-primary))]"
               placeholder="you@example.com"
             />
           </div>
 
           {error && (
-            <div className="p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm">
+            <div className="p-3 bg-[rgb(var(--color-error-bg))] border border-[rgb(var(--color-error-border))] text-[rgb(var(--color-error-text))] rounded-lg text-sm">
               {error}
             </div>
           )}
 
           {success && (
-            <div className="p-3 bg-green-100 border border-green-400 text-green-700 rounded-lg text-sm">
+            <div className="p-3 bg-[rgb(var(--color-success-bg))] border border-[rgb(var(--color-success-icon))] text-[rgb(var(--color-success-text))] rounded-lg text-sm">
               {success}
             </div>
           )}
@@ -65,15 +70,15 @@ export default function ForgotPasswordPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full py-2 px-4 bg-[rgb(var(--color-accent-primary))] text-white rounded-lg hover:bg-[rgb(var(--color-accent-hover))] disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? "Sending..." : "Send Reset Link"}
           </button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-gray-600">
+        <p className="mt-6 text-center text-sm text-[rgb(var(--color-text-secondary))]">
           Remember your password?{" "}
-          <Link href="/login" className="text-blue-600 hover:underline">
+          <Link href="/login" className="text-[rgb(var(--color-accent-primary))] hover:underline">
             Log in
           </Link>
         </p>
