@@ -1,5 +1,19 @@
 import { defineConfig, devices } from '@playwright/test'
 
+// Full browser matrix for local testing
+const allBrowsers = [
+  { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
+  { name: 'firefox', use: { ...devices['Desktop Firefox'] } },
+  { name: 'webkit', use: { ...devices['Desktop Safari'] } },
+  { name: 'Mobile Chrome', use: { ...devices['Pixel 5'] } },
+  { name: 'Mobile Safari', use: { ...devices['iPhone 13'] } },
+]
+
+// Chromium only for CI (faster)
+const ciBrowsers = [
+  { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
+]
+
 export default defineConfig({
   testDir: './e2e',
   fullyParallel: true,
@@ -16,28 +30,7 @@ export default defineConfig({
     screenshot: 'only-on-failure',
   },
 
-  projects: [
-    {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
-    },
-    {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-    },
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
-    },
-    {
-      name: 'Mobile Chrome',
-      use: { ...devices['Pixel 5'] },
-    },
-    {
-      name: 'Mobile Safari',
-      use: { ...devices['iPhone 13'] },
-    },
-  ],
+  projects: process.env.CI ? ciBrowsers : allBrowsers,
 
   webServer: {
     command: 'npm run dev',
