@@ -18,7 +18,6 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { useRouter } from "next/navigation";
 import type { Tournament, Player } from "@/lib/types";
 import { reorderPlayers, deletePlayer, addPlayer, updatePlayerName } from "./actions";
 
@@ -31,7 +30,6 @@ export default function PlayerManagement({
   tournament,
   players: initialPlayers,
 }: PlayerManagementProps) {
-  const router = useRouter();
   const [showBulkImport, setShowBulkImport] = useState(
     initialPlayers.length === 0
   );
@@ -131,7 +129,7 @@ export default function PlayerManagement({
     setIsUpdating(false);
     if (result.success) {
       handleCancelEdit();
-      router.refresh();
+      window.location.reload();
     } else {
       setError(result.error || "Failed to update player name");
     }
@@ -150,7 +148,7 @@ export default function PlayerManagement({
 
     if (result.success) {
       setNewPlayerName("");
-      router.refresh();
+      window.location.reload();
     } else {
       setError(result.error || "Failed to add player");
     }
