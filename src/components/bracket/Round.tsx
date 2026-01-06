@@ -89,9 +89,9 @@ export default function Round({
   return (
     <div className="flex flex-col w-48">
       {/* Round header */}
-      <div className="text-center mb-2 pb-2 border-b border-gray-200">
-        <h3 className="text-sm font-semibold text-gray-700">{roundName}</h3>
-        <p className="text-xs text-gray-500">{matches.length} match{matches.length !== 1 ? 'es' : ''}</p>
+      <div className="text-center mb-2 pb-2 border-b border-[rgb(var(--color-border-primary))]">
+        <h3 className="text-sm font-semibold text-[rgb(var(--color-text-primary))]">{roundName}</h3>
+        <p className="text-xs text-[rgb(var(--color-text-muted))]">{matches.length} match{matches.length !== 1 ? 'es' : ''}</p>
       </div>
 
       {/* Matches container */}
