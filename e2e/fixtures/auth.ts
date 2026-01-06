@@ -30,8 +30,8 @@ export async function login(page: Page): Promise<void> {
  * Logout the current user
  */
 export async function logout(page: Page): Promise<void> {
-  // Find and click the logout button/link
-  await page.getByRole('button', { name: /sign out|logout/i }).click()
+  // Find and click the logout button
+  await page.getByRole('button', { name: /log out/i }).click()
 
   // Wait for redirect to login or homepage
   await expect(page).toHaveURL(/\/(login)?$/, { timeout: 10000 })
@@ -42,9 +42,9 @@ export async function logout(page: Page): Promise<void> {
  */
 export async function isLoggedIn(page: Page): Promise<boolean> {
   try {
-    // Look for a common logged-in indicator (adjust based on your UI)
-    const signOutButton = page.getByRole('button', { name: /sign out|logout/i })
-    await signOutButton.waitFor({ timeout: 2000 })
+    // Look for the Log Out button as indicator of logged-in state
+    const logOutButton = page.getByRole('button', { name: /log out/i })
+    await logOutButton.waitFor({ timeout: 2000 })
     return true
   } catch {
     return false
