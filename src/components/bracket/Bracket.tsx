@@ -190,6 +190,112 @@ export default function BracketView({
         </div>
       )}
 
+      {/* Controls bar - only for logged in users */}
+      {isLoggedIn && (
+        <div className="mb-4 p-3 bg-gray-50 rounded-lg flex flex-wrap items-center gap-3">
+          {/* Bracket name input */}
+          <input
+            type="text"
+            value={editableBracketName}
+            onChange={(e) => {
+              setEditableBracketName(e.target.value);
+              setIsDirty(true);
+              setSaveMessage(null);
+            }}
+            placeholder="Bracket name (optional)"
+            maxLength={50}
+            disabled={isLocked}
+            className="flex-1 min-w-[200px] max-w-sm px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+          />
+
+          {/* Public/Private toggle */}
+          <label className="flex items-center gap-2 cursor-pointer whitespace-nowrap">
+            <input
+              type="checkbox"
+              checked={isPublic}
+              onChange={(e) => {
+                setIsPublic(e.target.checked);
+                setIsDirty(true);
+                setSaveMessage(null);
+              }}
+              disabled={isLocked}
+              className="w-4 h-4"
+            />
+            <span className="text-sm">
+              {isPublic ? "Public" : "Private"}
+            </span>
+          </label>
+
+          {/* Save button */}
+          <button
+            onClick={async () => {
+              setIsSaving(true);
+              setSaveMessage(null);
+
+              const { saveBracket } = await import(
+                "@/app/tournament/[id]/actions"
+              );
+
+              const picksArray = Array.from(picks.entries()).map(
+                ([key, winnerSeed]) => {
+                  const [round, matchPosition] = key.split("-").map(Number);
+                  return { round, matchPosition, winnerSeed };
+                }
+              );
+
+              const result = await saveBracket({
+                tournamentId: tournament.id,
+                bracketId: existingBracket?.id ?? null,
+                isPublic,
+                bracketName: editableBracketName.trim(),
+                picks: picksArray,
+                finalWinnerGames,
+                finalLoserGames,
+              });
+
+              setIsSaving(false);
+
+              if (result.error) {
+                setSaveMessage(`Error: ${result.error}`);
+              } else {
+                setSaveMessage("Saved!");
+                setIsDirty(false);
+                if (result.bracket?.id) {
+                  setBracketId(result.bracket.id);
+                }
+              }
+            }}
+            disabled={isLocked || isSaving}
+            className={`px-4 py-2 rounded-lg font-medium text-sm ${
+              isLocked
+                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                : isDirty
+                ? "bg-blue-600 text-white hover:bg-blue-700"
+                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+            }`}
+          >
+            {isSaving ? "Saving..." : "Save"}
+          </button>
+
+          {/* Status message */}
+          {saveMessage && (
+            <span
+              className={`text-sm ${
+                saveMessage.startsWith("Error")
+                  ? "text-red-600"
+                  : "text-green-600"
+              }`}
+            >
+              {saveMessage}
+            </span>
+          )}
+
+          {isLocked && (
+            <span className="text-sm text-red-600">Locked</span>
+          )}
+        </div>
+      )}
+
       {/* Bracket container with horizontal scroll */}
       <div className="overflow-x-auto pb-4">
         <div className="flex gap-2 min-w-max">
@@ -293,127 +399,6 @@ export default function BracketView({
           </div>
         </div>
       </div>
-
-      {/* Controls (save, public/private) - only for logged in users */}
-      {isLoggedIn && (
-        <div className="mt-6 p-4 bg-gray-50 rounded-lg space-y-4">
-          {/* Bracket name input */}
-          <div className="flex flex-col gap-1">
-            <label htmlFor="bracket-name" className="text-sm font-medium text-gray-700">
-              Bracket Name (optional)
-            </label>
-            <input
-              id="bracket-name"
-              type="text"
-              value={editableBracketName}
-              onChange={(e) => {
-                setEditableBracketName(e.target.value);
-                setIsDirty(true);
-                setSaveMessage(null);
-              }}
-              placeholder="My Bracket"
-              maxLength={50}
-              disabled={isLocked}
-              className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 max-w-sm"
-            />
-            <p className="text-xs text-gray-500">
-              Leave empty to use your display name
-            </p>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-4">
-          {/* Public/Private toggle */}
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={isPublic}
-              onChange={(e) => {
-                setIsPublic(e.target.checked);
-                setIsDirty(true);
-                setSaveMessage(null);
-              }}
-              disabled={isLocked}
-              className="w-4 h-4"
-            />
-            <span className="text-sm">
-              {isPublic ? "Public bracket" : "Private bracket"}
-            </span>
-          </label>
-
-          {/* Save button */}
-          <button
-            onClick={async () => {
-              setIsSaving(true);
-              setSaveMessage(null);
-
-              // Import and call save action
-              const { saveBracket } = await import(
-                "@/app/tournament/[id]/actions"
-              );
-
-              const picksArray = Array.from(picks.entries()).map(
-                ([key, winnerSeed]) => {
-                  const [round, matchPosition] = key.split("-").map(Number);
-                  return { round, matchPosition, winnerSeed };
-                }
-              );
-
-              const result = await saveBracket({
-                tournamentId: tournament.id,
-                bracketId: existingBracket?.id ?? null,
-                isPublic,
-                bracketName: editableBracketName.trim(),
-                picks: picksArray,
-                finalWinnerGames,
-                finalLoserGames,
-              });
-
-              setIsSaving(false);
-
-              if (result.error) {
-                setSaveMessage(`Error: ${result.error}`);
-              } else {
-                setSaveMessage("Bracket saved!");
-                setIsDirty(false);
-                // Update bracket ID so share URL appears after first save
-                if (result.bracket?.id) {
-                  setBracketId(result.bracket.id);
-                }
-              }
-            }}
-            disabled={isLocked || isSaving}
-            className={`px-6 py-2 rounded-lg font-medium ${
-              isLocked
-                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : isDirty
-                ? "bg-blue-600 text-white hover:bg-blue-700"
-                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-            }`}
-          >
-            {isSaving ? "Saving..." : "Save Bracket"}
-          </button>
-
-          {/* Status message */}
-          {saveMessage && (
-            <span
-              className={`text-sm ${
-                saveMessage.startsWith("Error")
-                  ? "text-red-600"
-                  : "text-green-600"
-              }`}
-            >
-              {saveMessage}
-            </span>
-          )}
-
-          {isLocked && (
-            <span className="text-sm text-red-600">
-              Predictions are locked
-            </span>
-          )}
-          </div>
-        </div>
-      )}
 
       {/* Share URL - only for logged in users with saved brackets */}
       {isLoggedIn && bracketId && (
