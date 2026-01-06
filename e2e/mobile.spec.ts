@@ -1,8 +1,9 @@
 import { test, expect, devices } from '@playwright/test'
 import { login } from './fixtures/auth'
 
-// Configure all tests in this file to use iPhone 13 device
-test.use({ ...devices['iPhone 13'] })
+// Configure mobile viewport (use project's browser, not webkit)
+const { viewport, userAgent, deviceScaleFactor, isMobile, hasTouch } = devices['iPhone 13']
+test.use({ viewport, userAgent, deviceScaleFactor, isMobile, hasTouch })
 
 test.describe('Mobile', () => {
 
