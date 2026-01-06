@@ -38,4 +38,31 @@ export default async function globalSetup() {
   }
 
   console.log('Test user data cleanup complete')
+
+  // Seed test results for score indicator tests
+  console.log('Seeding test results for score indicator tests...')
+
+  const { data: testTournament } = await supabase
+    .from('tournaments')
+    .select('id')
+    .eq('name', '2026 Michigan Test')
+    .single()
+
+  if (testTournament) {
+    // Seed a few opening round results for testing score indicators
+    // Opening round matches: 9v24, 10v23, 11v22, 12v21, 13v20, 14v19, 15v18, 16v17
+    const { error: resultsError } = await supabase.from('results').upsert([
+      { tournament_id: testTournament.id, round: 0, match_position: 0, winner_seed: 9, loser_seed: 24, winner_games: 0, loser_games: 0 },
+      { tournament_id: testTournament.id, round: 0, match_position: 1, winner_seed: 23, loser_seed: 10, winner_games: 0, loser_games: 0 },
+      { tournament_id: testTournament.id, round: 0, match_position: 2, winner_seed: 11, loser_seed: 22, winner_games: 0, loser_games: 0 },
+    ], { onConflict: 'tournament_id,round,match_position' })
+
+    if (resultsError) {
+      console.warn('Warning: Could not seed results:', resultsError.message)
+    } else {
+      console.log('Test results seeded successfully')
+    }
+  } else {
+    console.warn('Warning: Test tournament not found, skipping result seeding')
+  }
 }

@@ -20,6 +20,8 @@ interface RoundProps {
   isLocked: boolean;
   isLoggedIn: boolean;
   affectedSeeds?: number[];
+  pickCorrectnessMap?: Map<string, boolean | null>; // key: "round-position", value: is_correct
+  subtotal?: { earned: number; max: number }; // Points earned / max for this round
 }
 
 // Match height + gap = spacing unit
@@ -35,6 +37,8 @@ export default function Round({
   isLocked,
   isLoggedIn,
   affectedSeeds,
+  pickCorrectnessMap,
+  subtotal,
 }: RoundProps) {
   // Calculate gap between matches based on round
   // Each round doubles the gap to center between pairs from previous round
@@ -86,12 +90,25 @@ export default function Round({
     }
   };
 
+  // Check if any picks in this round have been scored (is_correct is not null)
+  const hasAnyScored = pickCorrectnessMap && matches.some(m => {
+    const key = `${round}-${m.position}`;
+    const isCorrect = pickCorrectnessMap.get(key);
+    return isCorrect !== undefined && isCorrect !== null;
+  });
+
   return (
     <div className="flex flex-col w-48">
       {/* Round header */}
       <div className="text-center mb-2 pb-2 border-b border-[rgb(var(--color-border-primary))]">
         <h3 className="text-sm font-semibold text-[rgb(var(--color-text-primary))]">{roundName}</h3>
         <p className="text-xs text-[rgb(var(--color-text-muted))]">{matches.length} match{matches.length !== 1 ? 'es' : ''}</p>
+        {/* Round subtotal - only show when any picks have been scored */}
+        {hasAnyScored && subtotal && (
+          <p className="text-xs font-medium mt-1 text-[rgb(var(--color-text-secondary))]">
+            {subtotal.earned}/{subtotal.max} pts
+          </p>
+        )}
       </div>
 
       {/* Matches container */}
@@ -112,6 +129,7 @@ export default function Round({
             isLocked={isLocked}
             isLoggedIn={isLoggedIn}
             affectedSeeds={affectedSeeds}
+            isCorrect={pickCorrectnessMap?.get(`${round}-${match.position}`)}
           />
         ))}
       </div>

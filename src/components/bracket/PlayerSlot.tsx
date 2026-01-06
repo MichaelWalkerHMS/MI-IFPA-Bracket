@@ -10,6 +10,7 @@ interface PlayerSlotProps {
   onClick: () => void;
   position: "top" | "bottom";
   isAffected?: boolean;
+  isCorrect?: boolean | null; // undefined = not winner, null = no result yet, true/false = correct/incorrect
 }
 
 export default function PlayerSlot({
@@ -19,6 +20,7 @@ export default function PlayerSlot({
   isClickable,
   onClick,
   isAffected,
+  isCorrect,
 }: PlayerSlotProps) {
   const player = seed !== null ? playerMap.get(seed) : null;
 
@@ -66,7 +68,23 @@ export default function PlayerSlot({
         {player?.name || `Seed ${seed}`}
       </span>
       {isWinner && (
-        <span className="ml-auto text-[rgb(var(--color-success-icon))] text-xs">&#10003;</span>
+        <span className="ml-auto flex items-center gap-1">
+          {/* Selection checkmark */}
+          <span className="text-[rgb(var(--color-success-icon))] text-xs">&#10003;</span>
+          {/* Score badge - only show when result exists */}
+          {isCorrect !== undefined && isCorrect !== null && (
+            <span
+              className={`text-xs font-bold px-1 rounded ${
+                isCorrect
+                  ? "bg-[rgb(var(--color-success-icon))] text-white"
+                  : "bg-[rgb(var(--color-error-icon))] text-white"
+              }`}
+              title={isCorrect ? "Correct prediction" : "Incorrect prediction"}
+            >
+              {isCorrect ? "✓" : "✗"}
+            </span>
+          )}
+        </span>
       )}
     </div>
   );
