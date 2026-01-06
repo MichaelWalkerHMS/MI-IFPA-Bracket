@@ -110,8 +110,8 @@ export default function TournamentOverview({
 
   if (isEditing) {
     return (
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">
+      <div className="bg-[rgb(var(--color-bg-primary))] rounded-lg border border-[rgb(var(--color-border-primary))] p-6">
+        <h2 className="text-lg font-semibold text-[rgb(var(--color-text-primary))] mb-4">
           Edit Tournament
         </h2>
         <TournamentForm
@@ -126,24 +126,24 @@ export default function TournamentOverview({
   return (
     <div className="space-y-6">
       {error && (
-        <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
+        <div className="p-4 bg-[rgb(var(--color-error-bg-light))] border border-[rgb(var(--color-error-border))] rounded-lg text-[rgb(var(--color-error-text))]">
           {error}
         </div>
       )}
 
       {recalculateSuccess && (
-        <div className="p-4 bg-green-50 border border-green-200 rounded-lg text-green-700">
+        <div className="p-4 bg-[rgb(var(--color-success-bg))] border border-[rgb(var(--color-success-icon))] rounded-lg text-[rgb(var(--color-success-text))]">
           {recalculateSuccess}
         </div>
       )}
 
       {/* Tournament Details */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
+      <div className="bg-[rgb(var(--color-bg-primary))] rounded-lg border border-[rgb(var(--color-border-primary))] p-6">
         <div className="flex justify-between items-start mb-4">
-          <h2 className="text-lg font-semibold text-gray-900">Details</h2>
+          <h2 className="text-lg font-semibold text-[rgb(var(--color-text-primary))]">Details</h2>
           <button
             onClick={() => setIsEditing(true)}
-            className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+            className="text-[rgb(var(--color-accent-primary))] hover:text-[rgb(var(--color-accent-hover))] text-sm font-medium"
           >
             Edit
           </button>
@@ -151,52 +151,52 @@ export default function TournamentOverview({
 
         <dl className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <dt className="text-sm text-gray-500">State</dt>
-            <dd className="font-medium">{tournament.state}</dd>
+            <dt className="text-sm text-[rgb(var(--color-text-muted))]">State</dt>
+            <dd className="font-medium text-[rgb(var(--color-text-primary))]">{tournament.state}</dd>
           </div>
           <div>
-            <dt className="text-sm text-gray-500">Year</dt>
-            <dd className="font-medium">{tournament.year}</dd>
+            <dt className="text-sm text-[rgb(var(--color-text-muted))]">Year</dt>
+            <dd className="font-medium text-[rgb(var(--color-text-primary))]">{tournament.year}</dd>
           </div>
           <div>
-            <dt className="text-sm text-gray-500">Player Count</dt>
-            <dd className="font-medium">{tournament.player_count}</dd>
+            <dt className="text-sm text-[rgb(var(--color-text-muted))]">Player Count</dt>
+            <dd className="font-medium text-[rgb(var(--color-text-primary))]">{tournament.player_count}</dd>
           </div>
           <div>
-            <dt className="text-sm text-gray-500">Timezone</dt>
-            <dd className="font-medium">{tournament.timezone}</dd>
+            <dt className="text-sm text-[rgb(var(--color-text-muted))]">Timezone</dt>
+            <dd className="font-medium text-[rgb(var(--color-text-primary))]">{tournament.timezone}</dd>
           </div>
           <div>
-            <dt className="text-sm text-gray-500">Predictions Lock</dt>
-            <dd className="font-medium">{formatDate(tournament.lock_date)}</dd>
+            <dt className="text-sm text-[rgb(var(--color-text-muted))]">Predictions Lock</dt>
+            <dd className="font-medium text-[rgb(var(--color-text-primary))]">{formatDate(tournament.lock_date)}</dd>
           </div>
           <div>
-            <dt className="text-sm text-gray-500">Start Date</dt>
-            <dd className="font-medium">{formatDate(tournament.start_date)}</dd>
+            <dt className="text-sm text-[rgb(var(--color-text-muted))]">Start Date</dt>
+            <dd className="font-medium text-[rgb(var(--color-text-primary))]">{formatDate(tournament.start_date)}</dd>
           </div>
           <div>
-            <dt className="text-sm text-gray-500">End Date</dt>
-            <dd className="font-medium">{formatDate(tournament.end_date)}</dd>
+            <dt className="text-sm text-[rgb(var(--color-text-muted))]">End Date</dt>
+            <dd className="font-medium text-[rgb(var(--color-text-primary))]">{formatDate(tournament.end_date)}</dd>
           </div>
           {tournament.matchplay_id && (
             <div>
-              <dt className="text-sm text-gray-500">MatchPlay ID</dt>
-              <dd className="font-medium">{tournament.matchplay_id}</dd>
+              <dt className="text-sm text-[rgb(var(--color-text-muted))]">MatchPlay ID</dt>
+              <dd className="font-medium text-[rgb(var(--color-text-primary))]">{tournament.matchplay_id}</dd>
             </div>
           )}
         </dl>
       </div>
 
       {/* Status & Visibility Controls */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">
+      <div className="bg-[rgb(var(--color-bg-primary))] rounded-lg border border-[rgb(var(--color-border-primary))] p-6">
+        <h2 className="text-lg font-semibold text-[rgb(var(--color-text-primary))] mb-4">
           Status & Visibility
         </h2>
 
         <div className="space-y-4">
           {/* Status */}
           <div>
-            <label className="text-sm text-gray-500 block mb-2">
+            <label className="text-sm text-[rgb(var(--color-text-muted))] block mb-2">
               Tournament Status
             </label>
             <div className="flex gap-2">
@@ -207,8 +207,8 @@ export default function TournamentOverview({
                     onClick={() => handleStatusChange(status)}
                     className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                       tournament.status === status
-                        ? "bg-blue-600 text-white"
-                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                        ? "bg-[rgb(var(--color-accent-primary))] text-white"
+                        : "bg-[rgb(var(--color-bg-tertiary))] text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-border-secondary))]"
                     }`}
                   >
                     {status.replace("_", " ")}
@@ -220,15 +220,15 @@ export default function TournamentOverview({
 
           {/* Visibility */}
           <div>
-            <label className="text-sm text-gray-500 block mb-2">
+            <label className="text-sm text-[rgb(var(--color-text-muted))] block mb-2">
               Public Visibility
             </label>
             <button
               onClick={handleVisibilityToggle}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                 tournament.is_active
-                  ? "bg-green-100 text-green-800 hover:bg-green-200"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  ? "bg-[rgb(var(--color-success-bg))] text-[rgb(var(--color-success-text))] hover:opacity-80"
+                  : "bg-[rgb(var(--color-bg-tertiary))] text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-border-secondary))]"
               }`}
             >
               {tournament.is_active ? "Visible to Public" : "Hidden from Public"}
@@ -237,17 +237,17 @@ export default function TournamentOverview({
 
           {/* Recalculate Scores */}
           <div>
-            <label className="text-sm text-gray-500 block mb-2">
+            <label className="text-sm text-[rgb(var(--color-text-muted))] block mb-2">
               Leaderboard Scores
             </label>
             <button
               onClick={handleRecalculateScores}
               disabled={isRecalculating || bracketCount === 0}
-              className="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors bg-[rgb(var(--color-bg-tertiary))] text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-border-secondary))] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isRecalculating ? "Recalculating..." : "Recalculate All Scores"}
             </button>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-[rgb(var(--color-text-muted))] mt-1">
               Scores update automatically when results change. Use this only if scores appear incorrect.
             </p>
           </div>
@@ -255,21 +255,21 @@ export default function TournamentOverview({
       </div>
 
       {/* Danger Zone */}
-      <div className="bg-white rounded-lg border border-red-200 p-6">
-        <h2 className="text-lg font-semibold text-red-600 mb-4">Danger Zone</h2>
-        <p className="text-gray-600 text-sm mb-4">
+      <div className="bg-[rgb(var(--color-bg-primary))] rounded-lg border border-[rgb(var(--color-error-border))] p-6">
+        <h2 className="text-lg font-semibold text-[rgb(var(--color-error-icon))] mb-4">Danger Zone</h2>
+        <p className="text-[rgb(var(--color-text-secondary))] text-sm mb-4">
           Deleting a tournament will remove all associated players. Brackets
           must be deleted separately first.
         </p>
         <button
           onClick={handleDelete}
           disabled={isDeleting || bracketCount > 0}
-          className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-4 py-2 bg-[rgb(var(--color-error-icon))] text-white rounded-lg hover:opacity-90 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isDeleting ? "Deleting..." : "Delete Tournament"}
         </button>
         {bracketCount > 0 && (
-          <p className="text-sm text-red-600 mt-2">
+          <p className="text-sm text-[rgb(var(--color-error-text))] mt-2">
             Cannot delete: {bracketCount} bracket(s) exist for this tournament.
           </p>
         )}

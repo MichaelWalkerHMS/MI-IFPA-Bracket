@@ -298,10 +298,10 @@ export default function ResultsEntry({
               onClick={() => setActiveRound(round)}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                 activeRound === round
-                  ? "bg-blue-600 text-white"
+                  ? "bg-[rgb(var(--color-accent-primary))] text-white"
                   : isComplete
-                    ? "bg-green-100 text-green-800 hover:bg-green-200"
-                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    ? "bg-[rgb(var(--color-success-bg))] text-[rgb(var(--color-success-text))] hover:opacity-80"
+                    : "bg-[rgb(var(--color-bg-tertiary))] text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-border-secondary))]"
               }`}
             >
               {ROUND_NAMES[round]}
@@ -314,24 +314,24 @@ export default function ResultsEntry({
       </div>
 
       {error && (
-        <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+        <div className="p-3 bg-[rgb(var(--color-error-bg-light))] border border-[rgb(var(--color-error-border))] rounded-lg text-[rgb(var(--color-error-text))] text-sm">
           {error}
         </div>
       )}
 
       {/* Matches for selected round */}
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-        <div className="p-4 bg-gray-50 border-b border-gray-200">
-          <h3 className="font-semibold text-gray-900">
+      <div className="bg-[rgb(var(--color-bg-primary))] rounded-lg border border-[rgb(var(--color-border-primary))] overflow-hidden">
+        <div className="p-4 bg-[rgb(var(--color-bg-secondary))] border-b border-[rgb(var(--color-border-primary))]">
+          <h3 className="font-semibold text-[rgb(var(--color-text-primary))]">
             {ROUND_NAMES[activeRound]}
           </h3>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-sm text-[rgb(var(--color-text-muted))] mt-1">
             Select the winner for each match.{" "}
             {activeRound === ROUNDS.FINALS && "Enter game scores for the final."}
           </p>
         </div>
 
-        <div className="divide-y divide-gray-200">
+        <div className="divide-y divide-[rgb(var(--color-border-primary))]">
           {Array.from({ length: MATCHES_PER_ROUND[activeRound] }).map(
             (_, position) => (
               <MatchResultInput
@@ -417,7 +417,7 @@ function MatchResultInput({
     <div className={`p-4 ${!canEnterResult ? "opacity-50" : ""}`}>
       <div className="flex items-center gap-4">
         {/* Match number */}
-        <span className="w-8 text-center text-sm font-mono text-gray-400">
+        <span className="w-8 text-center text-sm font-mono text-[rgb(var(--color-text-muted))]">
           #{position + 1}
         </span>
 
@@ -429,21 +429,21 @@ function MatchResultInput({
             disabled={!canEnterResult || isSaving}
             className={`p-3 rounded-lg border text-left transition-colors ${
               existingResult?.winner_seed === topSeed
-                ? "bg-green-100 border-green-500 text-green-800"
+                ? "bg-[rgb(var(--color-success-bg))] border-[rgb(var(--color-success-icon))] text-[rgb(var(--color-success-text))]"
                 : canEnterResult
-                  ? "bg-white border-gray-200 hover:border-blue-400 hover:bg-blue-50"
-                  : "bg-gray-50 border-gray-200 cursor-not-allowed"
+                  ? "bg-[rgb(var(--color-bg-primary))] border-[rgb(var(--color-border-primary))] hover:border-[rgb(var(--color-accent-primary))] hover:bg-[rgb(var(--color-accent-light))]"
+                  : "bg-[rgb(var(--color-bg-secondary))] border-[rgb(var(--color-border-primary))] cursor-not-allowed"
             }`}
           >
             <div className="flex items-center gap-2">
               {topSeed && (
-                <span className="text-xs font-mono text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">
+                <span className="text-xs font-mono text-[rgb(var(--color-text-muted))] bg-[rgb(var(--color-bg-tertiary))] px-1.5 py-0.5 rounded">
                   {topSeed}
                 </span>
               )}
-              <span className="font-medium">{getPlayerName(topSeed)}</span>
+              <span className="font-medium text-[rgb(var(--color-text-primary))]">{getPlayerName(topSeed)}</span>
               {existingResult?.winner_seed === topSeed && (
-                <span className="ml-auto text-green-600">
+                <span className="ml-auto text-[rgb(var(--color-success-icon))]">
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                     <path
                       fillRule="evenodd"
@@ -462,21 +462,21 @@ function MatchResultInput({
             disabled={!canEnterResult || isSaving}
             className={`p-3 rounded-lg border text-left transition-colors ${
               existingResult?.winner_seed === bottomSeed
-                ? "bg-green-100 border-green-500 text-green-800"
+                ? "bg-[rgb(var(--color-success-bg))] border-[rgb(var(--color-success-icon))] text-[rgb(var(--color-success-text))]"
                 : canEnterResult
-                  ? "bg-white border-gray-200 hover:border-blue-400 hover:bg-blue-50"
-                  : "bg-gray-50 border-gray-200 cursor-not-allowed"
+                  ? "bg-[rgb(var(--color-bg-primary))] border-[rgb(var(--color-border-primary))] hover:border-[rgb(var(--color-accent-primary))] hover:bg-[rgb(var(--color-accent-light))]"
+                  : "bg-[rgb(var(--color-bg-secondary))] border-[rgb(var(--color-border-primary))] cursor-not-allowed"
             }`}
           >
             <div className="flex items-center gap-2">
               {bottomSeed && (
-                <span className="text-xs font-mono text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">
+                <span className="text-xs font-mono text-[rgb(var(--color-text-muted))] bg-[rgb(var(--color-bg-tertiary))] px-1.5 py-0.5 rounded">
                   {bottomSeed}
                 </span>
               )}
-              <span className="font-medium">{getPlayerName(bottomSeed)}</span>
+              <span className="font-medium text-[rgb(var(--color-text-primary))]">{getPlayerName(bottomSeed)}</span>
               {existingResult?.winner_seed === bottomSeed && (
-                <span className="ml-auto text-green-600">
+                <span className="ml-auto text-[rgb(var(--color-success-icon))]">
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                     <path
                       fillRule="evenodd"
@@ -502,10 +502,10 @@ function MatchResultInput({
                 setWinnerGames(e.target.value ? parseInt(e.target.value) : undefined)
               }
               onBlur={handleUpdateScores}
-              className="w-14 px-2 py-1 border border-gray-200 rounded text-center"
+              className="w-14 px-2 py-1 border border-[rgb(var(--color-border-primary))] rounded text-center bg-[rgb(var(--color-bg-primary))] text-[rgb(var(--color-text-primary))]"
               placeholder="W"
             />
-            <span className="text-gray-400">-</span>
+            <span className="text-[rgb(var(--color-text-muted))]">-</span>
             <input
               type="number"
               min="0"
@@ -515,7 +515,7 @@ function MatchResultInput({
                 setLoserGames(e.target.value ? parseInt(e.target.value) : undefined)
               }
               onBlur={handleUpdateScores}
-              className="w-14 px-2 py-1 border border-gray-200 rounded text-center"
+              className="w-14 px-2 py-1 border border-[rgb(var(--color-border-primary))] rounded text-center bg-[rgb(var(--color-bg-primary))] text-[rgb(var(--color-text-primary))]"
               placeholder="L"
             />
           </div>
@@ -526,7 +526,7 @@ function MatchResultInput({
           <button
             onClick={() => onDelete(position)}
             disabled={isSaving}
-            className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
+            className="p-2 text-[rgb(var(--color-error-icon))] hover:text-[rgb(var(--color-error-text))] hover:bg-[rgb(var(--color-error-bg-light))] rounded transition-colors"
             title="Clear result"
           >
             <svg
@@ -547,7 +547,7 @@ function MatchResultInput({
 
         {/* Saving indicator */}
         {isSaving && (
-          <span className="text-sm text-gray-400">Saving...</span>
+          <span className="text-sm text-[rgb(var(--color-text-muted))]">Saving...</span>
         )}
       </div>
     </div>

@@ -66,7 +66,7 @@ export default async function TournamentAdminPage({
     <div>
       {/* Breadcrumb */}
       <div className="mb-4">
-        <Link href="/admin" className="text-blue-600 hover:underline text-sm">
+        <Link href="/admin" className="text-[rgb(var(--color-accent-primary))] hover:underline text-sm">
           &larr; Back to Tournaments
         </Link>
       </div>
@@ -74,24 +74,24 @@ export default async function TournamentAdminPage({
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-2xl font-bold text-[rgb(var(--color-text-primary))]">
             {typedTournament.name}
           </h1>
           <StatusBadge status={typedTournament.status} />
           {!typedTournament.is_active && (
-            <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+            <span className="px-2 py-1 rounded-full text-xs font-medium bg-[rgb(var(--color-bg-tertiary))] text-[rgb(var(--color-text-secondary))]">
               Hidden
             </span>
           )}
         </div>
-        <p className="text-gray-600 mt-1">
+        <p className="text-[rgb(var(--color-text-secondary))] mt-1">
           {typedTournament.player_count} players &bull; {bracketCount || 0}{" "}
           bracket(s) submitted
         </p>
       </div>
 
       {/* Tabs */}
-      <div className="border-b border-gray-200 mb-6">
+      <div className="border-b border-[rgb(var(--color-border-primary))] mb-6">
         <nav className="flex gap-6">
           {tabs.map((t) => (
             <Link
@@ -99,8 +99,8 @@ export default async function TournamentAdminPage({
               href={`/admin/tournament/${id}?tab=${t.id}`}
               className={`pb-3 text-sm font-medium border-b-2 transition-colors ${
                 tab === t.id
-                  ? "border-blue-600 text-blue-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700"
+                  ? "border-[rgb(var(--color-accent-primary))] text-[rgb(var(--color-accent-primary))]"
+                  : "border-transparent text-[rgb(var(--color-text-muted))] hover:text-[rgb(var(--color-text-secondary))]"
               }`}
             >
               {t.label}
@@ -137,14 +137,14 @@ export default async function TournamentAdminPage({
 
 function StatusBadge({ status }: { status: string }) {
   const colors: Record<string, string> = {
-    upcoming: "bg-blue-100 text-blue-800",
-    in_progress: "bg-yellow-100 text-yellow-800",
-    completed: "bg-green-100 text-green-800",
+    upcoming: "bg-[rgb(var(--color-accent-light))] text-[rgb(var(--color-accent-text))]",
+    in_progress: "bg-[rgb(var(--color-warning-bg))] text-[rgb(var(--color-warning-text))]",
+    completed: "bg-[rgb(var(--color-success-bg))] text-[rgb(var(--color-success-text))]",
   };
 
   return (
     <span
-      className={`px-2 py-1 rounded-full text-xs font-medium ${colors[status] || "bg-gray-100 text-gray-800"}`}
+      className={`px-2 py-1 rounded-full text-xs font-medium ${colors[status] || "bg-[rgb(var(--color-bg-tertiary))] text-[rgb(var(--color-text-primary))]"}`}
     >
       {status.replace("_", " ")}
     </span>

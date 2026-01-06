@@ -159,17 +159,17 @@ export default function PlayerManagement({
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-lg font-semibold text-gray-900">
+          <h2 className="text-lg font-semibold text-[rgb(var(--color-text-primary))]">
             Players ({players.length}/{tournament.player_count})
           </h2>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-[rgb(var(--color-text-muted))]">
             Drag to reorder players. Changes are saved when you click Save.
           </p>
         </div>
         {players.length > 0 && (
           <button
             onClick={() => setShowBulkImport(!showBulkImport)}
-            className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+            className="text-[rgb(var(--color-accent-primary))] hover:text-[rgb(var(--color-accent-hover))] text-sm font-medium"
           >
             {showBulkImport ? "Show Player List" : "Bulk Import"}
           </button>
@@ -177,7 +177,7 @@ export default function PlayerManagement({
       </div>
 
       {error && (
-        <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+        <div className="p-3 bg-[rgb(var(--color-error-bg-light))] border border-[rgb(var(--color-error-border))] rounded-lg text-[rgb(var(--color-error-text))] text-sm">
           {error}
         </div>
       )}
@@ -193,21 +193,21 @@ export default function PlayerManagement({
         <>
           {/* Save/Cancel buttons when changes exist */}
           {hasChanges && (
-            <div className="flex gap-2 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-              <span className="flex-1 text-yellow-800 text-sm">
+            <div className="flex gap-2 p-4 bg-[rgb(var(--color-warning-bg-light))] border border-[rgb(var(--color-warning-border))] rounded-lg">
+              <span className="flex-1 text-[rgb(var(--color-warning-text))] text-sm">
                 You have unsaved changes to player order.
               </span>
               <button
                 onClick={handleCancel}
                 disabled={isSaving}
-                className="px-3 py-1.5 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 text-sm font-medium"
+                className="px-3 py-1.5 bg-[rgb(var(--color-bg-tertiary))] text-[rgb(var(--color-text-secondary))] rounded-lg hover:bg-[rgb(var(--color-border-secondary))] text-sm font-medium"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSave}
                 disabled={isSaving}
-                className="px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium disabled:opacity-50"
+                className="px-3 py-1.5 bg-[rgb(var(--color-accent-primary))] text-white rounded-lg hover:bg-[rgb(var(--color-accent-hover))] text-sm font-medium disabled:opacity-50"
               >
                 {isSaving ? "Saving..." : "Save Order"}
               </button>
@@ -230,27 +230,27 @@ export default function PlayerManagement({
           />
 
           {/* Add Player Section */}
-          <div className="mt-4 border-t pt-4">
-            <h4 className="font-medium text-gray-900 mb-2">Add Player</h4>
+          <div className="mt-4 border-t border-[rgb(var(--color-border-primary))] pt-4">
+            <h4 className="font-medium text-[rgb(var(--color-text-primary))] mb-2">Add Player</h4>
             <form onSubmit={handleAddPlayer} className="flex gap-2">
               <input
                 type="text"
                 value={newPlayerName}
                 onChange={(e) => setNewPlayerName(e.target.value)}
                 placeholder="Player name"
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="flex-1 px-3 py-2 border border-[rgb(var(--color-border-secondary))] rounded-lg focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-accent-primary))] bg-[rgb(var(--color-bg-primary))] text-[rgb(var(--color-text-primary))]"
                 disabled={isAdding || players.length >= tournament.player_count}
               />
               <button
                 type="submit"
                 disabled={isAdding || !newPlayerName.trim() || players.length >= tournament.player_count}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 bg-[rgb(var(--color-accent-primary))] text-white rounded-lg hover:bg-[rgb(var(--color-accent-hover))] font-medium disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isAdding ? "Adding..." : "Add"}
               </button>
             </form>
             {players.length >= tournament.player_count && (
-              <p className="text-sm text-gray-500 mt-1">Tournament is at maximum capacity</p>
+              <p className="text-sm text-[rgb(var(--color-text-muted))] mt-1">Tournament is at maximum capacity</p>
             )}
           </div>
         </>
@@ -320,15 +320,15 @@ function BulkImportPanel({
   }
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-6">
-      <h3 className="font-medium text-gray-900 mb-2">Bulk Import Players</h3>
-      <p className="text-sm text-gray-500 mb-4">
+    <div className="bg-[rgb(var(--color-bg-primary))] rounded-lg border border-[rgb(var(--color-border-primary))] p-6">
+      <h3 className="font-medium text-[rgb(var(--color-text-primary))] mb-2">Bulk Import Players</h3>
+      <p className="text-sm text-[rgb(var(--color-text-muted))] mb-4">
         Enter player names, one per line. The order determines seeding (first
         line = seed 1).
       </p>
 
       {error && (
-        <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm mb-4">
+        <div className="p-3 bg-[rgb(var(--color-error-bg-light))] border border-[rgb(var(--color-error-border))] rounded-lg text-[rgb(var(--color-error-text))] text-sm mb-4">
           {error}
         </div>
       )}
@@ -337,18 +337,18 @@ function BulkImportPanel({
         value={names}
         onChange={(e) => setNames(e.target.value)}
         placeholder="Dominic Labella&#10;Matthew Stacks&#10;Rodney Minch&#10;..."
-        className="w-full h-64 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
+        className="w-full h-64 px-3 py-2 border border-[rgb(var(--color-border-secondary))] rounded-lg focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-accent-primary))] font-mono text-sm bg-[rgb(var(--color-bg-primary))] text-[rgb(var(--color-text-primary))]"
       />
 
       <div className="flex justify-between items-center mt-4">
-        <span className="text-sm text-gray-500">
+        <span className="text-sm text-[rgb(var(--color-text-muted))]">
           {lineCount} player(s) entered (max {playerCount})
         </span>
         <div className="flex gap-2">
           {existingPlayers.length > 0 && (
             <button
               onClick={onComplete}
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 font-medium"
+              className="px-4 py-2 bg-[rgb(var(--color-bg-tertiary))] text-[rgb(var(--color-text-secondary))] rounded-lg hover:bg-[rgb(var(--color-border-secondary))] font-medium"
             >
               Cancel
             </button>
@@ -356,7 +356,7 @@ function BulkImportPanel({
           <button
             onClick={handleSubmit}
             disabled={isSubmitting || lineCount === 0}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 bg-[rgb(var(--color-accent-primary))] text-white rounded-lg hover:bg-[rgb(var(--color-accent-hover))] font-medium disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isSubmitting ? "Importing..." : "Import Players"}
           </button>
@@ -395,9 +395,9 @@ function PlayerList({
 }) {
   if (players.length === 0) {
     return (
-      <div className="bg-white rounded-lg border border-gray-200 p-6 text-center">
-        <p className="text-gray-500">No players added yet.</p>
-        <p className="text-sm text-gray-400 mt-1">
+      <div className="bg-[rgb(var(--color-bg-primary))] rounded-lg border border-[rgb(var(--color-border-primary))] p-6 text-center">
+        <p className="text-[rgb(var(--color-text-muted))]">No players added yet.</p>
+        <p className="text-sm text-[rgb(var(--color-text-muted))] mt-1">
           Use the bulk import above to add players.
         </p>
       </div>
@@ -405,7 +405,7 @@ function PlayerList({
   }
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+    <div className="bg-[rgb(var(--color-bg-primary))] rounded-lg border border-[rgb(var(--color-border-primary))] overflow-hidden">
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
@@ -415,7 +415,7 @@ function PlayerList({
           items={players.map((p) => p.id)}
           strategy={verticalListSortingStrategy}
         >
-          <ul className="divide-y divide-gray-200">
+          <ul className="divide-y divide-[rgb(var(--color-border-primary))]">
             {players.map((player) => (
               <SortablePlayerRow
                 key={player.id}
@@ -476,15 +476,15 @@ function SortablePlayerRow({
     <li
       ref={setNodeRef}
       style={style}
-      className={`flex items-center gap-4 px-4 py-3 bg-white ${
-        isDragging ? "shadow-lg z-10 opacity-90" : "hover:bg-gray-50"
+      className={`flex items-center gap-4 px-4 py-3 bg-[rgb(var(--color-bg-primary))] ${
+        isDragging ? "shadow-lg z-10 opacity-90" : "hover:bg-[rgb(var(--color-bg-secondary))]"
       }`}
     >
       {/* Drag Handle */}
       <button
         {...attributes}
         {...listeners}
-        className="cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600"
+        className="cursor-grab active:cursor-grabbing text-[rgb(var(--color-text-muted))] hover:text-[rgb(var(--color-text-secondary))]"
         title="Drag to reorder"
       >
         <svg
@@ -503,7 +503,7 @@ function SortablePlayerRow({
       </button>
 
       {/* Seed Number */}
-      <span className="w-8 text-center font-mono text-gray-500">
+      <span className="w-8 text-center font-mono text-[rgb(var(--color-text-muted))]">
         {player.seed}
       </span>
 
@@ -519,12 +519,12 @@ function SortablePlayerRow({
           }}
           autoFocus
           disabled={isUpdating}
-          className="flex-1 px-2 py-1 border border-blue-400 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
+          className="flex-1 px-2 py-1 border border-[rgb(var(--color-accent-primary))] rounded focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-accent-primary))] font-medium bg-[rgb(var(--color-bg-primary))] text-[rgb(var(--color-text-primary))]"
         />
       ) : (
         <span
           onClick={onStartEdit}
-          className="flex-1 font-medium cursor-pointer hover:text-blue-600"
+          className="flex-1 font-medium cursor-pointer text-[rgb(var(--color-text-primary))] hover:text-[rgb(var(--color-accent-primary))]"
           title="Click to edit"
         >
           {player.name}
@@ -533,13 +533,13 @@ function SortablePlayerRow({
 
       {/* IFPA ID */}
       {player.ifpa_id && (
-        <span className="text-sm text-gray-400">IFPA #{player.ifpa_id}</span>
+        <span className="text-sm text-[rgb(var(--color-text-muted))]">IFPA #{player.ifpa_id}</span>
       )}
 
       {/* Delete Button */}
       <button
         onClick={onDelete}
-        className="text-red-400 hover:text-red-600 p-1"
+        className="text-[rgb(var(--color-error-icon))] hover:text-[rgb(var(--color-error-text))] p-1"
         title="Remove player"
       >
         <svg
