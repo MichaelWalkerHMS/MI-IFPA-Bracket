@@ -66,14 +66,23 @@ export async function recalculateScores(
     return { success: true, count: 0 };
   }
 
+  // Build a set of result keys to know which matches have results
+  const resultKeys = new Set<string>();
+  for (const result of results || []) {
+    resultKeys.add(`${result.round}-${result.match_position}`);
+  }
+
   // 4. Calculate scores for each bracket and prepare updates
-  const updates: Array<{
+  const bracketUpdates: Array<{
     id: string;
     score: number;
     correct_champion: boolean | null;
     game_score_diff: number | null;
     total_correct: number;
   }> = [];
+
+  // Track pick updates: { pickId, isCorrect }
+  const pickUpdates: Array<{ id: string; is_correct: boolean | null }> = [];
 
   for (const bracket of brackets as unknown as BracketWithPicks[]) {
     const scoringResult = calculateBracketScore(
@@ -86,18 +95,37 @@ export async function recalculateScores(
       }
     );
 
-    updates.push({
+    bracketUpdates.push({
       id: bracket.id,
       score: scoringResult.score,
       correct_champion: scoringResult.correctChampion,
       game_score_diff: scoringResult.gameScoreDiff,
       total_correct: scoringResult.totalCorrect,
     });
+
+    // Build a map of pickResults for quick lookup
+    const pickResultsMap = new Map<string, boolean>();
+    for (const pr of scoringResult.pickResults) {
+      pickResultsMap.set(`${pr.round}-${pr.matchPosition}`, pr.isCorrect);
+    }
+
+    // Update is_correct for each pick
+    for (const pick of bracket.picks || []) {
+      const key = `${pick.round}-${pick.match_position}`;
+      if (resultKeys.has(key)) {
+        // There's a result for this match
+        const isCorrect = pickResultsMap.get(key) ?? false;
+        pickUpdates.push({ id: pick.id, is_correct: isCorrect });
+      } else if (pick.is_correct !== null) {
+        // Result was deleted, reset to null
+        pickUpdates.push({ id: pick.id, is_correct: null });
+      }
+    }
   }
 
   // 5. Batch update all brackets
   // Supabase doesn't support batch updates natively, so we use Promise.all
-  const updatePromises = updates.map((update) =>
+  const bracketPromises = bracketUpdates.map((update) =>
     supabase
       .from('brackets')
       .update({
@@ -109,14 +137,22 @@ export async function recalculateScores(
       .eq('id', update.id)
   );
 
-  const updateResults = await Promise.all(updatePromises);
+  // 6. Batch update all picks with is_correct
+  const pickPromises = pickUpdates.map((update) =>
+    supabase
+      .from('picks')
+      .update({ is_correct: update.is_correct })
+      .eq('id', update.id)
+  );
+
+  const allResults = await Promise.all([...bracketPromises, ...pickPromises]);
 
   // Check for any errors
-  const errors = updateResults.filter((r) => r.error);
+  const errors = allResults.filter((r) => r.error);
   if (errors.length > 0) {
-    console.error('Errors updating brackets:', errors);
-    return { success: false, error: `Failed to update ${errors.length} brackets` };
+    console.error('Errors updating records:', errors);
+    return { success: false, error: `Failed to update ${errors.length} records` };
   }
 
-  return { success: true, count: updates.length };
+  return { success: true, count: bracketUpdates.length };
 }

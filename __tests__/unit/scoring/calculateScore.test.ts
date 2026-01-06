@@ -19,6 +19,7 @@ function createPick(round: number, matchPosition: number, winnerSeed: number): P
     round,
     match_position: matchPosition,
     winner_seed: winnerSeed,
+    is_correct: null,
     created_at: new Date().toISOString(),
   }
 }
@@ -424,6 +425,87 @@ describe('calculateBracketScore', () => {
       expect(result.totalCorrect).toBe(24)
       expect(result.correctChampion).toBe(true)
       expect(result.gameScoreDiff).toBe(0)
+    })
+  })
+
+  describe('pickResults', () => {
+    it('returns empty array when no results exist', () => {
+      const picks = [createPick(0, 0, 9)]
+      const results: Result[] = []
+
+      const result = calculateBracketScore(picks, results, defaultConfig, {
+        winnerGames: null,
+        loserGames: null,
+      })
+
+      expect(result.pickResults).toEqual([])
+    })
+
+    it('returns correct pick result for matching result', () => {
+      const picks = [createPick(0, 0, 9)]
+      const results = [createResult(0, 0, 9, 24)]
+
+      const result = calculateBracketScore(picks, results, defaultConfig, {
+        winnerGames: null,
+        loserGames: null,
+      })
+
+      expect(result.pickResults).toEqual([
+        { round: 0, matchPosition: 0, isCorrect: true }
+      ])
+    })
+
+    it('returns incorrect pick result for non-matching result', () => {
+      const picks = [createPick(0, 0, 24)]  // Picked 24
+      const results = [createResult(0, 0, 9, 24)]  // But 9 won
+
+      const result = calculateBracketScore(picks, results, defaultConfig, {
+        winnerGames: null,
+        loserGames: null,
+      })
+
+      expect(result.pickResults).toEqual([
+        { round: 0, matchPosition: 0, isCorrect: false }
+      ])
+    })
+
+    it('returns multiple pick results for multiple matches', () => {
+      const picks = [
+        createPick(0, 0, 9),   // Correct
+        createPick(0, 1, 23),  // Wrong
+      ]
+      const results = [
+        createResult(0, 0, 9, 24),
+        createResult(0, 1, 10, 23),
+      ]
+
+      const result = calculateBracketScore(picks, results, defaultConfig, {
+        winnerGames: null,
+        loserGames: null,
+      })
+
+      expect(result.pickResults).toHaveLength(2)
+      expect(result.pickResults).toContainEqual({ round: 0, matchPosition: 0, isCorrect: true })
+      expect(result.pickResults).toContainEqual({ round: 0, matchPosition: 1, isCorrect: false })
+    })
+
+    it('only includes picks that have corresponding results', () => {
+      const picks = [
+        createPick(0, 0, 9),   // Has result
+        createPick(0, 1, 10),  // No result
+        createPick(1, 0, 1),   // No result
+      ]
+      const results = [
+        createResult(0, 0, 9, 24),  // Only result
+      ]
+
+      const result = calculateBracketScore(picks, results, defaultConfig, {
+        winnerGames: null,
+        loserGames: null,
+      })
+
+      expect(result.pickResults).toHaveLength(1)
+      expect(result.pickResults[0]).toEqual({ round: 0, matchPosition: 0, isCorrect: true })
     })
   })
 })

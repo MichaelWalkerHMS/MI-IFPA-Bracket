@@ -59,6 +59,7 @@ export interface Pick {
   round: number;
   match_position: number;
   winner_seed: number;
+  is_correct: boolean | null; // Cached: whether pick matches result (null = no result yet)
   created_at: string;
 }
 

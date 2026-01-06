@@ -1,10 +1,17 @@
 import { Pick, Result, ScoringConfig } from '../types';
 
+export interface PickCorrectness {
+  round: number;
+  matchPosition: number;
+  isCorrect: boolean;
+}
+
 export interface ScoringResult {
   score: number;
   correctChampion: boolean | null;
   gameScoreDiff: number | null;
   totalCorrect: number;
+  pickResults: PickCorrectness[]; // Per-pick correctness data for caching
 }
 
 export interface BracketFinalGames {
@@ -16,7 +23,7 @@ export interface BracketFinalGames {
  * Get the point value for a given round based on scoring config.
  * Round encoding: 0=opening, 1=round of 16, 2=quarters, 3=semis, 4=finals, 5=consolation
  */
-function getPointsForRound(round: number, config: ScoringConfig): number {
+export function getPointsForRound(round: number, config: ScoringConfig): number {
   switch (round) {
     case 0: return config.opening;
     case 1: return config.round_of_16;
@@ -47,6 +54,7 @@ export function calculateBracketScore(
   let totalCorrect = 0;
   let correctChampion: boolean | null = null;
   let gameScoreDiff: number | null = null;
+  const pickResults: PickCorrectness[] = [];
 
   // Create a map of results by round-position for quick lookup
   const resultMap = new Map<string, Result>();
@@ -60,10 +68,19 @@ export function calculateBracketScore(
     const key = `${pick.round}-${pick.match_position}`;
     const result = resultMap.get(key);
 
-    if (result && pick.winner_seed === result.winner_seed) {
-      const points = getPointsForRound(pick.round, scoringConfig);
-      score += points;
-      totalCorrect++;
+    if (result) {
+      const isCorrect = pick.winner_seed === result.winner_seed;
+      pickResults.push({
+        round: pick.round,
+        matchPosition: pick.match_position,
+        isCorrect,
+      });
+
+      if (isCorrect) {
+        const points = getPointsForRound(pick.round, scoringConfig);
+        score += points;
+        totalCorrect++;
+      }
     }
   }
 
@@ -93,5 +110,6 @@ export function calculateBracketScore(
     correctChampion,
     gameScoreDiff,
     totalCorrect,
+    pickResults,
   };
 }

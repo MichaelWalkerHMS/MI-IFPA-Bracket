@@ -14,6 +14,7 @@ interface MatchProps {
   isLocked: boolean;
   isLoggedIn: boolean;
   affectedSeeds?: number[];
+  isCorrect?: boolean | null; // null = no result yet, true/false = correct/incorrect prediction
 }
 
 export default function Match({
@@ -27,6 +28,7 @@ export default function Match({
   isLocked,
   isLoggedIn,
   affectedSeeds,
+  isCorrect,
 }: MatchProps) {
   const handlePickTop = () => {
     if (topSeed !== null) {
@@ -45,6 +47,9 @@ export default function Match({
     (seed) => seed === topSeed || seed === bottomSeed
   );
 
+  const isTopWinner = winnerSeed === topSeed && topSeed !== null;
+  const isBottomWinner = winnerSeed === bottomSeed && bottomSeed !== null;
+
   return (
     <div className={`rounded-lg overflow-hidden bg-[rgb(var(--color-bg-primary))] shadow-sm ${
       isAffected ? 'border-2 border-[rgb(var(--color-warning-border))]' : 'border border-[rgb(var(--color-border-secondary))]'
@@ -52,21 +57,23 @@ export default function Match({
       <PlayerSlot
         seed={topSeed}
         playerMap={playerMap}
-        isWinner={winnerSeed === topSeed && topSeed !== null}
+        isWinner={isTopWinner}
         isClickable={!isLocked && isLoggedIn && topSeed !== null}
         onClick={handlePickTop}
         position="top"
         isAffected={topSeed !== null && affectedSeeds?.includes(topSeed)}
+        isCorrect={isTopWinner ? isCorrect : undefined}
       />
       <div className="border-t border-[rgb(var(--color-border-primary))]" />
       <PlayerSlot
         seed={bottomSeed}
         playerMap={playerMap}
-        isWinner={winnerSeed === bottomSeed && bottomSeed !== null}
+        isWinner={isBottomWinner}
         isClickable={!isLocked && isLoggedIn && bottomSeed !== null}
         onClick={handlePickBottom}
         position="bottom"
         isAffected={bottomSeed !== null && affectedSeeds?.includes(bottomSeed)}
+        isCorrect={isBottomWinner ? isCorrect : undefined}
       />
     </div>
   );

@@ -26,9 +26,9 @@ export const mockPrivateBracket: Bracket = {
 // Sample picks for a partially completed bracket
 export const mockPicks: Pick[] = [
   // Opening round picks (seeds 9-24 compete, lower seed often wins)
-  { id: 'pick-1', bracket_id: 'test-bracket-1', round: 0, match_position: 0, winner_seed: 9, created_at: '2026-01-04T00:00:00Z' },
-  { id: 'pick-2', bracket_id: 'test-bracket-1', round: 0, match_position: 1, winner_seed: 10, created_at: '2026-01-04T00:00:00Z' },
-  { id: 'pick-3', bracket_id: 'test-bracket-1', round: 0, match_position: 7, winner_seed: 16, created_at: '2026-01-04T00:00:00Z' },
+  { id: 'pick-1', bracket_id: 'test-bracket-1', round: 0, match_position: 0, winner_seed: 9, is_correct: null, created_at: '2026-01-04T00:00:00Z' },
+  { id: 'pick-2', bracket_id: 'test-bracket-1', round: 0, match_position: 1, winner_seed: 10, is_correct: null, created_at: '2026-01-04T00:00:00Z' },
+  { id: 'pick-3', bracket_id: 'test-bracket-1', round: 0, match_position: 7, winner_seed: 16, is_correct: null, created_at: '2026-01-04T00:00:00Z' },
 ]
 
 // Helper to create a picks Map from Pick array

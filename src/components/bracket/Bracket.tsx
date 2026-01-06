@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import type { Tournament, Player, Bracket, Pick, PlayerMap } from "@/lib/types";
+import { getPointsForRound } from "@/lib/scoring/calculateScore";
 
 // Get base URL for share links
 function getBaseUrl() {
@@ -82,6 +83,39 @@ export default function BracketView({
   const shareUrl = bracketId
     ? `${getBaseUrl()}/bracket/${bracketId}`
     : null;
+
+  // Build a map of pick correctness from existingPicks for score indicators
+  const pickCorrectnessMap = useMemo(() => {
+    const map = new Map<string, boolean | null>();
+    for (const pick of existingPicks) {
+      map.set(`${pick.round}-${pick.match_position}`, pick.is_correct);
+    }
+    return map;
+  }, [existingPicks]);
+
+  // Calculate round subtotals (points earned / max) for each round
+  const roundSubtotals = useMemo(() => {
+    const subtotals: Record<number, { earned: number; max: number }> = {};
+    const scoringConfig = tournament.scoring_config;
+
+    for (const round of [ROUNDS.OPENING, ROUNDS.ROUND_OF_16, ROUNDS.QUARTERS, ROUNDS.SEMIS, ROUNDS.FINALS, ROUNDS.CONSOLATION]) {
+      const matchCount = MATCHES_PER_ROUND[round] || 0;
+      const pointsPerMatch = getPointsForRound(round, scoringConfig);
+      const maxPoints = matchCount * pointsPerMatch;
+
+      let earned = 0;
+      for (let pos = 0; pos < matchCount; pos++) {
+        const isCorrect = pickCorrectnessMap.get(`${round}-${pos}`);
+        if (isCorrect === true) {
+          earned += pointsPerMatch;
+        }
+      }
+
+      subtotals[round] = { earned, max: maxPoints };
+    }
+
+    return subtotals;
+  }, [pickCorrectnessMap, tournament.scoring_config]);
 
   const handleCopyUrl = async () => {
     if (!shareUrl) return;
@@ -307,6 +341,8 @@ export default function BracketView({
             isLocked={isLocked}
             isLoggedIn={isLoggedIn}
             affectedSeeds={affectedSeeds}
+            pickCorrectnessMap={pickCorrectnessMap}
+            subtotal={roundSubtotals[ROUNDS.OPENING]}
           />
 
           {/* Round of 16 */}
@@ -319,6 +355,8 @@ export default function BracketView({
             isLocked={isLocked}
             isLoggedIn={isLoggedIn}
             affectedSeeds={affectedSeeds}
+            pickCorrectnessMap={pickCorrectnessMap}
+            subtotal={roundSubtotals[ROUNDS.ROUND_OF_16]}
           />
 
           {/* Quarterfinals */}
@@ -331,6 +369,8 @@ export default function BracketView({
             isLocked={isLocked}
             isLoggedIn={isLoggedIn}
             affectedSeeds={affectedSeeds}
+            pickCorrectnessMap={pickCorrectnessMap}
+            subtotal={roundSubtotals[ROUNDS.QUARTERS]}
           />
 
           {/* Semifinals */}
@@ -343,6 +383,8 @@ export default function BracketView({
             isLocked={isLocked}
             isLoggedIn={isLoggedIn}
             affectedSeeds={affectedSeeds}
+            pickCorrectnessMap={pickCorrectnessMap}
+            subtotal={roundSubtotals[ROUNDS.SEMIS]}
           />
 
           {/* Finals + Champion */}
@@ -356,6 +398,8 @@ export default function BracketView({
               isLocked={isLocked}
               isLoggedIn={isLoggedIn}
               affectedSeeds={affectedSeeds}
+              pickCorrectnessMap={pickCorrectnessMap}
+              subtotal={roundSubtotals[ROUNDS.FINALS]}
             />
 
             {/* Champion display */}
@@ -392,6 +436,8 @@ export default function BracketView({
                 isLocked={isLocked}
                 isLoggedIn={isLoggedIn}
                 affectedSeeds={affectedSeeds}
+                pickCorrectnessMap={pickCorrectnessMap}
+                subtotal={roundSubtotals[ROUNDS.CONSOLATION]}
               />
             </div>
           </div>

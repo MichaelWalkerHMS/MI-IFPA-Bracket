@@ -10,6 +10,7 @@ interface PlayerSlotProps {
   onClick: () => void;
   position: "top" | "bottom";
   isAffected?: boolean;
+  isCorrect?: boolean | null; // undefined = not winner, null = no result yet, true/false = correct/incorrect
 }
 
 export default function PlayerSlot({
@@ -19,6 +20,7 @@ export default function PlayerSlot({
   isClickable,
   onClick,
   isAffected,
+  isCorrect,
 }: PlayerSlotProps) {
   const player = seed !== null ? playerMap.get(seed) : null;
 
@@ -31,10 +33,8 @@ export default function PlayerSlot({
     );
   }
 
-  const baseClasses = "px-3 py-2 h-9 flex items-center gap-2 text-sm transition-colors";
-  const winnerClasses = isWinner
-    ? "bg-[rgb(var(--color-success-bg))] font-semibold"
-    : "bg-[rgb(var(--color-bg-primary))]";
+  const baseClasses = "px-3 py-2 h-9 flex items-center gap-2 text-sm transition-colors bg-[rgb(var(--color-bg-primary))]";
+  const winnerClasses = isWinner ? "font-semibold" : "";
   const clickableClasses = isClickable
     ? "cursor-pointer hover:bg-[rgb(var(--color-accent-light))]"
     : "";
@@ -62,11 +62,21 @@ export default function PlayerSlot({
       {isAffected && (
         <span className="text-[rgb(var(--color-warning-icon))] text-xs" title="Seeding changed">&#9888;</span>
       )}
-      <span className={isWinner ? "text-[rgb(var(--color-success-text))]" : "text-[rgb(var(--color-text-primary))]"}>
+      <span className="text-[rgb(var(--color-text-primary))]">
         {player?.name || `Seed ${seed}`}
       </span>
-      {isWinner && (
-        <span className="ml-auto text-[rgb(var(--color-success-icon))] text-xs">&#10003;</span>
+      {/* Score badge - only show on winner when result exists */}
+      {isWinner && isCorrect !== undefined && isCorrect !== null && (
+        <span
+          className={`ml-auto text-xs font-bold px-1 rounded ${
+            isCorrect
+              ? "bg-[rgb(var(--color-success-icon))] text-white"
+              : "bg-[rgb(var(--color-error-icon))] text-white"
+          }`}
+          title={isCorrect ? "Correct prediction" : "Incorrect prediction"}
+        >
+          {isCorrect ? "✓" : "✗"}
+        </span>
       )}
     </div>
   );
