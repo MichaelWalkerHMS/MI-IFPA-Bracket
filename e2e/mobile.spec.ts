@@ -52,8 +52,8 @@ test.describe('Mobile', () => {
     }
 
     // Save bracket via tap
-    await page.getByRole('button', { name: /save bracket/i }).tap()
-    await expect(page.getByText(/bracket saved|saved/i)).toBeVisible({ timeout: 10000 })
+    await page.getByRole('button', { name: 'Save' }).tap()
+    await expect(page.getByText(/saved/i)).toBeVisible({ timeout: 10000 })
   })
 
   test('login form works on mobile', async ({ page }) => {

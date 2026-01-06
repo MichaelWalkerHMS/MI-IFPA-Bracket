@@ -22,8 +22,8 @@ test.describe('Leaderboard', () => {
     await expect(page.getByRole('heading', { name: 'Opening Round' })).toBeVisible()
 
     // Save the bracket (even empty)
-    await page.getByRole('button', { name: /save bracket/i }).click()
-    await expect(page.getByText(/bracket saved/i)).toBeVisible({ timeout: 10000 })
+    await page.getByRole('button', { name: 'Save' }).click()
+    await expect(page.getByText(/saved/i)).toBeVisible({ timeout: 10000 })
 
     // Go back to tournament hub
     await page.getByRole('link', { name: /back to tournament/i }).click()

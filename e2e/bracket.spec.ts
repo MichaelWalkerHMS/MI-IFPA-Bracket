@@ -44,10 +44,10 @@ test.describe('Bracket', () => {
     }
 
     // Save the bracket
-    await page.getByRole('button', { name: /save bracket/i }).click()
+    await page.getByRole('button', { name: 'Save' }).click()
 
     // Wait for save confirmation
-    await expect(page.getByText(/bracket saved|saved/i)).toBeVisible({ timeout: 10000 })
+    await expect(page.getByText(/saved/i)).toBeVisible({ timeout: 10000 })
   })
 
   test('picks persist after page reload', async ({ page }) => {
@@ -68,8 +68,8 @@ test.describe('Bracket', () => {
       await firstSlot.click()
 
       // Save
-      await page.getByRole('button', { name: /save bracket/i }).click()
-      await expect(page.getByText(/bracket saved|saved/i)).toBeVisible({ timeout: 10000 })
+      await page.getByRole('button', { name: 'Save' }).click()
+      await expect(page.getByText(/saved/i)).toBeVisible({ timeout: 10000 })
 
       // Reload the page
       await page.reload()
