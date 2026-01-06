@@ -18,8 +18,9 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { useRouter } from "next/navigation";
 import type { Tournament, Player } from "@/lib/types";
-import { reorderPlayers, deletePlayer } from "./actions";
+import { reorderPlayers, deletePlayer, addPlayer, updatePlayerName } from "./actions";
 
 interface PlayerManagementProps {
   tournament: Tournament;
@@ -30,6 +31,7 @@ export default function PlayerManagement({
   tournament,
   players: initialPlayers,
 }: PlayerManagementProps) {
+  const router = useRouter();
   const [showBulkImport, setShowBulkImport] = useState(
     initialPlayers.length === 0
   );
@@ -37,6 +39,15 @@ export default function PlayerManagement({
   const [hasChanges, setHasChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Inline edit state
+  const [editingPlayerId, setEditingPlayerId] = useState<string | null>(null);
+  const [editingName, setEditingName] = useState("");
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  // Add player state
+  const [newPlayerName, setNewPlayerName] = useState("");
+  const [isAdding, setIsAdding] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -98,6 +109,50 @@ export default function PlayerManagement({
       setError(result.error);
     } else {
       window.location.reload();
+    }
+  }
+
+  // Inline edit handlers
+  function handleStartEdit(player: Player) {
+    setEditingPlayerId(player.id);
+    setEditingName(player.name);
+  }
+
+  function handleCancelEdit() {
+    setEditingPlayerId(null);
+    setEditingName("");
+  }
+
+  async function handleSaveEdit() {
+    if (!editingPlayerId || !editingName.trim()) return;
+    setIsUpdating(true);
+    setError(null);
+    const result = await updatePlayerName(editingPlayerId, editingName.trim());
+    setIsUpdating(false);
+    if (result.success) {
+      handleCancelEdit();
+      router.refresh();
+    } else {
+      setError(result.error || "Failed to update player name");
+    }
+  }
+
+  // Add player handler
+  async function handleAddPlayer(e: React.FormEvent) {
+    e.preventDefault();
+    if (!newPlayerName.trim()) return;
+
+    setIsAdding(true);
+    setError(null);
+    const nextSeed = players.length + 1;
+    const result = await addPlayer(tournament.id, newPlayerName.trim(), nextSeed);
+    setIsAdding(false);
+
+    if (result.success) {
+      setNewPlayerName("");
+      router.refresh();
+    } else {
+      setError(result.error || "Failed to add player");
     }
   }
 
@@ -167,7 +222,39 @@ export default function PlayerManagement({
             sensors={sensors}
             onDragEnd={handleDragEnd}
             onDelete={handleDelete}
+            editingPlayerId={editingPlayerId}
+            editingName={editingName}
+            isUpdating={isUpdating}
+            onStartEdit={handleStartEdit}
+            onCancelEdit={handleCancelEdit}
+            onSaveEdit={handleSaveEdit}
+            onEditingNameChange={setEditingName}
           />
+
+          {/* Add Player Section */}
+          <div className="mt-4 border-t pt-4">
+            <h4 className="font-medium text-gray-900 mb-2">Add Player</h4>
+            <form onSubmit={handleAddPlayer} className="flex gap-2">
+              <input
+                type="text"
+                value={newPlayerName}
+                onChange={(e) => setNewPlayerName(e.target.value)}
+                placeholder="Player name"
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                disabled={isAdding || players.length >= tournament.player_count}
+              />
+              <button
+                type="submit"
+                disabled={isAdding || !newPlayerName.trim() || players.length >= tournament.player_count}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isAdding ? "Adding..." : "Add"}
+              </button>
+            </form>
+            {players.length >= tournament.player_count && (
+              <p className="text-sm text-gray-500 mt-1">Tournament is at maximum capacity</p>
+            )}
+          </div>
         </>
       )}
     </div>
@@ -287,12 +374,26 @@ function PlayerList({
   sensors,
   onDragEnd,
   onDelete,
+  editingPlayerId,
+  editingName,
+  isUpdating,
+  onStartEdit,
+  onCancelEdit,
+  onSaveEdit,
+  onEditingNameChange,
 }: {
   players: Player[];
   tournamentId: string;
   sensors: ReturnType<typeof useSensors>;
   onDragEnd: (event: DragEndEvent) => void;
   onDelete: (playerId: string, playerName: string) => void;
+  editingPlayerId: string | null;
+  editingName: string;
+  isUpdating: boolean;
+  onStartEdit: (player: Player) => void;
+  onCancelEdit: () => void;
+  onSaveEdit: () => void;
+  onEditingNameChange: (name: string) => void;
 }) {
   if (players.length === 0) {
     return (
@@ -322,6 +423,13 @@ function PlayerList({
                 key={player.id}
                 player={player}
                 onDelete={() => onDelete(player.id, player.name)}
+                isEditing={editingPlayerId === player.id}
+                editingName={editingName}
+                isUpdating={isUpdating}
+                onStartEdit={() => onStartEdit(player)}
+                onCancelEdit={onCancelEdit}
+                onSaveEdit={onSaveEdit}
+                onEditingNameChange={onEditingNameChange}
               />
             ))}
           </ul>
@@ -334,9 +442,23 @@ function PlayerList({
 function SortablePlayerRow({
   player,
   onDelete,
+  isEditing,
+  editingName,
+  isUpdating,
+  onStartEdit,
+  onCancelEdit,
+  onSaveEdit,
+  onEditingNameChange,
 }: {
   player: Player;
   onDelete: () => void;
+  isEditing: boolean;
+  editingName: string;
+  isUpdating: boolean;
+  onStartEdit: () => void;
+  onCancelEdit: () => void;
+  onSaveEdit: () => void;
+  onEditingNameChange: (name: string) => void;
 }) {
   const {
     attributes,
@@ -388,7 +510,28 @@ function SortablePlayerRow({
       </span>
 
       {/* Player Name */}
-      <span className="flex-1 font-medium">{player.name}</span>
+      {isEditing ? (
+        <input
+          type="text"
+          value={editingName}
+          onChange={(e) => onEditingNameChange(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") onSaveEdit();
+            if (e.key === "Escape") onCancelEdit();
+          }}
+          autoFocus
+          disabled={isUpdating}
+          className="flex-1 px-2 py-1 border border-blue-400 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
+        />
+      ) : (
+        <span
+          onClick={onStartEdit}
+          className="flex-1 font-medium cursor-pointer hover:text-blue-600"
+          title="Click to edit"
+        >
+          {player.name}
+        </span>
+      )}
 
       {/* IFPA ID */}
       {player.ifpa_id && (
