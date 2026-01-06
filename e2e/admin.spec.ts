@@ -2,6 +2,20 @@ import { test, expect } from '@playwright/test'
 import { login } from './fixtures/auth'
 
 test.describe('Admin', () => {
+  test('admin button is NOT visible for non-admin users', async ({ page }) => {
+    // Login as regular user (e2e-test user is not an admin)
+    await login(page)
+
+    // Should be on homepage
+    await expect(page).toHaveURL('/')
+
+    // Admin button should NOT be visible
+    await expect(page.getByRole('link', { name: 'Admin' })).not.toBeVisible()
+
+    // But Log Out should be visible (confirming we're logged in)
+    await expect(page.getByRole('button', { name: /log out/i })).toBeVisible()
+  })
+
   test('non-admin user is blocked from admin pages', async ({ page }) => {
     // Login as regular user (e2e-test user is not an admin)
     await login(page)

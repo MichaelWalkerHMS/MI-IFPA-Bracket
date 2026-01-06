@@ -1,9 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
-import { signOut } from "@/app/auth/actions";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import type { Tournament, Player, Bracket, Pick } from "@/lib/types";
 import BracketView from "@/components/bracket/Bracket";
+import AuthHeader from "@/components/AuthHeader";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -107,17 +107,7 @@ export default async function BracketEditorPage({ params }: PageProps) {
         </div>
 
         {/* Auth status */}
-        <div className="flex items-center gap-4">
-          <span className="text-sm text-gray-600">{user.email}</span>
-          <form action={signOut}>
-            <button
-              type="submit"
-              className="px-4 py-2 text-sm bg-gray-200 rounded-lg hover:bg-gray-300"
-            >
-              Log Out
-            </button>
-          </form>
-        </div>
+        <AuthHeader />
       </div>
 
       {/* Bracket Editor */}

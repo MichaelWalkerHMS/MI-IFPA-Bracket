@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
-import { signOut } from "@/app/auth/actions";
 import Link from "next/link";
+import AuthHeader from "@/components/AuthHeader";
 
 export default async function Home() {
   const supabase = await createClient();
@@ -17,36 +17,7 @@ export default async function Home() {
     <main className="min-h-screen flex flex-col items-center justify-center p-8">
       {/* Auth status bar */}
       <div className="absolute top-4 right-4">
-        {user ? (
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-600">
-              {user.email}
-            </span>
-            <form action={signOut}>
-              <button
-                type="submit"
-                className="px-4 py-2 text-sm bg-gray-200 rounded-lg hover:bg-gray-300"
-              >
-                Log Out
-              </button>
-            </form>
-          </div>
-        ) : (
-          <div className="flex gap-2">
-            <Link
-              href="/login"
-              className="px-4 py-2 text-sm bg-gray-200 rounded-lg hover:bg-gray-300"
-            >
-              Log In
-            </Link>
-            <Link
-              href="/signup"
-              className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-            >
-              Sign Up
-            </Link>
-          </div>
-        )}
+        <AuthHeader />
       </div>
 
       <h1 className="text-4xl font-bold mb-4">

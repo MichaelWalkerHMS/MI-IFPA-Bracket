@@ -1,9 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
-import { signOut } from "@/app/auth/actions";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getLeaderboard } from "./actions";
 import Leaderboard from "@/components/leaderboard/Leaderboard";
+import AuthHeader from "@/components/AuthHeader";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -77,36 +77,7 @@ export default async function TournamentHubPage({ params }: PageProps) {
         </div>
 
         {/* Auth status */}
-        <div>
-          {user ? (
-            <div className="flex items-center gap-4">
-              <span className="text-sm text-gray-600">{user.email}</span>
-              <form action={signOut}>
-                <button
-                  type="submit"
-                  className="px-4 py-2 text-sm bg-gray-200 rounded-lg hover:bg-gray-300"
-                >
-                  Log Out
-                </button>
-              </form>
-            </div>
-          ) : (
-            <div className="flex gap-2">
-              <Link
-                href="/login"
-                className="px-4 py-2 text-sm bg-gray-200 rounded-lg hover:bg-gray-300"
-              >
-                Log In
-              </Link>
-              <Link
-                href="/signup"
-                className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-              >
-                Sign Up
-              </Link>
-            </div>
-          )}
-        </div>
+        <AuthHeader />
       </div>
 
       {/* User CTA Section */}
