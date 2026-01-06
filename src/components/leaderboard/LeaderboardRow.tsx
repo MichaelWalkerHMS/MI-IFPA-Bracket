@@ -49,6 +49,9 @@ export default function LeaderboardRow({
                 className={`font-medium ${isCurrentUser ? "text-blue-800" : "text-gray-900"}`}
               >
                 {displayName.primary}
+                {isCurrentUser && !entry.is_public && (
+                  <span className="ml-2 text-xs font-normal text-gray-500">(private)</span>
+                )}
               </span>
             </div>
             {displayName.secondary && (
