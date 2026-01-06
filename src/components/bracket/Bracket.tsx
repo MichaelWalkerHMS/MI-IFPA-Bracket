@@ -64,6 +64,7 @@ export default function BracketView({
 
   const [picks, setPicks] = useState<Map<string, number>>(initialPicks);
   const [isPublic, setIsPublic] = useState(existingBracket?.is_public ?? true);
+  const [editableBracketName, setEditableBracketName] = useState(existingBracket?.name || "");
   const [finalWinnerGames, setFinalWinnerGames] = useState<number | null>(
     existingBracket?.final_winner_games ?? null
   );
@@ -295,7 +296,32 @@ export default function BracketView({
 
       {/* Controls (save, public/private) - only for logged in users */}
       {isLoggedIn && (
-        <div className="mt-6 p-4 bg-gray-50 rounded-lg flex flex-wrap items-center gap-4">
+        <div className="mt-6 p-4 bg-gray-50 rounded-lg space-y-4">
+          {/* Bracket name input */}
+          <div className="flex flex-col gap-1">
+            <label htmlFor="bracket-name" className="text-sm font-medium text-gray-700">
+              Bracket Name (optional)
+            </label>
+            <input
+              id="bracket-name"
+              type="text"
+              value={editableBracketName}
+              onChange={(e) => {
+                setEditableBracketName(e.target.value);
+                setIsDirty(true);
+                setSaveMessage(null);
+              }}
+              placeholder="My Bracket"
+              maxLength={50}
+              disabled={isLocked}
+              className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 max-w-sm"
+            />
+            <p className="text-xs text-gray-500">
+              Leave empty to use your display name
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-4">
           {/* Public/Private toggle */}
           <label className="flex items-center gap-2 cursor-pointer">
             <input
@@ -336,7 +362,7 @@ export default function BracketView({
                 tournamentId: tournament.id,
                 bracketId: existingBracket?.id ?? null,
                 isPublic,
-                bracketName: "",
+                bracketName: editableBracketName.trim(),
                 picks: picksArray,
                 finalWinnerGames,
                 finalLoserGames,
@@ -385,6 +411,7 @@ export default function BracketView({
               Predictions are locked
             </span>
           )}
+          </div>
         </div>
       )}
 
