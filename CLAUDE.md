@@ -124,6 +124,7 @@ When starting the dev server, first kill any existing process on port 3000:
 - Add earned score indicator (✓/✗) for every match on bracket view
 - Add round score subtotals to bracket UI (e.g., "Opening: 6/8")
 - Improve Leaderboard UI - at minimum, Score needs better highlighting or visibility
+- Review E2E setup for cloned repos (graceful handling when secrets/test user unavailable)
 
 ## PR Requirements
 
