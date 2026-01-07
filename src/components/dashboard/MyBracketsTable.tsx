@@ -116,7 +116,7 @@ export default function MyBracketsTable({ brackets }: MyBracketsTableProps) {
               <Link
                 href={`/tournament/${group.tournamentId}`}
                 onClick={(e) => e.stopPropagation()}
-                className="px-3 py-1.5 text-sm font-medium rounded-md bg-[rgb(var(--color-bg-tertiary))] text-[rgb(var(--color-text-primary))] hover:bg-[rgb(var(--color-border-secondary))] transition-colors"
+                className="px-3 py-1.5 text-sm font-medium rounded-md border-2 border-[rgb(var(--color-accent-primary))] text-[rgb(var(--color-accent-primary))] hover:bg-[rgb(var(--color-accent-primary))] hover:text-white transition-colors"
               >
                 Leaderboard
               </Link>
@@ -147,6 +147,13 @@ export default function MyBracketsTable({ brackets }: MyBracketsTableProps) {
 
                       {/* Status badge */}
                       <BracketStatusBadge isComplete={bracket.is_complete} />
+
+                      {/* Private badge */}
+                      {!bracket.is_public && (
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[rgb(var(--color-bg-tertiary))] text-[rgb(var(--color-text-secondary))] border border-[rgb(var(--color-border-secondary))]">
+                          Private
+                        </span>
+                      )}
                     </div>
 
                     {/* Score/Rank */}
@@ -175,7 +182,7 @@ export default function MyBracketsTable({ brackets }: MyBracketsTableProps) {
                       )}
                       <Link
                         href={`/bracket/${bracket.id}`}
-                        className="px-3 py-1.5 text-sm font-medium rounded-md border border-[rgb(var(--color-border-secondary))] text-[rgb(var(--color-text-primary))] hover:bg-[rgb(var(--color-bg-tertiary))] transition-colors"
+                        className="px-3 py-1.5 text-sm font-medium rounded-md bg-[rgb(var(--color-bg-tertiary))] border border-[rgb(var(--color-border-primary))] text-[rgb(var(--color-text-primary))] hover:bg-[rgb(var(--color-border-secondary))] transition-colors"
                       >
                         View
                       </Link>

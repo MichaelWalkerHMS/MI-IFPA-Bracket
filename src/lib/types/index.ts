@@ -179,6 +179,7 @@ export interface DashboardBracket {
   pick_count: number;
   expected_picks: number;
   is_complete: boolean;
+  is_public: boolean;
   score: number;
   rank: number | null;
   is_locked: boolean;

@@ -18,6 +18,7 @@ const mockBrackets: DashboardBracket[] = [
     pick_count: 24,
     expected_picks: 24,
     is_complete: true,
+    is_public: true,
     score: 42,
     rank: 3,
     is_locked: false,
@@ -35,6 +36,7 @@ const mockBrackets: DashboardBracket[] = [
     pick_count: 10,
     expected_picks: 24,
     is_complete: false,
+    is_public: false, // Private bracket
     score: 0,
     rank: null,
     is_locked: false,
@@ -52,6 +54,7 @@ const mockBrackets: DashboardBracket[] = [
     pick_count: 16,
     expected_picks: 16,
     is_complete: true,
+    is_public: true,
     score: 28,
     rank: 5,
     is_locked: true,
@@ -121,6 +124,14 @@ describe("MyBracketsTable", () => {
 
       expect(screen.getByText("42 pts")).toBeInTheDocument();
       expect(screen.getByText("28 pts")).toBeInTheDocument();
+    });
+
+    it("renders Private badge for private brackets", () => {
+      render(<MyBracketsTable brackets={mockBrackets} />);
+
+      // Only bracket-2 is private (is_public: false)
+      const privateBadges = screen.getAllByText("Private");
+      expect(privateBadges).toHaveLength(1);
     });
 
     it("renders Edit button for unlocked brackets", () => {
