@@ -116,7 +116,7 @@ export default function MyBracketsTable({ brackets }: MyBracketsTableProps) {
               <Link
                 href={`/tournament/${group.tournamentId}`}
                 onClick={(e) => e.stopPropagation()}
-                className="px-3 py-1.5 text-sm font-medium rounded-md border-2 border-[rgb(var(--color-accent-primary))] text-[rgb(var(--color-accent-primary))] hover:bg-[rgb(var(--color-accent-primary))] hover:text-white transition-colors"
+                className="px-3 py-1.5 text-sm font-medium rounded-md bg-[rgb(var(--color-accent-primary))] text-white hover:bg-[rgb(var(--color-accent-hover))] transition-colors"
               >
                 Leaderboard
               </Link>
