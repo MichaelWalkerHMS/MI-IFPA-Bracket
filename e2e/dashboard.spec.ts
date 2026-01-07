@@ -125,20 +125,27 @@ test.describe('Dashboard - My Brackets Table', () => {
   })
 
   test('shows action links for existing brackets', async ({ page }) => {
-    // Create a bracket first to ensure we have one
-    const stateDropdown = page.locator('select').first()
-    await stateDropdown.selectOption({ label: 'MI' })
+    // Check if we already have a bracket - if not, create one
+    const editLink = page.getByRole('link', { name: 'Edit' }).first()
+    const hasExistingBracket = await editLink.isVisible().catch(() => false)
 
-    const tournamentDropdown = page.locator('select').nth(1)
-    await tournamentDropdown.selectOption({ index: 1 })
+    if (!hasExistingBracket) {
+      // Create a bracket first to ensure we have one
+      const stateDropdown = page.locator('select').first()
+      await stateDropdown.selectOption({ label: 'MI' })
 
-    await page.getByRole('button', { name: 'Create Bracket' }).click()
+      const tournamentDropdown = page.locator('select').nth(1)
+      await tournamentDropdown.selectOption({ index: 1 })
 
-    // Wait for redirect to edit page
-    await expect(page).toHaveURL(/\/bracket\/.*\/edit/, { timeout: 10000 })
+      await page.getByRole('button', { name: 'Create Bracket' }).click()
 
-    // Go back to dashboard
-    await page.goto('/')
+      // Wait for redirect to edit page
+      await expect(page).toHaveURL(/\/bracket\/.*\/edit/, { timeout: 10000 })
+
+      // Go back to dashboard
+      await page.goto('/')
+    }
+
     await expect(page.getByRole('heading', { name: 'My Brackets' })).toBeVisible()
 
     // Should see View and Leaderboard links

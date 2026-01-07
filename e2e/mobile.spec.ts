@@ -6,6 +6,8 @@ const { viewport, userAgent, deviceScaleFactor, isMobile, hasTouch } = devices['
 test.use({ viewport, userAgent, deviceScaleFactor, isMobile, hasTouch })
 
 test.describe('Mobile', () => {
+  // Skip on Firefox - isMobile option is not supported
+  test.skip(({ browserName }) => browserName === 'firefox', 'Firefox does not support isMobile')
 
   test('homepage loads on mobile viewport', async ({ page }) => {
     // Logged-out users see tournament list
