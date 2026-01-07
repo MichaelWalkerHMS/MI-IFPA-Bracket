@@ -1,3 +1,6 @@
+"use client";
+
+import { useState, useMemo } from "react";
 import Link from "next/link";
 import type { DashboardBracket } from "@/lib/types";
 import BracketStatusBadge from "./BracketStatusBadge";
@@ -6,7 +9,54 @@ interface MyBracketsTableProps {
   brackets: DashboardBracket[];
 }
 
+interface TournamentGroup {
+  tournamentId: string;
+  tournamentName: string;
+  playerCount: number;
+  isLocked: boolean;
+  brackets: DashboardBracket[];
+}
+
 export default function MyBracketsTable({ brackets }: MyBracketsTableProps) {
+  // Group brackets by tournament
+  const tournamentGroups = useMemo(() => {
+    const groups = new Map<string, TournamentGroup>();
+
+    for (const bracket of brackets) {
+      const existing = groups.get(bracket.tournament_id);
+      if (existing) {
+        existing.brackets.push(bracket);
+      } else {
+        groups.set(bracket.tournament_id, {
+          tournamentId: bracket.tournament_id,
+          tournamentName: bracket.tournament_name,
+          playerCount: bracket.player_count,
+          isLocked: bracket.is_locked,
+          brackets: [bracket],
+        });
+      }
+    }
+
+    return Array.from(groups.values());
+  }, [brackets]);
+
+  // Track expanded state for each tournament
+  const [expandedTournaments, setExpandedTournaments] = useState<Set<string>>(
+    () => new Set(tournamentGroups.map((g) => g.tournamentId))
+  );
+
+  const toggleTournament = (tournamentId: string) => {
+    setExpandedTournaments((prev) => {
+      const next = new Set(prev);
+      if (next.has(tournamentId)) {
+        next.delete(tournamentId);
+      } else {
+        next.add(tournamentId);
+      }
+      return next;
+    });
+  };
+
   if (brackets.length === 0) {
     return (
       <div className="text-center py-8 text-[rgb(var(--color-text-secondary))]">
@@ -17,93 +67,126 @@ export default function MyBracketsTable({ brackets }: MyBracketsTableProps) {
   }
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full">
-        <thead>
-          <tr className="text-left text-sm text-[rgb(var(--color-text-secondary))] border-b border-[rgb(var(--color-border-primary))]">
-            <th className="pb-2 font-medium">Tournament</th>
-            <th className="pb-2 font-medium">Players</th>
-            <th className="pb-2 font-medium">Status</th>
-            <th className="pb-2 font-medium">Rank</th>
-            <th className="pb-2 font-medium">Score</th>
-            <th className="pb-2 font-medium text-right">Actions</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-[rgb(var(--color-border-primary))]">
-          {brackets.map((bracket) => (
-            <tr key={bracket.id} className="group">
-              <td className="py-3">
-                <div className="flex items-start gap-2">
-                  <svg className="w-4 h-4 mt-0.5 text-[rgb(var(--color-text-muted))] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                  <div>
-                    <div className="font-medium text-[rgb(var(--color-text-primary))]">
-                      {bracket.tournament_state} {bracket.tournament_year}
-                    </div>
-                    {bracket.name && (
-                      <div className="text-xs text-[rgb(var(--color-text-muted))]">
-                        {bracket.name}
-                      </div>
-                    )}
+    <div className="space-y-3">
+      {tournamentGroups.map((group) => {
+        const isExpanded = expandedTournaments.has(group.tournamentId);
+
+        return (
+          <div
+            key={group.tournamentId}
+            className="border border-[rgb(var(--color-border-primary))] rounded-lg overflow-hidden"
+          >
+            {/* Tournament Header (Parent) */}
+            <button
+              onClick={() => toggleTournament(group.tournamentId)}
+              className="w-full px-4 py-3 bg-[rgb(var(--color-bg-secondary))] hover:bg-[rgb(var(--color-bg-tertiary))] transition-colors flex items-center justify-between text-left"
+            >
+              <div className="flex items-center gap-3">
+                {/* Chevron */}
+                <svg
+                  className={`w-5 h-5 text-[rgb(var(--color-text-muted))] transition-transform ${
+                    isExpanded ? "rotate-90" : ""
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+
+                {/* Tournament Info */}
+                <div>
+                  <div className="font-semibold text-[rgb(var(--color-text-primary))]">
+                    {group.tournamentName}
+                  </div>
+                  <div className="text-sm text-[rgb(var(--color-text-secondary))]">
+                    {group.playerCount} players
+                    {" · "}
+                    {group.brackets.length} bracket{group.brackets.length !== 1 ? "s" : ""}
                   </div>
                 </div>
-              </td>
-              <td className="py-3">
-                <span className="text-[rgb(var(--color-text-secondary))]">
-                  {bracket.player_count} players
-                </span>
-              </td>
-              <td className="py-3">
-                <BracketStatusBadge isComplete={bracket.is_complete} />
-              </td>
-              <td className="py-3">
-                {bracket.rank !== null ? (
-                  <span className="font-medium text-[rgb(var(--color-text-primary))]">
-                    #{bracket.rank}
-                  </span>
-                ) : (
-                  <span className="text-[rgb(var(--color-text-muted))]">-</span>
-                )}
-              </td>
-              <td className="py-3">
-                {bracket.score > 0 ? (
-                  <span className="font-semibold text-[rgb(var(--color-accent-primary))]">
-                    {bracket.score} pts
-                  </span>
-                ) : (
-                  <span className="text-[rgb(var(--color-text-muted))]">-</span>
-                )}
-              </td>
-              <td className="py-3 text-right">
-                <div className="flex items-center justify-end gap-3 text-sm">
-                  {!bracket.is_locked && (
-                    <Link
-                      href={`/bracket/${bracket.id}/edit`}
-                      className="text-[rgb(var(--color-accent-primary))] hover:underline"
-                    >
-                      Edit
-                    </Link>
-                  )}
-                  <Link
-                    href={`/bracket/${bracket.id}`}
-                    className="text-[rgb(var(--color-accent-primary))] hover:underline"
+              </div>
+
+              {/* Leaderboard button */}
+              <Link
+                href={`/tournament/${group.tournamentId}`}
+                onClick={(e) => e.stopPropagation()}
+                className="px-3 py-1.5 text-sm font-medium rounded-md bg-[rgb(var(--color-bg-tertiary))] text-[rgb(var(--color-text-primary))] hover:bg-[rgb(var(--color-border-secondary))] transition-colors"
+              >
+                Leaderboard
+              </Link>
+            </button>
+
+            {/* Brackets List (Children) */}
+            {isExpanded && (
+              <div className="divide-y divide-[rgb(var(--color-border-primary))]">
+                {group.brackets.map((bracket) => (
+                  <div
+                    key={bracket.id}
+                    className="px-4 py-3 bg-[rgb(var(--color-bg-primary))] flex items-center justify-between gap-4"
                   >
-                    View
-                  </Link>
-                  <Link
-                    href={`/tournament/${bracket.tournament_id}`}
-                    className="text-[rgb(var(--color-accent-primary))] hover:underline"
-                  >
-                    Leaderboard
-                  </Link>
-                </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+                    {/* Bracket Info */}
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                      {/* Indent indicator */}
+                      <div className="w-5 flex justify-center">
+                        <div className="w-1.5 h-1.5 rounded-full bg-[rgb(var(--color-border-secondary))]" />
+                      </div>
+
+                      {/* Bracket name as link */}
+                      <Link
+                        href={`/bracket/${bracket.id}`}
+                        className="font-medium text-[rgb(var(--color-accent-primary))] hover:underline truncate"
+                      >
+                        {bracket.name || "Unnamed Bracket"}
+                      </Link>
+
+                      {/* Status badge */}
+                      <BracketStatusBadge isComplete={bracket.is_complete} />
+                    </div>
+
+                    {/* Score/Rank */}
+                    <div className="flex items-center gap-4 text-sm shrink-0">
+                      {bracket.rank !== null && (
+                        <span className="text-[rgb(var(--color-text-secondary))]">
+                          Rank <span className="font-semibold text-[rgb(var(--color-text-primary))]">#{bracket.rank}</span>
+                        </span>
+                      )}
+                      {bracket.score > 0 && (
+                        <span className="font-semibold text-[rgb(var(--color-accent-primary))]">
+                          {bracket.score} pts
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex items-center gap-2 shrink-0">
+                      {!bracket.is_locked && (
+                        <Link
+                          href={`/bracket/${bracket.id}/edit`}
+                          className="px-3 py-1.5 text-sm font-medium rounded-md bg-[rgb(var(--color-accent-primary))] text-white hover:bg-[rgb(var(--color-accent-hover))] transition-colors"
+                        >
+                          Edit
+                        </Link>
+                      )}
+                      <Link
+                        href={`/bracket/${bracket.id}`}
+                        className="px-3 py-1.5 text-sm font-medium rounded-md border border-[rgb(var(--color-border-secondary))] text-[rgb(var(--color-text-primary))] hover:bg-[rgb(var(--color-bg-tertiary))] transition-colors"
+                      >
+                        View
+                      </Link>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }

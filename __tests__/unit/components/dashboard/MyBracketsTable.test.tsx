@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { describe, it, expect } from "vitest";
 import MyBracketsTable from "@/components/dashboard/MyBracketsTable";
 import type { DashboardBracket } from "@/lib/types";
@@ -8,7 +9,7 @@ const mockBrackets: DashboardBracket[] = [
     id: "bracket-1",
     name: "My First Bracket",
     tournament_id: "tournament-1",
-    tournament_name: "Michigan 2026 State Championship",
+    tournament_name: "2026 Michigan State Championship",
     tournament_state: "Michigan",
     tournament_year: 2026,
     player_count: 24,
@@ -23,14 +24,14 @@ const mockBrackets: DashboardBracket[] = [
   },
   {
     id: "bracket-2",
-    name: null,
-    tournament_id: "tournament-2",
-    tournament_name: "Ohio 2026 State Championship",
-    tournament_state: "Ohio",
+    name: "Second Try",
+    tournament_id: "tournament-1", // Same tournament as bracket-1
+    tournament_name: "2026 Michigan State Championship",
+    tournament_state: "Michigan",
     tournament_year: 2026,
     player_count: 24,
-    lock_date: "2026-02-01T12:00:00Z",
-    tournament_status: "upcoming",
+    lock_date: "2026-01-17T12:00:00Z",
+    tournament_status: "in_progress",
     pick_count: 10,
     expected_picks: 24,
     is_complete: false,
@@ -41,8 +42,8 @@ const mockBrackets: DashboardBracket[] = [
   {
     id: "bracket-3",
     name: "Championship Pick",
-    tournament_id: "tournament-3",
-    tournament_name: "Indiana 2025 State Championship",
+    tournament_id: "tournament-2", // Different tournament
+    tournament_name: "2025 Indiana State Championship",
     tournament_state: "Indiana",
     tournament_year: 2025,
     player_count: 16,
@@ -59,44 +60,48 @@ const mockBrackets: DashboardBracket[] = [
 
 describe("MyBracketsTable", () => {
   describe("when brackets exist", () => {
-    it("renders table headers", () => {
+    it("groups brackets by tournament", () => {
       render(<MyBracketsTable brackets={mockBrackets} />);
 
-      expect(screen.getByText("Tournament")).toBeInTheDocument();
-      expect(screen.getByText("Players")).toBeInTheDocument();
-      expect(screen.getByText("Status")).toBeInTheDocument();
-      expect(screen.getByText("Rank")).toBeInTheDocument();
-      expect(screen.getByText("Score")).toBeInTheDocument();
-      expect(screen.getByText("Actions")).toBeInTheDocument();
+      // Should show tournament names as group headers
+      expect(screen.getByText("2026 Michigan State Championship")).toBeInTheDocument();
+      expect(screen.getByText("2025 Indiana State Championship")).toBeInTheDocument();
     });
 
-    it("renders bracket tournament info", () => {
+    it("shows bracket count per tournament", () => {
       render(<MyBracketsTable brackets={mockBrackets} />);
 
-      expect(screen.getByText("Michigan 2026")).toBeInTheDocument();
-      expect(screen.getByText("Ohio 2026")).toBeInTheDocument();
-      expect(screen.getByText("Indiana 2025")).toBeInTheDocument();
+      // Michigan has 2 brackets, Indiana has 1 bracket
+      // Text is split across elements, so we use a function matcher
+      expect(screen.getByText((_, element) => {
+        return element?.textContent === "24 players · 2 brackets";
+      })).toBeInTheDocument();
+      expect(screen.getByText((_, element) => {
+        return element?.textContent === "16 players · 1 bracket";
+      })).toBeInTheDocument();
     });
 
-    it("renders bracket names when available", () => {
+    it("shows player count in tournament header", () => {
       render(<MyBracketsTable brackets={mockBrackets} />);
 
-      expect(screen.getByText("My First Bracket")).toBeInTheDocument();
-      expect(screen.getByText("Championship Pick")).toBeInTheDocument();
+      expect(screen.getByText(/24 players/)).toBeInTheDocument();
+      expect(screen.getByText(/16 players/)).toBeInTheDocument();
     });
 
-    it("renders player counts", () => {
+    it("renders bracket names as clickable links", () => {
       render(<MyBracketsTable brackets={mockBrackets} />);
 
-      // All three have player counts displayed
-      const playerCounts = screen.getAllByText(/\d+ players/);
-      expect(playerCounts).toHaveLength(3);
+      const firstBracketLink = screen.getByRole("link", { name: "My First Bracket" });
+      expect(firstBracketLink).toHaveAttribute("href", "/bracket/bracket-1");
+
+      const secondBracketLink = screen.getByRole("link", { name: "Second Try" });
+      expect(secondBracketLink).toHaveAttribute("href", "/bracket/bracket-2");
     });
 
-    it("renders status badges", () => {
+    it("renders status badges for each bracket", () => {
       render(<MyBracketsTable brackets={mockBrackets} />);
 
-      // 2 complete, 1 incomplete
+      // 2 complete (Ready), 1 incomplete
       const readyBadges = screen.getAllByText("Ready");
       const incompleteBadges = screen.getAllByText("Incomplete");
 
@@ -104,7 +109,7 @@ describe("MyBracketsTable", () => {
       expect(incompleteBadges).toHaveLength(1);
     });
 
-    it("renders ranks for ranked brackets", () => {
+    it("renders rank for ranked brackets", () => {
       render(<MyBracketsTable brackets={mockBrackets} />);
 
       expect(screen.getByText("#3")).toBeInTheDocument();
@@ -118,52 +123,87 @@ describe("MyBracketsTable", () => {
       expect(screen.getByText("28 pts")).toBeInTheDocument();
     });
 
-    it("renders Edit link for unlocked brackets", () => {
+    it("renders Edit button for unlocked brackets", () => {
       render(<MyBracketsTable brackets={mockBrackets} />);
 
-      const editLinks = screen.getAllByText("Edit");
-      // Only unlocked brackets (2 of 3) should have Edit links
-      expect(editLinks).toHaveLength(2);
+      const editButtons = screen.getAllByRole("link", { name: "Edit" });
+      // Only unlocked brackets (2 of 3) should have Edit buttons
+      expect(editButtons).toHaveLength(2);
     });
 
-    it("renders View link for all brackets", () => {
+    it("renders View button for all brackets", () => {
       render(<MyBracketsTable brackets={mockBrackets} />);
 
-      const viewLinks = screen.getAllByText("View");
-      expect(viewLinks).toHaveLength(3);
+      const viewButtons = screen.getAllByRole("link", { name: "View" });
+      expect(viewButtons).toHaveLength(3);
     });
 
-    it("renders Leaderboard link for all brackets", () => {
+    it("renders Leaderboard button for each tournament group", () => {
       render(<MyBracketsTable brackets={mockBrackets} />);
 
-      const leaderboardLinks = screen.getAllByText("Leaderboard");
-      expect(leaderboardLinks).toHaveLength(3);
+      const leaderboardButtons = screen.getAllByRole("link", { name: "Leaderboard" });
+      // One per tournament group (2 tournaments)
+      expect(leaderboardButtons).toHaveLength(2);
     });
 
-    it("links to correct bracket edit URLs", () => {
+    it("links Edit buttons to correct URLs", () => {
       render(<MyBracketsTable brackets={mockBrackets} />);
 
-      const editLinks = screen.getAllByRole("link", { name: "Edit" });
-      expect(editLinks[0]).toHaveAttribute("href", "/bracket/bracket-1/edit");
-      expect(editLinks[1]).toHaveAttribute("href", "/bracket/bracket-2/edit");
+      const editButtons = screen.getAllByRole("link", { name: "Edit" });
+      expect(editButtons[0]).toHaveAttribute("href", "/bracket/bracket-1/edit");
+      expect(editButtons[1]).toHaveAttribute("href", "/bracket/bracket-2/edit");
     });
 
-    it("links to correct bracket view URLs", () => {
+    it("links Leaderboard buttons to correct tournament URLs", () => {
       render(<MyBracketsTable brackets={mockBrackets} />);
 
-      const viewLinks = screen.getAllByRole("link", { name: "View" });
-      expect(viewLinks[0]).toHaveAttribute("href", "/bracket/bracket-1");
-      expect(viewLinks[1]).toHaveAttribute("href", "/bracket/bracket-2");
-      expect(viewLinks[2]).toHaveAttribute("href", "/bracket/bracket-3");
+      const leaderboardButtons = screen.getAllByRole("link", { name: "Leaderboard" });
+      expect(leaderboardButtons[0]).toHaveAttribute("href", "/tournament/tournament-1");
+      expect(leaderboardButtons[1]).toHaveAttribute("href", "/tournament/tournament-2");
+    });
+  });
+
+  describe("collapsible behavior", () => {
+    it("starts with all tournaments expanded", () => {
+      render(<MyBracketsTable brackets={mockBrackets} />);
+
+      // All bracket names should be visible
+      expect(screen.getByText("My First Bracket")).toBeVisible();
+      expect(screen.getByText("Second Try")).toBeVisible();
+      expect(screen.getByText("Championship Pick")).toBeVisible();
     });
 
-    it("links to correct tournament leaderboard URLs", () => {
+    it("collapses tournament when header is clicked", async () => {
+      const user = userEvent.setup();
       render(<MyBracketsTable brackets={mockBrackets} />);
 
-      const leaderboardLinks = screen.getAllByRole("link", { name: "Leaderboard" });
-      expect(leaderboardLinks[0]).toHaveAttribute("href", "/tournament/tournament-1");
-      expect(leaderboardLinks[1]).toHaveAttribute("href", "/tournament/tournament-2");
-      expect(leaderboardLinks[2]).toHaveAttribute("href", "/tournament/tournament-3");
+      // Click on Michigan tournament header
+      const michiganHeader = screen.getByText("2026 Michigan State Championship").closest("button");
+      expect(michiganHeader).toBeInTheDocument();
+
+      await user.click(michiganHeader!);
+
+      // Michigan brackets should be hidden
+      expect(screen.queryByText("My First Bracket")).not.toBeInTheDocument();
+      expect(screen.queryByText("Second Try")).not.toBeInTheDocument();
+
+      // Indiana bracket should still be visible
+      expect(screen.getByText("Championship Pick")).toBeVisible();
+    });
+
+    it("expands tournament when collapsed header is clicked again", async () => {
+      const user = userEvent.setup();
+      render(<MyBracketsTable brackets={mockBrackets} />);
+
+      const michiganHeader = screen.getByText("2026 Michigan State Championship").closest("button");
+
+      // Collapse
+      await user.click(michiganHeader!);
+      expect(screen.queryByText("My First Bracket")).not.toBeInTheDocument();
+
+      // Expand again
+      await user.click(michiganHeader!);
+      expect(screen.getByText("My First Bracket")).toBeVisible();
     });
   });
 
@@ -175,10 +215,10 @@ describe("MyBracketsTable", () => {
       expect(screen.getByText("Use the form below to create your first bracket!")).toBeInTheDocument();
     });
 
-    it("does not render table", () => {
+    it("does not render tournament groups", () => {
       render(<MyBracketsTable brackets={[]} />);
 
-      expect(screen.queryByRole("table")).not.toBeInTheDocument();
+      expect(screen.queryByRole("button")).not.toBeInTheDocument();
     });
   });
 });
