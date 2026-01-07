@@ -22,8 +22,14 @@ test.describe('Leaderboard', () => {
     await page.getByRole('button', { name: 'Save' }).click()
     await expect(page.getByText(/saved/i)).toBeVisible({ timeout: 10000 })
 
-    // Go back to tournament hub
-    await page.getByRole('link', { name: /back to tournament/i }).click()
+    // Go back to dashboard
+    await page.getByRole('link', { name: /back to dashboard/i }).click()
+
+    // Wait for dashboard to load with our brackets
+    await expect(page.getByRole('heading', { name: 'My Brackets' })).toBeVisible()
+
+    // Click Leaderboard link to go to tournament page
+    await page.getByRole('link', { name: 'Leaderboard' }).first().click()
 
     // Should see leaderboard with our bracket
     await expect(page.getByText('LEADERBOARD')).toBeVisible()

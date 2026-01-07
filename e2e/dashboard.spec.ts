@@ -74,7 +74,8 @@ test.describe('Dashboard', () => {
     await tournamentDropdown.selectOption({ index: 1 })
 
     // Tournament details should appear (player count, lock time)
-    await expect(page.getByText(/\d+ players/)).toBeVisible()
+    // Use .first() because player count appears in both My Brackets table and TournamentDetails
+    await expect(page.getByText(/\d+ players/).first()).toBeVisible()
     await expect(page.getByText(/Lock/i)).toBeVisible()
   })
 
