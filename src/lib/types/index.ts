@@ -104,7 +104,7 @@ export type PlayerMap = Map<number, Player>;
 // For server action payloads
 export interface SaveBracketInput {
   tournamentId: string;
-  bracketId: string | null;
+  bracketId: string | null; // If provided, updates existing bracket; if null, creates new
   isPublic: boolean;
   bracketName: string;
   picks: Array<{ round: number; matchPosition: number; winnerSeed: number }>;
@@ -162,4 +162,24 @@ export interface SeedingChangeLog {
   affected_seeds: number[];
   description: string | null;
   created_at: string;
+}
+
+// Dashboard types
+
+export interface DashboardBracket {
+  id: string;
+  name: string | null;
+  tournament_id: string;
+  tournament_name: string;
+  tournament_state: string;
+  tournament_year: number;
+  player_count: number;
+  lock_date: string;
+  tournament_status: 'upcoming' | 'in_progress' | 'completed';
+  pick_count: number;
+  expected_picks: number;
+  is_complete: boolean;
+  score: number;
+  rank: number | null;
+  is_locked: boolean;
 }

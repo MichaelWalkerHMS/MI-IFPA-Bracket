@@ -46,7 +46,7 @@ export default async function TournamentHubPage({ params }: PageProps) {
   });
 
   // Fetch leaderboard data
-  const { entries, userBracketId } = await getLeaderboard(id);
+  const { entries, userBracketIds } = await getLeaderboard(id);
 
   return (
     <main className="min-h-screen p-4 md:p-8">
@@ -88,17 +88,27 @@ export default async function TournamentHubPage({ params }: PageProps) {
       <div className="mb-6">
         {user ? (
           <div className="p-4 bg-[rgb(var(--color-bg-secondary))] border border-[rgb(var(--color-border-primary))] rounded-lg">
-            {userBracketId ? (
-              <div className="flex items-center justify-between">
+            {userBracketIds.length > 0 ? (
+              <div className="flex items-center justify-between flex-wrap gap-3">
                 <p className="text-[rgb(var(--color-text-primary))]">
-                  You have a bracket for this tournament.
+                  You have {userBracketIds.length} bracket{userBracketIds.length > 1 ? "s" : ""} for this tournament.
                 </p>
-                <Link
-                  href={`/tournament/${id}/edit`}
-                  className="px-4 py-2 bg-[rgb(var(--color-accent-primary))] text-white rounded-lg hover:bg-[rgb(var(--color-accent-hover))] font-medium"
-                >
-                  View/Edit Your Bracket
-                </Link>
+                <div className="flex gap-2">
+                  {!isLocked && (
+                    <Link
+                      href="/"
+                      className="px-4 py-2 border border-[rgb(var(--color-accent-primary))] text-[rgb(var(--color-accent-primary))] rounded-lg hover:bg-[rgb(var(--color-accent-light))] font-medium"
+                    >
+                      Create Another
+                    </Link>
+                  )}
+                  <Link
+                    href="/"
+                    className="px-4 py-2 bg-[rgb(var(--color-accent-primary))] text-white rounded-lg hover:bg-[rgb(var(--color-accent-hover))] font-medium"
+                  >
+                    Go to Dashboard
+                  </Link>
+                </div>
               </div>
             ) : (
               <div className="flex items-center justify-between">
@@ -109,7 +119,7 @@ export default async function TournamentHubPage({ params }: PageProps) {
                 </p>
                 {!isLocked && (
                   <Link
-                    href={`/tournament/${id}/edit`}
+                    href="/"
                     className="px-4 py-2 bg-[rgb(var(--color-accent-primary))] text-white rounded-lg hover:bg-[rgb(var(--color-accent-hover))] font-medium"
                   >
                     Create Your Bracket

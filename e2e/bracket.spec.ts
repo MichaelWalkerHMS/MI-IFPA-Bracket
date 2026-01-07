@@ -8,29 +8,62 @@ test.describe('Bracket', () => {
     await expect(page.getByRole('button', { name: /log out/i })).toBeVisible({ timeout: 10000 })
   })
 
-  test('can navigate to tournament and create bracket', async ({ page }) => {
-    // Click on a tournament from homepage (use the test tournament)
-    await page.getByText('2026 Michigan Test').click()
+  test('can navigate to tournament leaderboard from dashboard', async ({ page }) => {
+    // From dashboard, create a bracket first (if we don't have one)
+    // or click on an existing bracket's Leaderboard link
+    const leaderboardLink = page.getByRole('link', { name: 'Leaderboard' }).first()
+    const createBracketSection = page.getByRole('heading', { name: 'Create New Bracket' })
 
-    // Should be on tournament hub page
-    await expect(page).toHaveURL(/\/tournament\//)
+    // Check if we already have brackets
+    const hasLeaderboardLink = await leaderboardLink.isVisible().catch(() => false)
 
-    // Click "Create Your Bracket" button
-    await page.getByRole('link', { name: /create your bracket/i }).click()
+    if (hasLeaderboardLink) {
+      // Click leaderboard link for existing bracket
+      await leaderboardLink.click()
+      await expect(page).toHaveURL(/\/tournament\//)
+    } else {
+      // Create a bracket first via wizard
+      await expect(createBracketSection).toBeVisible()
 
-    // Should be on bracket edit page
-    await expect(page).toHaveURL(/\/tournament\/.*\/edit/)
+      const stateDropdown = page.locator('select').first()
+      await stateDropdown.selectOption({ label: 'Michigan' })
 
-    // Should see the bracket interface with rounds
-    await expect(page.getByRole('heading', { name: 'Opening Round' })).toBeVisible()
+      const tournamentDropdown = page.locator('select').nth(1)
+      await tournamentDropdown.selectOption({ index: 1 })
+
+      await page.getByRole('button', { name: 'Create Bracket' }).click()
+      await expect(page).toHaveURL(/\/bracket\/.*\/edit/, { timeout: 10000 })
+
+      // Navigate back to dashboard and then to leaderboard
+      await page.goto('/')
+      await page.getByRole('link', { name: 'Leaderboard' }).first().click()
+      await expect(page).toHaveURL(/\/tournament\//)
+    }
+
+    // Should see leaderboard section
+    await expect(page.getByText('LEADERBOARD')).toBeVisible()
   })
 
   test('can make picks and save bracket', async ({ page }) => {
-    // Navigate to a tournament and create/edit bracket
-    await page.getByText('2026 Michigan Test').click()
-    await page.getByRole('link', { name: /create your bracket|view.*edit.*bracket/i }).click()
+    // Create or navigate to bracket edit page via dashboard
+    const editLink = page.getByRole('link', { name: 'Edit' }).first()
+    const hasEditLink = await editLink.isVisible().catch(() => false)
+
+    if (hasEditLink) {
+      await editLink.click()
+    } else {
+      // Create a new bracket via wizard
+      const stateDropdown = page.locator('select').first()
+      await stateDropdown.selectOption({ label: 'Michigan' })
+
+      const tournamentDropdown = page.locator('select').nth(1)
+      await tournamentDropdown.selectOption({ index: 1 })
+
+      await page.getByRole('button', { name: 'Create Bracket' }).click()
+    }
 
     // Wait for bracket to load
+    await expect(page).toHaveURL(/\/bracket\/.*\/edit/, { timeout: 10000 })
     await expect(page.getByRole('heading', { name: 'Opening Round' })).toBeVisible()
 
     // Find clickable player slots and make a pick
@@ -51,11 +84,25 @@ test.describe('Bracket', () => {
   })
 
   test('picks persist after page reload', async ({ page }) => {
-    // Navigate to bracket edit page
-    await page.getByText('2026 Michigan Test').click()
-    await page.getByRole('link', { name: /create your bracket|view.*edit.*bracket/i }).click()
+    // Navigate to bracket edit page via dashboard
+    const editLink = page.getByRole('link', { name: 'Edit' }).first()
+    const hasEditLink = await editLink.isVisible().catch(() => false)
+
+    if (hasEditLink) {
+      await editLink.click()
+    } else {
+      // Create a new bracket via wizard
+      const stateDropdown = page.locator('select').first()
+      await stateDropdown.selectOption({ label: 'Michigan' })
+
+      const tournamentDropdown = page.locator('select').nth(1)
+      await tournamentDropdown.selectOption({ index: 1 })
+
+      await page.getByRole('button', { name: 'Create Bracket' }).click()
+    }
 
     // Wait for bracket to load
+    await expect(page).toHaveURL(/\/bracket\/.*\/edit/, { timeout: 10000 })
     await expect(page.getByRole('heading', { name: 'Opening Round' })).toBeVisible()
 
     // Make a pick on the first match if possible
