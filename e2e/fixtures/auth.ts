@@ -59,7 +59,7 @@ export async function navigateToBracketEditor(
   page: Page,
   options: { state?: string; tournamentName?: string } = {}
 ): Promise<void> {
-  const { state = 'Michigan', tournamentName } = options
+  const { state = 'MI', tournamentName } = options
 
   // Check if we already have an Edit button for an existing bracket
   const editLink = page.getByRole('link', { name: 'Edit' }).first()

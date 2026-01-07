@@ -9,9 +9,9 @@ test.describe('Dashboard', () => {
     await expect(page.getByRole('heading', { name: 'IFPA Bracket Predictor' })).toBeVisible()
     await expect(page.getByRole('heading', { name: 'Tournaments' })).toBeVisible()
 
-    // Should see login/signup CTAs
-    await expect(page.getByRole('link', { name: 'Log In' })).toBeVisible()
-    await expect(page.getByRole('link', { name: 'Sign Up' })).toBeVisible()
+    // Should see login/signup CTAs (use .first() as there may be multiple Log In links)
+    await expect(page.getByRole('link', { name: 'Log In' }).first()).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Sign Up' }).first()).toBeVisible()
   })
 
   test('logged in user sees dashboard with My Brackets section', async ({ page }) => {
@@ -44,7 +44,7 @@ test.describe('Dashboard', () => {
 
     // Select a state
     const stateDropdown = page.locator('select').first()
-    await stateDropdown.selectOption({ label: 'Michigan' })
+    await stateDropdown.selectOption({ label: 'MI' })
 
     // Tournament dropdown should now be enabled
     const tournamentDropdown = page.locator('select').nth(1)
@@ -55,7 +55,7 @@ test.describe('Dashboard', () => {
 
     // Bracket name should be auto-populated
     const bracketNameInput = page.getByPlaceholder('Enter bracket name')
-    await expect(bracketNameInput).toHaveValue(/Michigan.*#\d+/)
+    await expect(bracketNameInput).toHaveValue(/MI.*#\d+/)
 
     // Create button should be enabled
     const createButton = page.getByRole('button', { name: 'Create Bracket' })
@@ -68,7 +68,7 @@ test.describe('Dashboard', () => {
 
     // Select a state and tournament
     const stateDropdown = page.locator('select').first()
-    await stateDropdown.selectOption({ label: 'Michigan' })
+    await stateDropdown.selectOption({ label: 'MI' })
 
     const tournamentDropdown = page.locator('select').nth(1)
     await tournamentDropdown.selectOption({ index: 1 })
@@ -84,14 +84,14 @@ test.describe('Dashboard', () => {
 
     // Select a state and tournament
     const stateDropdown = page.locator('select').first()
-    await stateDropdown.selectOption({ label: 'Michigan' })
+    await stateDropdown.selectOption({ label: 'MI' })
 
     const tournamentDropdown = page.locator('select').nth(1)
     await tournamentDropdown.selectOption({ index: 1 })
 
     // Wait for bracket name to be populated
     const bracketNameInput = page.getByPlaceholder('Enter bracket name')
-    await expect(bracketNameInput).toHaveValue(/Michigan.*#\d+/)
+    await expect(bracketNameInput).toHaveValue(/MI.*#\d+/)
 
     // Click create
     await page.getByRole('button', { name: 'Create Bracket' }).click()
@@ -126,7 +126,7 @@ test.describe('Dashboard - My Brackets Table', () => {
   test('shows action links for existing brackets', async ({ page }) => {
     // Create a bracket first to ensure we have one
     const stateDropdown = page.locator('select').first()
-    await stateDropdown.selectOption({ label: 'Michigan' })
+    await stateDropdown.selectOption({ label: 'MI' })
 
     const tournamentDropdown = page.locator('select').nth(1)
     await tournamentDropdown.selectOption({ index: 1 })

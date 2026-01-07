@@ -26,7 +26,7 @@ test.describe('Bracket', () => {
       await expect(createBracketSection).toBeVisible()
 
       const stateDropdown = page.locator('select').first()
-      await stateDropdown.selectOption({ label: 'Michigan' })
+      await stateDropdown.selectOption({ label: 'MI' })
 
       const tournamentDropdown = page.locator('select').nth(1)
       await tournamentDropdown.selectOption({ index: 1 })
@@ -54,7 +54,7 @@ test.describe('Bracket', () => {
     } else {
       // Create a new bracket via wizard
       const stateDropdown = page.locator('select').first()
-      await stateDropdown.selectOption({ label: 'Michigan' })
+      await stateDropdown.selectOption({ label: 'MI' })
 
       const tournamentDropdown = page.locator('select').nth(1)
       await tournamentDropdown.selectOption({ index: 1 })
@@ -93,7 +93,7 @@ test.describe('Bracket', () => {
     } else {
       // Create a new bracket via wizard
       const stateDropdown = page.locator('select').first()
-      await stateDropdown.selectOption({ label: 'Michigan' })
+      await stateDropdown.selectOption({ label: 'MI' })
 
       const tournamentDropdown = page.locator('select').nth(1)
       await tournamentDropdown.selectOption({ index: 1 })

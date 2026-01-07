@@ -33,7 +33,9 @@ export default defineConfig({
   projects: process.env.CI ? ciBrowsers : allBrowsers,
 
   webServer: {
-    command: 'npm run dev',
+    // Use --webpack locally to bypass Turbopack Windows "nul" reserved name bug
+    // CI (Linux) can use Turbopack without issues
+    command: process.env.CI ? 'npx next dev' : 'npx next dev --webpack',
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
     timeout: 120000,
