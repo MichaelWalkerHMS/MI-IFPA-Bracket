@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { login } from './fixtures/auth'
+import { login, navigateToBracketEditor } from './fixtures/auth'
 
 test.describe('Score Indicators', () => {
   test.beforeEach(async ({ page }) => {
@@ -8,16 +8,8 @@ test.describe('Score Indicators', () => {
   })
 
   test('bracket renders with score indicator support', async ({ page }) => {
-    // Navigate to tournament
-    await page.getByText('2026 Michigan Test').click()
-    await expect(page).toHaveURL(/\/tournament\//)
-
-    // Create/edit bracket
-    await page.getByRole('link', { name: /create your bracket|view.*edit.*bracket/i }).click()
-    await expect(page).toHaveURL(/\/tournament\/.*\/edit/)
-
-    // Wait for bracket to load
-    await expect(page.getByRole('heading', { name: 'Opening Round' })).toBeVisible()
+    // Navigate to bracket editor via dashboard
+    await navigateToBracketEditor(page)
 
     // Verify round headers are displayed (the infrastructure for subtotals exists)
     await expect(page.getByRole('heading', { name: 'Round of 16' })).toBeVisible()
@@ -27,12 +19,8 @@ test.describe('Score Indicators', () => {
   })
 
   test('can make picks and save bracket with score indicator infrastructure', async ({ page }) => {
-    // Navigate to bracket editor
-    await page.getByText('2026 Michigan Test').click()
-    await page.getByRole('link', { name: /create your bracket|view.*edit.*bracket/i }).click()
-
-    // Wait for bracket to load
-    await expect(page.getByRole('heading', { name: 'Opening Round' })).toBeVisible()
+    // Navigate to bracket editor via dashboard
+    await navigateToBracketEditor(page)
 
     // Make some picks - click on player slots to select winners
     // The first match in opening round is 9 vs 24
@@ -56,12 +44,8 @@ test.describe('Score Indicators', () => {
     // This test verifies the score badge UI renders correctly
     // Note: Score badges only appear when is_correct is non-null (after recalculateScores runs)
 
-    // Navigate to bracket editor
-    await page.getByText('2026 Michigan Test').click()
-    await page.getByRole('link', { name: /create your bracket|view.*edit.*bracket/i }).click()
-
-    // Wait for bracket to load
-    await expect(page.getByRole('heading', { name: 'Opening Round' })).toBeVisible()
+    // Navigate to bracket editor via dashboard
+    await navigateToBracketEditor(page)
 
     // Make a pick on the first opening round match (9 vs 24)
     // Seed 9 should be the winner based on our seeded results
@@ -87,12 +71,8 @@ test.describe('Score Indicators', () => {
   })
 
   test('round subtotals only show when results have been scored', async ({ page }) => {
-    // Navigate to bracket editor
-    await page.getByText('2026 Michigan Test').click()
-    await page.getByRole('link', { name: /create your bracket|view.*edit.*bracket/i }).click()
-
-    // Wait for bracket to load
-    await expect(page.getByRole('heading', { name: 'Opening Round' })).toBeVisible()
+    // Navigate to bracket editor via dashboard
+    await navigateToBracketEditor(page)
 
     // The round headers should be visible
     const openingRoundHeader = page.getByRole('heading', { name: 'Opening Round' }).locator('..')

@@ -50,3 +50,43 @@ export async function isLoggedIn(page: Page): Promise<boolean> {
     return false
   }
 }
+
+/**
+ * Navigate to bracket editor for a specific tournament.
+ * Uses the dashboard: either clicks Edit on existing bracket, or creates new via wizard.
+ */
+export async function navigateToBracketEditor(
+  page: Page,
+  options: { state?: string; tournamentName?: string } = {}
+): Promise<void> {
+  const { state = 'Michigan', tournamentName } = options
+
+  // Check if we already have an Edit button for an existing bracket
+  const editLink = page.getByRole('link', { name: 'Edit' }).first()
+  const hasEditLink = await editLink.isVisible().catch(() => false)
+
+  if (hasEditLink) {
+    await editLink.click()
+  } else {
+    // Use the Create Bracket wizard
+    const stateDropdown = page.locator('select').first()
+    await stateDropdown.selectOption({ label: state })
+
+    // Wait for tournament dropdown to populate
+    await page.waitForTimeout(500)
+
+    const tournamentDropdown = page.locator('select').nth(1)
+    if (tournamentName) {
+      await tournamentDropdown.selectOption({ label: tournamentName })
+    } else {
+      // Select first available tournament
+      await tournamentDropdown.selectOption({ index: 1 })
+    }
+
+    await page.getByRole('button', { name: 'Create Bracket' }).click()
+  }
+
+  // Wait for bracket editor to load
+  await expect(page).toHaveURL(/\/bracket\/.*\/edit/, { timeout: 10000 })
+  await expect(page.getByRole('heading', { name: 'Opening Round' })).toBeVisible()
+}
