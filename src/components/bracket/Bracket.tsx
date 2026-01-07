@@ -277,7 +277,7 @@ export default function BracketView({
 
               const result = await saveBracket({
                 tournamentId: tournament.id,
-                bracketId: existingBracket?.id ?? null,
+                bracketId: bracketId, // Use state which updates after first save
                 isPublic,
                 bracketName: editableBracketName.trim(),
                 picks: picksArray,

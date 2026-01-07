@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import type { SaveBracketInput, LoadBracketResult, Bracket, Pick, LeaderboardEntry } from "@/lib/types";
+import type { SaveBracketInput, LoadBracketResult, Bracket, Pick, LeaderboardEntry, DashboardBracket } from "@/lib/types";
 
 /**
  * Load the current user's bracket and picks for a tournament
@@ -45,6 +45,8 @@ export async function loadUserBracket(
 
 /**
  * Save or update a bracket with picks
+ * If bracketId is provided, updates that specific bracket
+ * Otherwise creates a new bracket
  */
 export async function saveBracket(
   data: SaveBracketInput
@@ -74,18 +76,10 @@ export async function saveBracket(
     return { bracket: null, error: "Predictions are locked" };
   }
 
-  // Check if bracket already exists
-  const { data: existingBracket } = await supabase
-    .from("brackets")
-    .select("id")
-    .eq("user_id", user.id)
-    .eq("tournament_id", data.tournamentId)
-    .single();
-
   let bracketId: string;
 
-  if (existingBracket) {
-    // Update existing bracket
+  if (data.bracketId) {
+    // Update existing bracket by ID
     const { data: updatedBracket, error: updateError } = await supabase
       .from("brackets")
       .update({
@@ -95,7 +89,8 @@ export async function saveBracket(
         final_loser_games: data.finalLoserGames,
         updated_at: new Date().toISOString(),
       })
-      .eq("id", existingBracket.id)
+      .eq("id", data.bracketId)
+      .eq("user_id", user.id) // Security: ensure user owns this bracket
       .select()
       .single();
 
@@ -181,11 +176,11 @@ export async function checkLockStatus(
 
 /**
  * Fetch leaderboard data for a tournament
- * Returns all public brackets + current user's bracket (even if private)
+ * Returns all public brackets + current user's brackets (even if private)
  */
 export async function getLeaderboard(
   tournamentId: string
-): Promise<{ entries: LeaderboardEntry[]; userBracketId: string | null }> {
+): Promise<{ entries: LeaderboardEntry[]; userBracketIds: string[] }> {
   const supabase = await createClient();
 
   const {
@@ -221,7 +216,7 @@ export async function getLeaderboard(
     .order("created_at", { ascending: true });
 
   if (error || !brackets) {
-    return { entries: [], userBracketId: null };
+    return { entries: [], userBracketIds: [] };
   }
 
   // Transform to LeaderboardEntry format
@@ -242,10 +237,222 @@ export async function getLeaderboard(
     };
   });
 
-  // Find current user's bracket ID
-  const userBracketId = user
-    ? entries.find((e) => e.owner_id === user.id)?.id || null
-    : null;
+  // Find all current user's bracket IDs
+  const userBracketIds = user
+    ? entries.filter((e) => e.owner_id === user.id).map((e) => e.id)
+    : [];
 
-  return { entries, userBracketId };
+  return { entries, userBracketIds };
+}
+
+/**
+ * Load all brackets for the current user across all tournaments (for dashboard)
+ */
+export async function loadUserBrackets(): Promise<DashboardBracket[]> {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return [];
+  }
+
+  // Fetch all brackets with tournament info and pick counts
+  const { data: brackets, error } = await supabase
+    .from("brackets")
+    .select(`
+      id,
+      name,
+      tournament_id,
+      is_public,
+      score,
+      created_at,
+      final_winner_games,
+      tournaments!brackets_tournament_id_fkey (
+        name,
+        state,
+        year,
+        player_count,
+        lock_date,
+        status
+      )
+    `)
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: false });
+
+  if (error || !brackets) {
+    return [];
+  }
+
+  // Get pick counts for each bracket
+  const bracketIds = brackets.map((b) => b.id);
+  const { data: pickCounts } = await supabase
+    .from("picks")
+    .select("bracket_id")
+    .in("bracket_id", bracketIds);
+
+  // Count picks per bracket
+  const pickCountMap = new Map<string, number>();
+  pickCounts?.forEach((p) => {
+    pickCountMap.set(p.bracket_id, (pickCountMap.get(p.bracket_id) || 0) + 1);
+  });
+
+  // Get leaderboard rankings for each tournament
+  const tournamentIds = [...new Set(brackets.map((b) => b.tournament_id))];
+  const rankingMap = new Map<string, number>(); // bracketId -> rank
+
+  for (const tournamentId of tournamentIds) {
+    const { entries } = await getLeaderboard(tournamentId);
+    entries.forEach((entry, index) => {
+      rankingMap.set(entry.id, index + 1);
+    });
+  }
+
+  // Transform to DashboardBracket format
+  return brackets.map((b) => {
+    const tournament = Array.isArray(b.tournaments) ? b.tournaments[0] : b.tournaments;
+    const playerCount = tournament?.player_count || 24;
+    // 24 players = 24 picks, 16 players = 16 picks
+    const expectedPicks = playerCount === 16 ? 16 : 24;
+    const pickCount = pickCountMap.get(b.id) || 0;
+    const isLocked = new Date(tournament?.lock_date || "") <= new Date();
+
+    return {
+      id: b.id,
+      name: b.name,
+      tournament_id: b.tournament_id,
+      tournament_name: tournament?.name || "Unknown Tournament",
+      tournament_state: tournament?.state || "",
+      tournament_year: tournament?.year || new Date().getFullYear(),
+      player_count: playerCount,
+      lock_date: tournament?.lock_date || "",
+      tournament_status: tournament?.status || "upcoming",
+      pick_count: pickCount,
+      expected_picks: expectedPicks,
+      is_complete: pickCount >= expectedPicks && b.final_winner_games !== null,
+      is_public: b.is_public,
+      score: b.score,
+      rank: rankingMap.get(b.id) || null,
+      is_locked: isLocked,
+    };
+  });
+}
+
+/**
+ * Load a specific bracket by ID with its picks
+ */
+export async function loadBracketById(
+  bracketId: string
+): Promise<LoadBracketResult & { tournamentId: string | null }> {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { bracket: null, picks: [], tournamentId: null };
+  }
+
+  // Get bracket (must belong to user)
+  const { data: bracket } = await supabase
+    .from("brackets")
+    .select("*")
+    .eq("id", bracketId)
+    .eq("user_id", user.id)
+    .single();
+
+  if (!bracket) {
+    return { bracket: null, picks: [], tournamentId: null };
+  }
+
+  // Get picks
+  const { data: picks } = await supabase
+    .from("picks")
+    .select("*")
+    .eq("bracket_id", bracket.id);
+
+  return {
+    bracket: bracket as Bracket,
+    picks: (picks || []) as Pick[],
+    tournamentId: bracket.tournament_id,
+  };
+}
+
+/**
+ * Create a new empty bracket for a tournament
+ */
+export async function createBracket(
+  tournamentId: string,
+  bracketName: string
+): Promise<{ bracket: Bracket | null; error: string | null }> {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { bracket: null, error: "Not authenticated" };
+  }
+
+  // Check lock status
+  const { data: tournament } = await supabase
+    .from("tournaments")
+    .select("lock_date")
+    .eq("id", tournamentId)
+    .single();
+
+  if (!tournament) {
+    return { bracket: null, error: "Tournament not found" };
+  }
+
+  if (new Date(tournament.lock_date) <= new Date()) {
+    return { bracket: null, error: "Predictions are locked" };
+  }
+
+  // Create new bracket
+  const { data: newBracket, error: insertError } = await supabase
+    .from("brackets")
+    .insert({
+      user_id: user.id,
+      tournament_id: tournamentId,
+      name: bracketName,
+      is_public: true,
+    })
+    .select()
+    .single();
+
+  if (insertError) {
+    return { bracket: null, error: insertError.message };
+  }
+
+  return { bracket: newBracket as Bracket, error: null };
+}
+
+/**
+ * Count existing brackets for a user in a tournament (for generating default names)
+ */
+export async function countUserBracketsForTournament(
+  tournamentId: string
+): Promise<number> {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return 0;
+  }
+
+  const { count } = await supabase
+    .from("brackets")
+    .select("*", { count: "exact", head: true })
+    .eq("user_id", user.id)
+    .eq("tournament_id", tournamentId);
+
+  return count || 0;
 }

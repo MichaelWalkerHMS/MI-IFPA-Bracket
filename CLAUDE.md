@@ -110,16 +110,11 @@ When starting the dev server, first kill any existing process on port 3000:
 - Phase 4: Admin interface & results (including seeding change warnings)
 
 **Backlog:**
-- Admin button on homepage (visible only to admins)
-- Add single player UI in admin (without bulk import)
-- Add rename/edit player function in admin (to change name without delete+reimport)
 - Fix seed script URL output
 - Accommodate 16 player tournaments
 - Improve UI for selecting which tournament you want to create a bracket for
 - User dashboard for the tournaments they have predicted
 - Allow for multiple brackets per user
-- Add ability to name/rename brackets during creation and editing
-- Show "(private)" indicator next to user's private brackets in leaderboard
 - Remove ability to manually add more than 4 wins on final match results page
 - Improve Leaderboard UI - at minimum, Score needs better highlighting or visibility
 - Review E2E setup for cloned repos (graceful handling when secrets/test user unavailable)

@@ -19,7 +19,8 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  // Limit workers to avoid race conditions with shared test user session
+  workers: process.env.CI ? 1 : 2,
   reporter: process.env.CI ? 'github' : 'html',
 
   globalSetup: './e2e/global-setup.ts',
@@ -33,7 +34,9 @@ export default defineConfig({
   projects: process.env.CI ? ciBrowsers : allBrowsers,
 
   webServer: {
-    command: 'npm run dev',
+    // Use --webpack locally to bypass Turbopack Windows "nul" reserved name bug
+    // CI (Linux) can use Turbopack without issues
+    command: process.env.CI ? 'npx next dev' : 'npx next dev --webpack',
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
     timeout: 120000,

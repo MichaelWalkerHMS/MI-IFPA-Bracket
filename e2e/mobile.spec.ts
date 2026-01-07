@@ -1,13 +1,16 @@
 import { test, expect, devices } from '@playwright/test'
-import { login } from './fixtures/auth'
+import { login, navigateToBracketEditor } from './fixtures/auth'
 
 // Configure mobile viewport (use project's browser, not webkit)
 const { viewport, userAgent, deviceScaleFactor, isMobile, hasTouch } = devices['iPhone 13']
 test.use({ viewport, userAgent, deviceScaleFactor, isMobile, hasTouch })
 
 test.describe('Mobile', () => {
+  // Skip on Firefox - isMobile option is not supported
+  test.skip(({ browserName }) => browserName === 'firefox', 'Firefox does not support isMobile')
 
   test('homepage loads on mobile viewport', async ({ page }) => {
+    // Logged-out users see tournament list
     await page.goto('/')
 
     // Should see tournament list
@@ -15,6 +18,7 @@ test.describe('Mobile', () => {
   })
 
   test('can navigate to tournament on mobile', async ({ page }) => {
+    // Logged-out users see tournament list
     await page.goto('/')
 
     // Tap tournament
@@ -26,22 +30,20 @@ test.describe('Mobile', () => {
 
   test('bracket is accessible on mobile', async ({ page }) => {
     await login(page)
+    await expect(page.getByRole('button', { name: /log out/i })).toBeVisible({ timeout: 10000 })
 
-    // Navigate to tournament
-    await page.getByText('2026 Michigan Test').tap()
-    await page.getByRole('link', { name: /create your bracket|view.*edit.*bracket/i }).tap()
+    // Navigate to bracket editor via dashboard
+    await navigateToBracketEditor(page)
 
-    // Bracket should load
-    await expect(page.getByRole('heading', { name: 'Opening Round' })).toBeVisible()
+    // Bracket should load (navigateToBracketEditor already checks this)
   })
 
   test('can make picks on mobile', async ({ page }) => {
     await login(page)
+    await expect(page.getByRole('button', { name: /log out/i })).toBeVisible({ timeout: 10000 })
 
-    // Navigate to bracket
-    await page.getByText('2026 Michigan Test').tap()
-    await page.getByRole('link', { name: /create your bracket|view.*edit.*bracket/i }).tap()
-    await expect(page.getByRole('heading', { name: 'Opening Round' })).toBeVisible()
+    // Navigate to bracket editor via dashboard
+    await navigateToBracketEditor(page)
 
     // Find and tap a player slot
     const playerSlots = page.locator('[class*="cursor-pointer"]').filter({ hasText: /\d+\.\s+\w+/ })
