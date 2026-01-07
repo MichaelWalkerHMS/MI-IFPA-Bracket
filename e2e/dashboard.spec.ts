@@ -2,16 +2,123 @@ import { test, expect } from '@playwright/test'
 import { login } from './fixtures/auth'
 
 test.describe('Dashboard', () => {
-  test('logged out user sees tournament list and CTA', async ({ page }) => {
+  test('logged out user sees tournament wizard and CTA', async ({ page }) => {
     await page.goto('/')
 
-    // Should see the landing page with tournament list
+    // Should see the landing page with tournament wizard
     await expect(page.getByRole('heading', { name: 'IFPA Bracket Predictor' })).toBeVisible()
-    await expect(page.getByRole('heading', { name: 'Tournaments' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Explore Tournaments' })).toBeVisible()
+
+    // Should see the wizard dropdowns
+    await expect(page.getByText('Select State')).toBeVisible()
+    await expect(page.getByText('Select Tournament')).toBeVisible()
 
     // Should see login/signup CTAs (use .first() as there may be multiple Log In links)
     await expect(page.getByRole('link', { name: 'Log In' }).first()).toBeVisible()
     await expect(page.getByRole('link', { name: 'Sign Up' }).first()).toBeVisible()
+  })
+
+  test('logged out user can select state and tournament in wizard', async ({ page }) => {
+    await page.goto('/')
+
+    // Select a state
+    const stateDropdown = page.locator('select').first()
+    await stateDropdown.selectOption({ label: 'MI' })
+
+    // Tournament dropdown should now be enabled
+    const tournamentDropdown = page.locator('select').nth(1)
+    await expect(tournamentDropdown).toBeEnabled()
+
+    // Select a tournament
+    await tournamentDropdown.selectOption({ index: 1 })
+
+    // Should see tournament details and action buttons
+    await expect(page.getByText(/\d+ players/).first()).toBeVisible()
+    await expect(page.getByRole('button', { name: 'View Leaderboard' })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Create Bracket' })).toBeVisible()
+  })
+
+  test('logged out user can view leaderboard from wizard', async ({ page }) => {
+    await page.goto('/')
+
+    // Select a state and tournament
+    const stateDropdown = page.locator('select').first()
+    await stateDropdown.selectOption({ label: 'MI' })
+
+    const tournamentDropdown = page.locator('select').nth(1)
+    await tournamentDropdown.selectOption({ index: 1 })
+
+    // Click View Leaderboard
+    await page.getByRole('button', { name: 'View Leaderboard' }).click()
+
+    // Should navigate to tournament page
+    await expect(page).toHaveURL(/\/tournament\//, { timeout: 10000 })
+  })
+
+  test('logged out user sees auth modal when clicking Create Bracket', async ({ page }) => {
+    await page.goto('/')
+
+    // Select a state and tournament
+    const stateDropdown = page.locator('select').first()
+    await stateDropdown.selectOption({ label: 'MI' })
+
+    const tournamentDropdown = page.locator('select').nth(1)
+    await tournamentDropdown.selectOption({ index: 1 })
+
+    // Click Create Bracket
+    await page.getByRole('button', { name: 'Create Bracket' }).click()
+
+    // Should see auth modal with signup tab active by default
+    await expect(page.getByRole('dialog')).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Create an Account' })).toBeVisible()
+    await expect(page.getByLabel('Your Name')).toBeVisible()
+    await expect(page.getByLabel('Email')).toBeVisible()
+    await expect(page.getByLabel('Password')).toBeVisible()
+  })
+
+  test('auth modal can switch between login and signup tabs', async ({ page }) => {
+    await page.goto('/')
+
+    // Select a state and tournament
+    const stateDropdown = page.locator('select').first()
+    await stateDropdown.selectOption({ label: 'MI' })
+
+    const tournamentDropdown = page.locator('select').nth(1)
+    await tournamentDropdown.selectOption({ index: 1 })
+
+    // Click Create Bracket to open modal
+    await page.getByRole('button', { name: 'Create Bracket' }).click()
+    await expect(page.getByRole('dialog')).toBeVisible()
+
+    // Should start on signup tab
+    await expect(page.getByRole('heading', { name: 'Create an Account' })).toBeVisible()
+
+    // Switch to login tab
+    await page.getByRole('button', { name: 'Log In' }).click()
+    await expect(page.getByRole('heading', { name: 'Welcome Back' })).toBeVisible()
+
+    // Switch back to signup tab
+    await page.getByRole('button', { name: 'Sign Up' }).click()
+    await expect(page.getByRole('heading', { name: 'Create an Account' })).toBeVisible()
+  })
+
+  test('auth modal can be closed', async ({ page }) => {
+    await page.goto('/')
+
+    // Select a state and tournament
+    const stateDropdown = page.locator('select').first()
+    await stateDropdown.selectOption({ label: 'MI' })
+
+    const tournamentDropdown = page.locator('select').nth(1)
+    await tournamentDropdown.selectOption({ index: 1 })
+
+    // Click Create Bracket to open modal
+    await page.getByRole('button', { name: 'Create Bracket' }).click()
+    await expect(page.getByRole('dialog')).toBeVisible()
+
+    // Close modal with X button
+    await page.getByRole('button', { name: 'Close' }).click()
+    await expect(page.getByRole('dialog')).not.toBeVisible()
   })
 
   test('logged in user sees dashboard with My Brackets section', async ({ page }) => {
