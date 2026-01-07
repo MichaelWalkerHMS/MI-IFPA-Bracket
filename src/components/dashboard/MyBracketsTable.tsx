@@ -77,11 +77,11 @@ export default function MyBracketsTable({ brackets }: MyBracketsTableProps) {
             className="border border-[rgb(var(--color-border-primary))] rounded-lg overflow-hidden"
           >
             {/* Tournament Header (Parent) */}
-            <button
-              onClick={() => toggleTournament(group.tournamentId)}
-              className="w-full px-4 py-3 bg-[rgb(var(--color-bg-secondary))] hover:bg-[rgb(var(--color-bg-tertiary))] transition-colors flex items-center justify-between text-left"
-            >
-              <div className="flex items-center gap-3">
+            <div className="px-4 py-3 bg-[rgb(var(--color-bg-secondary))] flex items-center justify-between">
+              <button
+                onClick={() => toggleTournament(group.tournamentId)}
+                className="flex items-center gap-3 hover:opacity-80 transition-opacity text-left"
+              >
                 {/* Chevron */}
                 <svg
                   className={`w-5 h-5 text-[rgb(var(--color-text-muted))] transition-transform ${
@@ -110,17 +110,16 @@ export default function MyBracketsTable({ brackets }: MyBracketsTableProps) {
                     {group.brackets.length} bracket{group.brackets.length !== 1 ? "s" : ""}
                   </div>
                 </div>
-              </div>
+              </button>
 
               {/* Leaderboard button */}
               <Link
                 href={`/tournament/${group.tournamentId}`}
-                onClick={(e) => e.stopPropagation()}
                 className="px-3 py-1.5 text-sm font-medium rounded-md bg-[rgb(var(--color-accent-primary))] text-white hover:bg-[rgb(var(--color-accent-hover))] transition-colors"
               >
                 Leaderboard
               </Link>
-            </button>
+            </div>
 
             {/* Brackets List (Children) */}
             {isExpanded && (
