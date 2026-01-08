@@ -204,7 +204,8 @@ async function seed() {
   });
 
   console.log('\nSeed complete!');
-  console.log('\nYou can now visit: http://localhost:3000/tournament/' + tournament.id);
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+  console.log(`\nYou can now visit: ${baseUrl}/tournament/${tournament.id}`);
 }
 
 seed().catch(console.error);
