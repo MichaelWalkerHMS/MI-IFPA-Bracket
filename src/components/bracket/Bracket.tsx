@@ -27,16 +27,8 @@ import {
 } from "@/lib/bracket/logic";
 import Round from "./Round";
 import FinalScoreInput from "./FinalScoreInput";
+import BracketConnector from "./BracketConnector";
 import { deleteBracket } from "@/app/tournament/[id]/actions";
-
-// Arrow connector component for visual flow between rounds
-const ArrowConnector = () => (
-  <div className="flex items-center self-center" data-testid="round-arrow-connector">
-    <svg width="24" height="20" className="text-[rgb(var(--color-border-primary))]">
-      <path d="M0 10 L16 10 M10 4 L16 10 L10 16" stroke="currentColor" strokeWidth="2" fill="none"/>
-    </svg>
-  </div>
-);
 
 interface BracketViewProps {
   tournament: Tournament;
@@ -456,7 +448,12 @@ export default function BracketView({
             subtotal={roundSubtotals[ROUNDS.OPENING]}
           />
 
-          <ArrowConnector />
+          {/* Connector: Opening → R16 */}
+          <BracketConnector
+            sourceRound={ROUNDS.OPENING}
+            sourceMatchCount={MATCHES_PER_ROUND[ROUNDS.OPENING]}
+            destMatchCount={MATCHES_PER_ROUND[ROUNDS.ROUND_OF_16]}
+          />
 
           {/* Round of 16 */}
           <Round
@@ -472,7 +469,12 @@ export default function BracketView({
             subtotal={roundSubtotals[ROUNDS.ROUND_OF_16]}
           />
 
-          <ArrowConnector />
+          {/* Connector: R16 → Quarters */}
+          <BracketConnector
+            sourceRound={ROUNDS.ROUND_OF_16}
+            sourceMatchCount={MATCHES_PER_ROUND[ROUNDS.ROUND_OF_16]}
+            destMatchCount={MATCHES_PER_ROUND[ROUNDS.QUARTERS]}
+          />
 
           {/* Quarterfinals */}
           <Round
@@ -488,7 +490,11 @@ export default function BracketView({
             subtotal={roundSubtotals[ROUNDS.QUARTERS]}
           />
 
-          <ArrowConnector />
+          <BracketConnector
+            sourceRound={ROUNDS.QUARTERS}
+            sourceMatchCount={MATCHES_PER_ROUND[ROUNDS.QUARTERS]}
+            destMatchCount={MATCHES_PER_ROUND[ROUNDS.SEMIS]}
+          />
 
           {/* Semifinals */}
           <Round
@@ -504,7 +510,11 @@ export default function BracketView({
             subtotal={roundSubtotals[ROUNDS.SEMIS]}
           />
 
-          <ArrowConnector />
+          <BracketConnector
+            sourceRound={ROUNDS.SEMIS}
+            sourceMatchCount={MATCHES_PER_ROUND[ROUNDS.SEMIS]}
+            destMatchCount={MATCHES_PER_ROUND[ROUNDS.FINALS]}
+          />
 
           {/* Finals + Champion */}
           <div className="flex flex-col">
