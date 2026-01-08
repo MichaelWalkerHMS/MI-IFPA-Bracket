@@ -3,6 +3,7 @@
 import type { PlayerMap } from "@/lib/types";
 import Match from "./Match";
 import { ROUNDS } from "@/lib/bracket/constants";
+import { ROUND_PADDING, ROUND_GAP, MATCH_GAP } from "@/lib/bracket/layout";
 
 interface MatchData {
   position: number;
@@ -24,10 +25,6 @@ interface RoundProps {
   subtotal?: { earned: number; max: number }; // Points earned / max for this round
 }
 
-// Match height + gap = spacing unit
-// Each match is h-[72px] (two 36px player slots)
-// We use consistent spacing based on this unit
-
 export default function Round({
   round,
   roundName,
@@ -40,54 +37,15 @@ export default function Round({
   pickCorrectnessMap,
   subtotal,
 }: RoundProps) {
-  // Calculate gap between matches based on round
-  // Each round doubles the gap to center between pairs from previous round
+  // Get gap and padding from shared layout constants
   const getGapStyle = (): React.CSSProperties => {
-    // Base unit: match height (72px) + small gap (8px) = 80px
-    const baseUnit = 80;
-
-    switch (round) {
-      case ROUNDS.OPENING:
-      case ROUNDS.ROUND_OF_16:
-        return { gap: '8px' };
-      case ROUNDS.QUARTERS:
-        // Gap = 1 match height + 2 small gaps = 88px
-        return { gap: `${baseUnit}px` };
-      case ROUNDS.SEMIS:
-        // Gap = 3 match heights + 4 small gaps = 248px
-        return { gap: `${baseUnit * 2 + baseUnit}px` };
-      case ROUNDS.FINALS:
-      case ROUNDS.CONSOLATION:
-        return { gap: '8px' };
-      default:
-        return { gap: '8px' };
-    }
+    const gap = ROUND_GAP[round] ?? MATCH_GAP;
+    return { gap: `${gap}px` };
   };
 
-  // Calculate top padding to center matches with their source matches
   const getPaddingStyle = (): React.CSSProperties => {
-    const baseUnit = 80; // match height + gap
-
-    switch (round) {
-      case ROUNDS.OPENING:
-      case ROUNDS.ROUND_OF_16:
-        return { paddingTop: '0px' };
-      case ROUNDS.QUARTERS:
-        // Center between pairs: (baseUnit) / 2 = 40px
-        return { paddingTop: `${baseUnit / 2}px` };
-      case ROUNDS.SEMIS:
-        // Center between pairs of QF: paddingTop = QF padding + (QF gap + baseUnit) / 2
-        // = 40 + (80 + 80) / 2 = 40 + 80 = 120px
-        return { paddingTop: `${baseUnit / 2 + baseUnit}px` };
-      case ROUNDS.FINALS:
-        // Center between semis: paddingTop = Semis padding + (Semis gap + baseUnit) / 2
-        // = 120 + (240 + 80) / 2 = 120 + 160 = 280px
-        return { paddingTop: `${baseUnit / 2 + baseUnit + baseUnit * 2}px` };
-      case ROUNDS.CONSOLATION:
-        return { paddingTop: '0px' };
-      default:
-        return { paddingTop: '0px' };
-    }
+    const padding = ROUND_PADDING[round] ?? 0;
+    return { paddingTop: `${padding}px` };
   };
 
   // Check if any picks in this round have been scored (is_correct is not null)
