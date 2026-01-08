@@ -153,7 +153,7 @@ export default async function BracketPage({ params }: PageProps) {
 
       {/* CTA for logged-out users */}
       {!user && (
-        <div className="mt-8 p-6 bg-blue-50 border border-blue-200 rounded-lg text-center max-w-2xl mx-auto">
+        <div className="mt-8 p-6 bg-[rgb(var(--color-bg-secondary))] border border-[rgb(var(--color-border-primary))] rounded-lg text-center max-w-2xl mx-auto">
           <p className="text-lg font-medium text-[rgb(var(--color-text-primary))] mb-2">
             Want to make your own predictions?
           </p>

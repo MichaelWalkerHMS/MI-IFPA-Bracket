@@ -27,6 +27,16 @@ import {
 } from "@/lib/bracket/logic";
 import Round from "./Round";
 import FinalScoreInput from "./FinalScoreInput";
+import { deleteBracket } from "@/app/tournament/[id]/actions";
+
+// Arrow connector component for visual flow between rounds
+const ArrowConnector = () => (
+  <div className="flex items-center self-center" data-testid="round-arrow-connector">
+    <svg width="24" height="20" className="text-[rgb(var(--color-border-primary))]">
+      <path d="M0 10 L16 10 M10 4 L16 10 L10 16" stroke="currentColor" strokeWidth="2" fill="none"/>
+    </svg>
+  </div>
+);
 
 interface BracketViewProps {
   tournament: Tournament;
@@ -224,7 +234,6 @@ export default function BracketView({
   const handleDelete = async () => {
     if (!bracketId) return;
     setIsDeleting(true);
-    const { deleteBracket } = await import("@/app/tournament/[id]/actions");
     const result = await deleteBracket(bracketId);
     if (result.error) {
       alert(result.error);
@@ -399,9 +408,15 @@ export default function BracketView({
 
       {/* Delete confirmation modal */}
       {showDeleteModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <div
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="delete-modal-title"
+          onKeyDown={(e) => e.key === "Escape" && setShowDeleteModal(false)}
+        >
           <div className="bg-[rgb(var(--color-bg-primary))] p-6 rounded-lg max-w-md mx-4">
-            <h3 className="text-lg font-bold mb-2">Delete Bracket?</h3>
+            <h3 id="delete-modal-title" className="text-lg font-bold mb-2">Delete Bracket?</h3>
             <p className="text-[rgb(var(--color-text-secondary))] mb-4">
               This will permanently delete your bracket and all predictions. This cannot be undone.
             </p>
@@ -441,12 +456,7 @@ export default function BracketView({
             subtotal={roundSubtotals[ROUNDS.OPENING]}
           />
 
-          {/* Arrow connector */}
-          <div className="flex items-center self-center">
-            <svg width="24" height="20" className="text-[rgb(var(--color-border-primary))]">
-              <path d="M0 10 L16 10 M10 4 L16 10 L10 16" stroke="currentColor" strokeWidth="2" fill="none"/>
-            </svg>
-          </div>
+          <ArrowConnector />
 
           {/* Round of 16 */}
           <Round
@@ -462,12 +472,7 @@ export default function BracketView({
             subtotal={roundSubtotals[ROUNDS.ROUND_OF_16]}
           />
 
-          {/* Arrow connector */}
-          <div className="flex items-center self-center">
-            <svg width="24" height="20" className="text-[rgb(var(--color-border-primary))]">
-              <path d="M0 10 L16 10 M10 4 L16 10 L10 16" stroke="currentColor" strokeWidth="2" fill="none"/>
-            </svg>
-          </div>
+          <ArrowConnector />
 
           {/* Quarterfinals */}
           <Round
@@ -483,12 +488,7 @@ export default function BracketView({
             subtotal={roundSubtotals[ROUNDS.QUARTERS]}
           />
 
-          {/* Arrow connector */}
-          <div className="flex items-center self-center">
-            <svg width="24" height="20" className="text-[rgb(var(--color-border-primary))]">
-              <path d="M0 10 L16 10 M10 4 L16 10 L10 16" stroke="currentColor" strokeWidth="2" fill="none"/>
-            </svg>
-          </div>
+          <ArrowConnector />
 
           {/* Semifinals */}
           <Round
@@ -504,12 +504,7 @@ export default function BracketView({
             subtotal={roundSubtotals[ROUNDS.SEMIS]}
           />
 
-          {/* Arrow connector */}
-          <div className="flex items-center self-center">
-            <svg width="24" height="20" className="text-[rgb(var(--color-border-primary))]">
-              <path d="M0 10 L16 10 M10 4 L16 10 L10 16" stroke="currentColor" strokeWidth="2" fill="none"/>
-            </svg>
-          </div>
+          <ArrowConnector />
 
           {/* Finals + Champion */}
           <div className="flex flex-col">

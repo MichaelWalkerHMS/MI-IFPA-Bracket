@@ -493,7 +493,14 @@ export async function deleteBracket(
   const tournamentId = bracket.tournament_id;
 
   // Delete picks first (foreign key constraint)
-  await supabase.from("picks").delete().eq("bracket_id", bracketId);
+  const { error: picksError } = await supabase
+    .from("picks")
+    .delete()
+    .eq("bracket_id", bracketId);
+
+  if (picksError) {
+    return { error: `Failed to delete picks: ${picksError.message}` };
+  }
 
   // Delete bracket
   const { error } = await supabase

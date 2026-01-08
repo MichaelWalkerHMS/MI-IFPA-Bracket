@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { login, logout } from './fixtures/auth'
+import { login, logout, navigateToBracketEditor } from './fixtures/auth'
 
 test.describe('Bracket', () => {
   test.beforeEach(async ({ page }) => {
@@ -144,25 +144,8 @@ test.describe('Bracket', () => {
   })
 
   test('public/private toggle shows slider and explainer popup', async ({ page }) => {
-    // Navigate to bracket edit page
-    const editLink = page.getByRole('link', { name: 'Edit' }).first()
-    const hasEditLink = await editLink.isVisible().catch(() => false)
-
-    if (hasEditLink) {
-      await editLink.click()
-    } else {
-      // Create a new bracket via wizard
-      const stateDropdown = page.locator('select').first()
-      await stateDropdown.selectOption({ label: 'Michigan' })
-
-      const tournamentDropdown = page.locator('select').nth(1)
-      await tournamentDropdown.selectOption({ index: 1 })
-
-      await page.getByRole('button', { name: 'Create Bracket' }).click()
-    }
-
-    // Wait for bracket to load
-    await expect(page).toHaveURL(/\/bracket\/.*\/edit/, { timeout: 10000 })
+    // Navigate to bracket edit page using helper
+    await navigateToBracketEditor(page)
 
     // The toggle slider should be visible - look for the toggle button
     const toggleButton = page.getByRole('button', { name: /make private|make public/i })
@@ -192,33 +175,16 @@ test.describe('Bracket', () => {
   })
 
   test('arrows are visible between rounds', async ({ page }) => {
-    // Navigate to bracket edit page
-    const editLink = page.getByRole('link', { name: 'Edit' }).first()
-    const hasEditLink = await editLink.isVisible().catch(() => false)
+    // Navigate to bracket edit page using helper
+    await navigateToBracketEditor(page)
 
-    if (hasEditLink) {
-      await editLink.click()
-    } else {
-      // Create a new bracket via wizard
-      const stateDropdown = page.locator('select').first()
-      await stateDropdown.selectOption({ label: 'Michigan' })
+    // Arrow connectors should be present between rounds (using data-testid)
+    const arrowConnectors = page.getByTestId('round-arrow-connector')
 
-      const tournamentDropdown = page.locator('select').nth(1)
-      await tournamentDropdown.selectOption({ index: 1 })
-
-      await page.getByRole('button', { name: 'Create Bracket' }).click()
-    }
-
-    // Wait for bracket to load
-    await expect(page).toHaveURL(/\/bracket\/.*\/edit/, { timeout: 10000 })
-
-    // SVG arrow connectors should be present between rounds
-    const arrowSvgs = page.locator('svg path[d*="L16 10"]')
-
-    // There should be arrows between rounds (at least 4 - between Opening/R16, R16/QF, QF/SF, SF/Finals)
-    await expect(arrowSvgs.first()).toBeVisible()
-    const arrowCount = await arrowSvgs.count()
-    expect(arrowCount).toBeGreaterThanOrEqual(4)
+    // There should be 4 arrows between rounds: Opening→R16, R16→QF, QF→SF, SF→Finals
+    await expect(arrowConnectors.first()).toBeVisible()
+    const arrowCount = await arrowConnectors.count()
+    expect(arrowCount).toBe(4)
   })
 
   test('can delete own bracket with confirmation', async ({ page }) => {
@@ -274,42 +240,24 @@ test.describe('Bracket', () => {
 
 test.describe('Bracket (logged out)', () => {
   test('logged out user sees CTA on public bracket page', async ({ page }) => {
-    // First login, create a bracket, make it public, get its URL
+    // First login and create/navigate to a bracket
     await login(page)
     await page.waitForLoadState('networkidle')
+    await navigateToBracketEditor(page)
 
-    // Navigate to bracket edit page
-    const editLink = page.getByRole('link', { name: 'Edit' }).first()
-    const hasEditLink = await editLink.isVisible().catch(() => false)
+    // Extract bracket ID from URL
+    const match = page.url().match(/\/bracket\/(.*)\/edit/)
+    const bracketId = match?.[1] || ''
 
-    let bracketId: string
-
-    if (hasEditLink) {
-      await editLink.click()
-      await expect(page).toHaveURL(/\/bracket\/(.*)\/edit/, { timeout: 10000 })
-      const match = page.url().match(/\/bracket\/(.*)\/edit/)
-      bracketId = match?.[1] || ''
-    } else {
-      // Create a new bracket
-      const stateDropdown = page.locator('select').first()
-      await stateDropdown.selectOption({ label: 'Michigan' })
-
-      const tournamentDropdown = page.locator('select').nth(1)
-      await tournamentDropdown.selectOption({ index: 1 })
-
-      await page.getByRole('button', { name: 'Create Bracket' }).click()
-      await expect(page).toHaveURL(/\/bracket\/(.*)\/edit/, { timeout: 10000 })
-
-      const match = page.url().match(/\/bracket\/(.*)\/edit/)
-      bracketId = match?.[1] || ''
-
-      // Save the bracket
-      await page.getByRole('button', { name: 'Save' }).click()
+    // Save if needed (new brackets need to be saved)
+    const saveButton = page.getByRole('button', { name: 'Save' })
+    if (await saveButton.isEnabled()) {
+      await saveButton.click()
       await expect(page.getByText(/saved/i)).toBeVisible({ timeout: 10000 })
     }
 
     // Ensure it's public (toggle if needed)
-    const isPrivate = await page.getByText('Private').isVisible().catch(() => false)
+    const isPrivate = await page.getByText('Private', { exact: true }).isVisible().catch(() => false)
     if (isPrivate) {
       const toggleButton = page.getByRole('button', { name: /make public/i })
       await toggleButton.click()
