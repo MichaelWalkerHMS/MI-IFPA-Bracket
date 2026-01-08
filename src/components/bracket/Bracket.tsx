@@ -299,7 +299,7 @@ export default function BracketView({
 
             {/* Private explainer popup */}
             {showPrivateExplainer && (
-              <div className="absolute z-10 top-8 left-0 p-4 bg-[rgb(var(--color-bg-primary))] border border-[rgb(var(--color-border-primary))] rounded-lg shadow-lg max-w-xs">
+              <div className="absolute z-10 top-full mt-2 left-1/2 -translate-x-1/2 sm:left-0 sm:translate-x-0 w-72 p-4 bg-[rgb(var(--color-bg-primary))] border border-[rgb(var(--color-border-primary))] rounded-lg shadow-lg">
                 <p className="text-sm text-[rgb(var(--color-text-secondary))] mb-2">
                   <strong>Private brackets:</strong>
                 </p>
