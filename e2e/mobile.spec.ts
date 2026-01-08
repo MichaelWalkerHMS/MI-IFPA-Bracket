@@ -10,22 +10,31 @@ test.describe('Mobile', () => {
   test.skip(({ browserName }) => browserName === 'firefox', 'Firefox does not support isMobile')
 
   test('homepage loads on mobile viewport', async ({ page }) => {
-    // Logged-out users see tournament list
+    // Logged-out users see tournament wizard
     await page.goto('/')
 
-    // Should see tournament list
-    await expect(page.getByText('2026 Michigan Test')).toBeVisible()
+    // Should see wizard with dropdowns
+    await expect(page.getByRole('heading', { name: 'Explore Tournaments' })).toBeVisible()
+    await expect(page.getByText('Select State')).toBeVisible()
+    await expect(page.getByText('Select Tournament')).toBeVisible()
   })
 
   test('can navigate to tournament on mobile', async ({ page }) => {
-    // Logged-out users see tournament list
+    // Logged-out users use wizard to navigate
     await page.goto('/')
 
-    // Tap tournament
-    await page.getByText('2026 Michigan Test').tap()
+    // Select state and tournament via wizard
+    const stateDropdown = page.locator('select').first()
+    await stateDropdown.selectOption({ label: 'MI' })
+
+    const tournamentDropdown = page.locator('select').nth(1)
+    await tournamentDropdown.selectOption({ index: 1 })
+
+    // Tap View Leaderboard to navigate
+    await page.getByRole('button', { name: 'View Leaderboard' }).tap()
 
     // Should be on tournament page
-    await expect(page).toHaveURL(/\/tournament\//)
+    await expect(page).toHaveURL(/\/tournament\//, { timeout: 10000 })
   })
 
   test('bracket is accessible on mobile', async ({ page }) => {

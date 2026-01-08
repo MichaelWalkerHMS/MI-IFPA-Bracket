@@ -4,26 +4,25 @@ import { login } from './fixtures/auth'
 test.describe('Bracket', () => {
   test.beforeEach(async ({ page }) => {
     await login(page)
+    // Wait for page to fully load
+    await page.waitForLoadState('networkidle')
     // Verify login succeeded by checking for Log Out button
     await expect(page.getByRole('button', { name: /log out/i })).toBeVisible({ timeout: 10000 })
+    // Also verify we see the dashboard (logged-in view)
+    await expect(page.getByRole('heading', { name: 'My Brackets' })).toBeVisible({ timeout: 10000 })
   })
 
   test('can navigate to tournament leaderboard from dashboard', async ({ page }) => {
-    // From dashboard, create a bracket first (if we don't have one)
-    // or click on an existing bracket's Leaderboard link
-    const leaderboardLink = page.getByRole('link', { name: 'Leaderboard' }).first()
-    const createBracketSection = page.getByRole('heading', { name: 'Create New Bracket' })
+    // Re-verify we're logged in and on dashboard (redundant but helps debug flakiness)
+    await expect(page.getByRole('heading', { name: 'My Brackets' })).toBeVisible()
 
-    // Check if we already have brackets
+    // Check if we already have a bracket with leaderboard link
+    const leaderboardLink = page.getByRole('link', { name: 'Leaderboard' }).first()
     const hasLeaderboardLink = await leaderboardLink.isVisible().catch(() => false)
 
-    if (hasLeaderboardLink) {
-      // Click leaderboard link for existing bracket
-      await leaderboardLink.click()
-      await expect(page).toHaveURL(/\/tournament\//)
-    } else {
-      // Create a bracket first via wizard
-      await expect(createBracketSection).toBeVisible()
+    if (!hasLeaderboardLink) {
+      // Create a bracket first via the dashboard wizard
+      await expect(page.getByRole('heading', { name: 'Create New Bracket' })).toBeVisible()
 
       const stateDropdown = page.locator('select').first()
       await stateDropdown.selectOption({ label: 'MI' })
@@ -31,14 +30,26 @@ test.describe('Bracket', () => {
       const tournamentDropdown = page.locator('select').nth(1)
       await tournamentDropdown.selectOption({ index: 1 })
 
+      // Wait for bracket name to be auto-populated or fill manually
+      const bracketNameInput = page.getByPlaceholder('Enter bracket name')
+      try {
+        await expect(bracketNameInput).toHaveValue(/MI.*#\d+/, { timeout: 5000 })
+      } catch {
+        // If auto-generation fails, fill in a name manually
+        await bracketNameInput.fill('Test Bracket')
+      }
+
       await page.getByRole('button', { name: 'Create Bracket' }).click()
       await expect(page).toHaveURL(/\/bracket\/.*\/edit/, { timeout: 10000 })
 
-      // Navigate back to dashboard and then to leaderboard
+      // Navigate back to dashboard
       await page.goto('/')
-      await page.getByRole('link', { name: 'Leaderboard' }).first().click()
-      await expect(page).toHaveURL(/\/tournament\//)
+      await page.waitForLoadState('networkidle')
     }
+
+    // Now click the leaderboard link
+    await page.getByRole('link', { name: 'Leaderboard' }).first().click()
+    await expect(page).toHaveURL(/\/tournament\//, { timeout: 10000 })
 
     // Should see leaderboard section
     await expect(page.getByText('LEADERBOARD')).toBeVisible()

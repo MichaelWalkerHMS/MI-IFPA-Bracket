@@ -4,6 +4,8 @@ import AuthHeader from "@/components/AuthHeader";
 import SettingsButton from "@/components/SettingsButton";
 import { MyBracketsTable, CreateBracketWizard } from "@/components/dashboard";
 import { loadUserBrackets } from "@/app/tournament/[id]/actions";
+import TournamentWizard from "@/components/landing/TournamentWizard";
+import PendingBracketHandler from "@/components/landing/PendingBracketHandler";
 import type { Tournament } from "@/lib/types";
 
 export default async function Home() {
@@ -24,6 +26,9 @@ export default async function Home() {
   if (user) {
     return (
       <main className="min-h-screen p-4 md:p-8">
+        {/* Handler for pending bracket creation from logged-out wizard */}
+        <PendingBracketHandler userId={user.id} />
+
         {/* Header */}
         <div className="flex justify-between items-start mb-6">
           <div>
@@ -72,7 +77,7 @@ export default async function Home() {
     );
   }
 
-  // Logged-out user sees landing page with tournament list
+  // Logged-out user sees landing page with tournament wizard
   return (
     <main className="min-h-screen flex flex-col items-center justify-center p-8">
       {/* Auth status bar */}
@@ -88,9 +93,9 @@ export default async function Home() {
         Predict the outcomes of IFPA Pinball State Championships
       </p>
 
-      {/* Tournament list */}
-      <div className="mt-4 p-6 border border-[rgb(var(--color-border-primary))] rounded-lg max-w-md w-full bg-[rgb(var(--color-bg-primary))]">
-        <h2 className="text-xl font-semibold mb-4">Tournaments</h2>
+      {/* Tournament wizard */}
+      <div className="mt-4 p-6 border border-[rgb(var(--color-border-primary))] rounded-lg max-w-2xl w-full bg-[rgb(var(--color-bg-primary))]">
+        <h2 className="text-xl font-semibold mb-4">Explore Tournaments</h2>
 
         {error ? (
           <div className="text-[rgb(var(--color-error-icon))]">
@@ -98,21 +103,7 @@ export default async function Home() {
             <p className="text-sm">{error.message}</p>
           </div>
         ) : tournaments && tournaments.length > 0 ? (
-          <ul className="space-y-2">
-            {tournaments.map((t) => (
-              <li key={t.id}>
-                <Link
-                  href={`/tournament/${t.id}`}
-                  className="block p-3 bg-[rgb(var(--color-bg-secondary))] rounded-lg hover:bg-[rgb(var(--color-bg-tertiary))] transition-colors"
-                >
-                  <p className="font-medium">{t.name}</p>
-                  <p className="text-sm text-[rgb(var(--color-text-secondary))]">
-                    {t.status} • {t.player_count} players
-                  </p>
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <TournamentWizard tournaments={tournaments as Tournament[]} />
         ) : (
           <p className="text-[rgb(var(--color-text-secondary))]">No tournaments available yet.</p>
         )}
