@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import type { Tournament, Player, Bracket, Pick } from "@/lib/types";
 import BracketView from "@/components/bracket/Bracket";
 import SettingsButton from "@/components/SettingsButton";
+import NavLinks from "@/components/NavLinks";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -34,7 +35,8 @@ export default async function BracketPage({ params }: PageProps) {
   if (!bracket.is_public && !isOwner) {
     return (
       <main className="min-h-screen flex flex-col items-center justify-center p-8">
-        <div className="absolute top-4 right-4">
+        <div className="absolute top-4 right-4 flex items-center gap-2">
+          <NavLinks />
           <SettingsButton />
         </div>
         <div className="text-center">
@@ -106,8 +108,9 @@ export default async function BracketPage({ params }: PageProps) {
 
   return (
     <main className="min-h-screen p-4 md:p-8">
-      {/* Settings button */}
-      <div className="absolute top-4 right-4">
+      {/* Navigation and Settings */}
+      <div className="absolute top-4 right-4 flex items-center gap-2">
+        <NavLinks />
         <SettingsButton />
       </div>
 

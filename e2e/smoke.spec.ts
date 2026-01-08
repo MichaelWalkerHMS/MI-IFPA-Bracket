@@ -7,6 +7,48 @@ test('homepage loads', async ({ page }) => {
   await expect(page).toHaveTitle(/IFPA|Bracket|Predictor/i)
 })
 
+test('footer appears on all pages with privacy link', async ({ page }) => {
+  // Check footer on homepage
+  await page.goto('/')
+  await expect(page.getByRole('contentinfo')).toBeVisible()
+  await expect(page.getByRole('contentinfo').getByRole('link', { name: /Privacy Policy/i })).toBeVisible()
+
+  // Check footer on login page
+  await page.goto('/login')
+  await expect(page.getByRole('contentinfo').getByRole('link', { name: /Privacy Policy/i })).toBeVisible()
+
+  // Check footer on about page
+  await page.goto('/about')
+  await expect(page.getByRole('contentinfo').getByRole('link', { name: /Privacy Policy/i })).toBeVisible()
+})
+
+test('nav links appear in header on homepage', async ({ page }) => {
+  await page.goto('/')
+
+  // Verify About and FAQ links are visible
+  await expect(page.getByRole('link', { name: 'About' })).toBeVisible()
+  await expect(page.getByRole('link', { name: 'FAQ' })).toBeVisible()
+})
+
+test('can navigate using nav links', async ({ page }) => {
+  await page.goto('/')
+
+  // Click About link and verify navigation
+  await page.getByRole('link', { name: 'About' }).click()
+  await expect(page).toHaveURL('/about')
+  await expect(page.getByRole('heading', { name: /About IFPA Bracket Predictor/i })).toBeVisible()
+
+  // Click FAQ link and verify navigation
+  await page.getByRole('link', { name: 'FAQ' }).click()
+  await expect(page).toHaveURL('/faq')
+  await expect(page.getByRole('heading', { name: /Frequently Asked Questions/i })).toBeVisible()
+
+  // Click Privacy link in footer and verify navigation
+  await page.getByRole('contentinfo').getByRole('link', { name: /Privacy Policy/i }).click()
+  await expect(page).toHaveURL('/privacy')
+  await expect(page.getByRole('heading', { name: /Privacy Policy/i })).toBeVisible()
+})
+
 test('login page loads', async ({ page }) => {
   await page.goto('/login')
 

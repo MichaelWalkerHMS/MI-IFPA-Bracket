@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import AuthHeader from "@/components/AuthHeader";
 import SettingsButton from "@/components/SettingsButton";
+import NavLinks from "@/components/NavLinks";
 import { MyBracketsTable, CreateBracketWizard } from "@/components/dashboard";
 import { loadUserBrackets } from "@/app/tournament/[id]/actions";
 import TournamentWizard from "@/components/landing/TournamentWizard";
@@ -38,6 +39,7 @@ export default async function Home() {
             </p>
           </div>
           <div className="flex items-center gap-2">
+            <NavLinks />
             <SettingsButton />
             <AuthHeader />
           </div>
@@ -85,6 +87,7 @@ export default async function Home() {
     <main className="min-h-screen flex flex-col items-center justify-center p-8">
       {/* Auth status bar */}
       <div className="absolute top-4 right-4 flex items-center gap-2">
+        <NavLinks />
         <SettingsButton />
         <AuthHeader />
       </div>

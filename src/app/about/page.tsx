@@ -1,6 +1,7 @@
 import Link from "next/link";
 import SettingsButton from "@/components/SettingsButton";
 import AuthHeader from "@/components/AuthHeader";
+import NavLinks from "@/components/NavLinks";
 
 export default function AboutPage() {
   return (
@@ -11,6 +12,7 @@ export default function AboutPage() {
           &larr; Back to Home
         </Link>
         <div className="flex items-center gap-2">
+          <NavLinks />
           <SettingsButton />
           <AuthHeader />
         </div>

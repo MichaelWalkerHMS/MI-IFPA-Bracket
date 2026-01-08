@@ -5,6 +5,7 @@ import { getLeaderboard } from "./actions";
 import Leaderboard from "@/components/leaderboard/Leaderboard";
 import AuthHeader from "@/components/AuthHeader";
 import SettingsButton from "@/components/SettingsButton";
+import NavLinks from "@/components/NavLinks";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -79,6 +80,7 @@ export default async function TournamentHubPage({ params }: PageProps) {
 
         {/* Auth status */}
         <div className="flex items-center gap-2">
+          <NavLinks />
           <SettingsButton />
           <AuthHeader />
         </div>
