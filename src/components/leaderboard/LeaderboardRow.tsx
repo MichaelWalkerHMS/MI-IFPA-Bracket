@@ -57,15 +57,7 @@ export default function LeaderboardRow({
             )}
           </div>
         </div>
-        <div className={`font-mono text-lg font-bold px-3 py-1 rounded ${
-          rank === 1
-            ? 'bg-yellow-500/20 text-yellow-600'
-            : rank === 2
-            ? 'bg-gray-400/20 text-gray-500'
-            : rank === 3
-            ? 'bg-orange-500/20 text-orange-600'
-            : 'bg-[rgb(var(--color-bg-secondary))] text-[rgb(var(--color-text-primary))]'
-        }`}>
+        <div className="font-mono text-lg font-bold px-3 py-1 rounded bg-[rgb(var(--color-bg-secondary))] text-[rgb(var(--color-text-primary))]">
           {entry.score !== null ? entry.score : "--"}
         </div>
       </div>

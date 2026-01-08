@@ -93,7 +93,7 @@ test.describe('Leaderboard', () => {
     expect(entryText).toContain('by')
   })
 
-  test('leaderboard highlights top 3 scores', async ({ page }) => {
+  test('leaderboard displays scores with prominent styling', async ({ page }) => {
     // Navigate to tournament via wizard (logged out users now use wizard to browse)
     await page.goto('/')
 
@@ -111,13 +111,12 @@ test.describe('Leaderboard', () => {
     // Check that leaderboard entries exist
     await expect(page.getByText('LEADERBOARD')).toBeVisible()
 
-    // Verify score elements have styling classes
-    // The top 3 scores should have distinct background colors (yellow, gray, orange)
+    // Verify score elements have prominent styling (larger text, bold, boxed)
     // Score elements are in a div with font-mono text-lg font-bold px-3 py-1 rounded
     const scoreElements = page.locator('.font-mono.text-lg.font-bold')
     const count = await scoreElements.count()
 
-    // Just verify that score elements exist with the new styling
+    // Verify that score elements exist with the enhanced styling
     if (count > 0) {
       await expect(scoreElements.first()).toBeVisible()
     }
