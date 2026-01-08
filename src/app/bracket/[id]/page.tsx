@@ -150,6 +150,24 @@ export default async function BracketPage({ params }: PageProps) {
         affectedSeeds={affectedSeeds}
         seedingChangeCount={seedingChangeCount}
       />
+
+      {/* CTA for logged-out users */}
+      {!user && (
+        <div className="mt-8 p-6 bg-blue-50 border border-blue-200 rounded-lg text-center max-w-2xl mx-auto">
+          <p className="text-lg font-medium text-[rgb(var(--color-text-primary))] mb-2">
+            Want to make your own predictions?
+          </p>
+          <p className="text-[rgb(var(--color-text-secondary))] mb-4">
+            Create your bracket and compete on the leaderboard!
+          </p>
+          <Link
+            href="/"
+            className="inline-block px-6 py-2 bg-[rgb(var(--color-accent-primary))] text-white rounded-lg hover:opacity-90 transition-opacity"
+          >
+            Create Your Bracket
+          </Link>
+        </div>
+      )}
     </main>
   );
 }

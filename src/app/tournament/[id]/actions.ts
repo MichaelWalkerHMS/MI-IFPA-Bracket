@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { revalidatePath } from "next/cache";
 import type { SaveBracketInput, LoadBracketResult, Bracket, Pick, LeaderboardEntry, DashboardBracket } from "@/lib/types";
 
 /**
@@ -455,4 +456,56 @@ export async function countUserBracketsForTournament(
     .eq("tournament_id", tournamentId);
 
   return count || 0;
+}
+
+/**
+ * Delete a bracket and all its picks
+ * Only the bracket owner can delete their own bracket
+ */
+export async function deleteBracket(
+  bracketId: string
+): Promise<{ success?: boolean; tournamentId?: string; error?: string }> {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { error: "Not authenticated" };
+  }
+
+  // Verify ownership
+  const { data: bracket } = await supabase
+    .from("brackets")
+    .select("user_id, tournament_id")
+    .eq("id", bracketId)
+    .single();
+
+  if (!bracket) {
+    return { error: "Bracket not found" };
+  }
+
+  if (bracket.user_id !== user.id) {
+    return { error: "Not authorized to delete this bracket" };
+  }
+
+  const tournamentId = bracket.tournament_id;
+
+  // Delete picks first (foreign key constraint)
+  await supabase.from("picks").delete().eq("bracket_id", bracketId);
+
+  // Delete bracket
+  const { error } = await supabase
+    .from("brackets")
+    .delete()
+    .eq("id", bracketId);
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  revalidatePath(`/tournament/${tournamentId}`);
+  revalidatePath("/");
+  return { success: true, tournamentId };
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import type { Tournament, Player, Bracket, Pick, PlayerMap } from "@/lib/types";
 import { getPointsForRound } from "@/lib/scoring/calculateScore";
 
@@ -78,6 +79,13 @@ export default function BracketView({
   const [copied, setCopied] = useState(false);
   // Track bracket ID in state so it updates after first save
   const [bracketId, setBracketId] = useState<string | null>(existingBracket?.id ?? null);
+  // Private explainer popup state
+  const [showPrivateExplainer, setShowPrivateExplainer] = useState(false);
+  // Delete modal state
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const router = useRouter();
 
   // Share URL (available when bracket is saved - uses state to update after first save)
   const shareUrl = bracketId
@@ -212,6 +220,20 @@ export default function BracketView({
     setSaveMessage(null);
   };
 
+  // Handle bracket deletion
+  const handleDelete = async () => {
+    if (!bracketId) return;
+    setIsDeleting(true);
+    const { deleteBracket } = await import("@/app/tournament/[id]/actions");
+    const result = await deleteBracket(bracketId);
+    if (result.error) {
+      alert(result.error);
+      setIsDeleting(false);
+    } else {
+      router.push("/");
+    }
+  };
+
   return (
     <div className="w-full">
       {/* Seeding change warning banner */}
@@ -242,21 +264,58 @@ export default function BracketView({
             className="flex-1 min-w-[200px] max-w-sm px-3 py-2 border border-[rgb(var(--color-border-secondary))] rounded-md focus:ring-2 focus:ring-[rgb(var(--color-accent-primary))] focus:border-[rgb(var(--color-accent-primary))] text-sm bg-[rgb(var(--color-bg-primary))]"
           />
 
-          {/* Public/Private toggle */}
-          <label className="flex items-center gap-2 cursor-pointer whitespace-nowrap">
-            <input
-              type="checkbox"
-              checked={isPublic}
-              onChange={(e) => {
-                setIsPublic(e.target.checked);
+          {/* Public/Private toggle slider */}
+          <div className="relative flex items-center gap-3">
+            <span className="text-sm text-[rgb(var(--color-text-secondary))] whitespace-nowrap">
+              {isPublic ? "Public" : "Private"}
+            </span>
+            <button
+              type="button"
+              onClick={() => {
+                if (isLocked) return;
+                const newValue = !isPublic;
+                setIsPublic(newValue);
                 setIsDirty(true);
                 setSaveMessage(null);
+                if (!newValue) {
+                  setShowPrivateExplainer(true);
+                }
               }}
               disabled={isLocked}
-              className="w-4 h-4"
-            />
-            <span className="text-sm">Public</span>
-          </label>
+              className={`relative w-12 h-6 rounded-full transition-colors ${
+                isPublic
+                  ? "bg-[rgb(var(--color-accent-primary))]"
+                  : "bg-[rgb(var(--color-border-secondary))]"
+              } ${isLocked ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+              aria-label={isPublic ? "Make private" : "Make public"}
+            >
+              <div
+                className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${
+                  isPublic ? "left-7" : "left-1"
+                }`}
+              />
+            </button>
+
+            {/* Private explainer popup */}
+            {showPrivateExplainer && (
+              <div className="absolute z-10 top-8 left-0 p-4 bg-[rgb(var(--color-bg-primary))] border border-[rgb(var(--color-border-primary))] rounded-lg shadow-lg max-w-xs">
+                <p className="text-sm text-[rgb(var(--color-text-secondary))] mb-2">
+                  <strong>Private brackets:</strong>
+                </p>
+                <ul className="text-sm text-[rgb(var(--color-text-secondary))] list-disc pl-4 space-y-1">
+                  <li>Only visible to you</li>
+                  <li>Won&apos;t appear on public leaderboard</li>
+                  <li>You can make it public anytime</li>
+                </ul>
+                <button
+                  onClick={() => setShowPrivateExplainer(false)}
+                  className="mt-3 text-sm text-[rgb(var(--color-accent-primary))] hover:underline"
+                >
+                  Got it
+                </button>
+              </div>
+            )}
+          </div>
 
           {/* Save button */}
           <button
@@ -325,12 +384,49 @@ export default function BracketView({
           {isLocked && (
             <span className="text-sm text-[rgb(var(--color-error-icon))]">Locked</span>
           )}
+
+          {/* Delete button (only for saved brackets) */}
+          {bracketId && (
+            <button
+              onClick={() => setShowDeleteModal(true)}
+              className="px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors ml-auto"
+            >
+              Delete Bracket
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Delete confirmation modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-[rgb(var(--color-bg-primary))] p-6 rounded-lg max-w-md mx-4">
+            <h3 className="text-lg font-bold mb-2">Delete Bracket?</h3>
+            <p className="text-[rgb(var(--color-text-secondary))] mb-4">
+              This will permanently delete your bracket and all predictions. This cannot be undone.
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className="px-4 py-2 text-sm border border-[rgb(var(--color-border-primary))] rounded-lg hover:bg-[rgb(var(--color-bg-secondary))]"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={isDeleting}
+                className="px-4 py-2 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+              >
+                {isDeleting ? "Deleting..." : "Delete"}
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
       {/* Bracket container with horizontal scroll */}
       <div className="overflow-x-auto pb-4">
-        <div className="flex gap-2 min-w-max">
+        <div className="flex gap-2 min-w-max items-start">
           {/* Opening Round */}
           <Round
             round={ROUNDS.OPENING}
@@ -344,6 +440,13 @@ export default function BracketView({
             pickCorrectnessMap={pickCorrectnessMap}
             subtotal={roundSubtotals[ROUNDS.OPENING]}
           />
+
+          {/* Arrow connector */}
+          <div className="flex items-center self-center">
+            <svg width="24" height="20" className="text-[rgb(var(--color-border-primary))]">
+              <path d="M0 10 L16 10 M10 4 L16 10 L10 16" stroke="currentColor" strokeWidth="2" fill="none"/>
+            </svg>
+          </div>
 
           {/* Round of 16 */}
           <Round
@@ -359,6 +462,13 @@ export default function BracketView({
             subtotal={roundSubtotals[ROUNDS.ROUND_OF_16]}
           />
 
+          {/* Arrow connector */}
+          <div className="flex items-center self-center">
+            <svg width="24" height="20" className="text-[rgb(var(--color-border-primary))]">
+              <path d="M0 10 L16 10 M10 4 L16 10 L10 16" stroke="currentColor" strokeWidth="2" fill="none"/>
+            </svg>
+          </div>
+
           {/* Quarterfinals */}
           <Round
             round={ROUNDS.QUARTERS}
@@ -373,6 +483,13 @@ export default function BracketView({
             subtotal={roundSubtotals[ROUNDS.QUARTERS]}
           />
 
+          {/* Arrow connector */}
+          <div className="flex items-center self-center">
+            <svg width="24" height="20" className="text-[rgb(var(--color-border-primary))]">
+              <path d="M0 10 L16 10 M10 4 L16 10 L10 16" stroke="currentColor" strokeWidth="2" fill="none"/>
+            </svg>
+          </div>
+
           {/* Semifinals */}
           <Round
             round={ROUNDS.SEMIS}
@@ -386,6 +503,13 @@ export default function BracketView({
             pickCorrectnessMap={pickCorrectnessMap}
             subtotal={roundSubtotals[ROUNDS.SEMIS]}
           />
+
+          {/* Arrow connector */}
+          <div className="flex items-center self-center">
+            <svg width="24" height="20" className="text-[rgb(var(--color-border-primary))]">
+              <path d="M0 10 L16 10 M10 4 L16 10 L10 16" stroke="currentColor" strokeWidth="2" fill="none"/>
+            </svg>
+          </div>
 
           {/* Finals + Champion */}
           <div className="flex flex-col">
