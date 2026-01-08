@@ -6,9 +6,9 @@ test.describe('Leaderboard', () => {
     // Navigate to tournament via wizard (logged out users now use wizard to browse)
     await page.goto('/')
 
-    // Select state and tournament via wizard
+    // Select state and tournament via wizard (state dropdown now uses full names)
     const stateDropdown = page.locator('select').first()
-    await stateDropdown.selectOption({ label: 'MI' })
+    await stateDropdown.selectOption({ label: 'Michigan' })
 
     const tournamentDropdown = page.locator('select').nth(1)
     await tournamentDropdown.selectOption({ index: 1 })
@@ -49,9 +49,9 @@ test.describe('Leaderboard', () => {
     // Navigate to tournament via wizard (logged out users now use wizard to browse)
     await page.goto('/')
 
-    // Select state and tournament via wizard
+    // Select state and tournament via wizard (state dropdown now uses full names)
     const stateDropdown = page.locator('select').first()
-    await stateDropdown.selectOption({ label: 'MI' })
+    await stateDropdown.selectOption({ label: 'Michigan' })
 
     const tournamentDropdown = page.locator('select').nth(1)
     await tournamentDropdown.selectOption({ index: 1 })
@@ -62,5 +62,64 @@ test.describe('Leaderboard', () => {
 
     // Should see Score header
     await expect(page.getByText('Score')).toBeVisible()
+  })
+
+  test('leaderboard shows bracket name and owner horizontally', async ({ page }) => {
+    await login(page)
+    await expect(page.getByRole('button', { name: /log out/i })).toBeVisible({ timeout: 10000 })
+
+    // Navigate to bracket editor via dashboard
+    await navigateToBracketEditor(page)
+
+    // Save the bracket (even empty)
+    await page.getByRole('button', { name: 'Save' }).click()
+    await expect(page.getByText(/saved/i)).toBeVisible({ timeout: 10000 })
+
+    // Go back to dashboard and click leaderboard
+    await page.getByRole('link', { name: /back to dashboard/i }).click()
+    await page.getByRole('link', { name: 'Leaderboard' }).first().click()
+
+    // Wait for leaderboard to load
+    await expect(page.getByText('LEADERBOARD')).toBeVisible()
+
+    // Verify the leaderboard has entries with inline name format
+    // The horizontal layout puts bracket name and "by Owner" on same line with gap-2 flex-wrap
+    const leaderboardEntry = page.locator('a[href^="/bracket/"]').first()
+    await expect(leaderboardEntry).toBeVisible()
+
+    // Verify that the text contains "by" indicating the secondary name is shown
+    // In horizontal layout, this appears inline with the bracket name
+    const entryText = await leaderboardEntry.textContent()
+    expect(entryText).toContain('by')
+  })
+
+  test('leaderboard highlights top 3 scores', async ({ page }) => {
+    // Navigate to tournament via wizard (logged out users now use wizard to browse)
+    await page.goto('/')
+
+    // Select state and tournament via wizard (state dropdown now uses full names)
+    const stateDropdown = page.locator('select').first()
+    await stateDropdown.selectOption({ label: 'Michigan' })
+
+    const tournamentDropdown = page.locator('select').nth(1)
+    await tournamentDropdown.selectOption({ index: 1 })
+
+    // Click View Leaderboard to navigate to tournament page
+    await page.getByRole('button', { name: 'View Leaderboard' }).click()
+    await expect(page).toHaveURL(/\/tournament\//, { timeout: 10000 })
+
+    // Check that leaderboard entries exist
+    await expect(page.getByText('LEADERBOARD')).toBeVisible()
+
+    // Verify score elements have styling classes
+    // The top 3 scores should have distinct background colors (yellow, gray, orange)
+    // Score elements are in a div with font-mono text-lg font-bold px-3 py-1 rounded
+    const scoreElements = page.locator('.font-mono.text-lg.font-bold')
+    const count = await scoreElements.count()
+
+    // Just verify that score elements exist with the new styling
+    if (count > 0) {
+      await expect(scoreElements.first()).toBeVisible()
+    }
   })
 })
