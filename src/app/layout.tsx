@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
   title: "IFPA Bracket Predictor",
@@ -31,8 +32,11 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="bg-[rgb(var(--color-bg-secondary))] text-[rgb(var(--color-text-primary))]">
-        <ThemeProvider>{children}</ThemeProvider>
+      <body className="min-h-screen flex flex-col bg-[rgb(var(--color-bg-secondary))] text-[rgb(var(--color-text-primary))]">
+        <ThemeProvider>
+          <div className="flex-1">{children}</div>
+          <Footer />
+        </ThemeProvider>
       </body>
     </html>
   );

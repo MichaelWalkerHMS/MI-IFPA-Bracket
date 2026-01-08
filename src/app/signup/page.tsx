@@ -4,6 +4,7 @@ import { useState } from "react";
 import { signUp } from "@/app/auth/actions";
 import Link from "next/link";
 import SettingsButton from "@/components/SettingsButton";
+import NavLinks from "@/components/NavLinks";
 
 export default function SignUpPage() {
   const [error, setError] = useState<string | null>(null);
@@ -25,7 +26,8 @@ export default function SignUpPage() {
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center p-8">
-      <div className="absolute top-4 right-4">
+      <div className="absolute top-4 right-4 flex items-center gap-2">
+        <NavLinks />
         <SettingsButton />
       </div>
 

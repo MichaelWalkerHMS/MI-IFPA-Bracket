@@ -5,6 +5,7 @@ import type { Tournament, Player, Bracket, Pick } from "@/lib/types";
 import BracketView from "@/components/bracket/Bracket";
 import AuthHeader from "@/components/AuthHeader";
 import SettingsButton from "@/components/SettingsButton";
+import NavLinks from "@/components/NavLinks";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -112,6 +113,7 @@ export default async function BracketEditPage({ params }: PageProps) {
 
         {/* Auth status */}
         <div className="flex items-center gap-2">
+          <NavLinks />
           <SettingsButton />
           <AuthHeader />
         </div>

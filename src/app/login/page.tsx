@@ -4,6 +4,7 @@ import { useState } from "react";
 import { signIn } from "@/app/auth/actions";
 import Link from "next/link";
 import SettingsButton from "@/components/SettingsButton";
+import NavLinks from "@/components/NavLinks";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -26,7 +27,8 @@ export default function LoginPage() {
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center p-8">
-      <div className="absolute top-4 right-4">
+      <div className="absolute top-4 right-4 flex items-center gap-2">
+        <NavLinks />
         <SettingsButton />
       </div>
 

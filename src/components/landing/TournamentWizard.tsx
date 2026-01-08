@@ -162,7 +162,7 @@ export default function TournamentWizard({ tournaments }: TournamentWizardProps)
       <AuthModal
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
-        defaultTab="signup"
+        defaultTab="login"
       />
     </div>
   );

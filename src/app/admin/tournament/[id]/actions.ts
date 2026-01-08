@@ -450,6 +450,14 @@ export async function saveResult(
   winnerGames?: number,
   loserGames?: number
 ) {
+  // Validate game counts (best-of-7 format: first to 4 wins)
+  if (winnerGames !== undefined && winnerGames > 4) {
+    return { error: "Winner games cannot exceed 4" };
+  }
+  if (loserGames !== undefined && loserGames > 3) {
+    return { error: "Loser games cannot exceed 3" };
+  }
+
   const auth = await requireAdmin();
   if ("error" in auth) {
     return { error: auth.error };
