@@ -3,6 +3,19 @@
 import { useState } from "react";
 import type { Tournament, TournamentFormData } from "@/lib/types";
 
+const US_STATES = [
+  "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado",
+  "Connecticut", "Delaware", "Florida", "Georgia", "Hawaii", "Idaho",
+  "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana",
+  "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota",
+  "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada",
+  "New Hampshire", "New Jersey", "New Mexico", "New York",
+  "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon",
+  "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota",
+  "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington",
+  "West Virginia", "Wisconsin", "Wyoming"
+];
+
 interface TournamentFormProps {
   tournament?: Tournament; // If provided, we're editing
   onSubmit: (data: TournamentFormData) => Promise<{ error?: string }>;
@@ -19,7 +32,7 @@ export default function TournamentForm({
   // Initialize form state
   const [formData, setFormData] = useState<TournamentFormData>({
     name: tournament?.name || "",
-    state: tournament?.state || "MI",
+    state: tournament?.state || "Michigan",
     year: tournament?.year || new Date().getFullYear(),
     lock_date: tournament?.lock_date
       ? formatDateTimeLocal(tournament.lock_date)
@@ -103,18 +116,18 @@ export default function TournamentForm({
           >
             State
           </label>
-          <input
-            type="text"
+          <select
             id="state"
             value={formData.state}
-            onChange={(e) =>
-              setFormData({ ...formData, state: e.target.value.toUpperCase() })
-            }
+            onChange={(e) => setFormData({ ...formData, state: e.target.value })}
             className="w-full px-3 py-2 border border-[rgb(var(--color-border-secondary))] rounded-lg focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-accent-primary))] bg-[rgb(var(--color-bg-primary))] text-[rgb(var(--color-text-primary))]"
-            placeholder="MI"
-            maxLength={2}
             required
-          />
+          >
+            <option value="">Select State...</option>
+            {US_STATES.map((state) => (
+              <option key={state} value={state}>{state}</option>
+            ))}
+          </select>
         </div>
         <div>
           <label

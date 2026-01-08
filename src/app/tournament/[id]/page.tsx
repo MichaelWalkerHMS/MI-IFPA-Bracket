@@ -84,68 +84,71 @@ export default async function TournamentHubPage({ params }: PageProps) {
         </div>
       </div>
 
-      {/* User CTA Section */}
-      <div className="mb-6">
-        {user ? (
-          <div className="p-4 bg-[rgb(var(--color-bg-secondary))] border border-[rgb(var(--color-border-primary))] rounded-lg">
-            {userBracketIds.length > 0 ? (
-              <div className="flex items-center justify-between flex-wrap gap-3">
-                <p className="text-[rgb(var(--color-text-primary))]">
-                  You have {userBracketIds.length} bracket{userBracketIds.length > 1 ? "s" : ""} for this tournament.
-                </p>
-                <div className="flex gap-2">
+      {/* Content with max-width */}
+      <div className="max-w-4xl mx-auto">
+        {/* User CTA Section */}
+        <div className="mb-6">
+          {user ? (
+            <div className="p-4 bg-[rgb(var(--color-bg-secondary))] border border-[rgb(var(--color-border-primary))] rounded-lg">
+              {userBracketIds.length > 0 ? (
+                <div className="flex items-center justify-between flex-wrap gap-3">
+                  <p className="text-[rgb(var(--color-text-primary))]">
+                    You have {userBracketIds.length} bracket{userBracketIds.length > 1 ? "s" : ""} for this tournament.
+                  </p>
+                  <div className="flex gap-2">
+                    {!isLocked && (
+                      <Link
+                        href="/"
+                        className="px-4 py-2 border border-[rgb(var(--color-accent-primary))] text-[rgb(var(--color-accent-primary))] rounded-lg hover:bg-[rgb(var(--color-accent-light))] font-medium"
+                      >
+                        Create Another
+                      </Link>
+                    )}
+                    <Link
+                      href="/"
+                      className="px-4 py-2 bg-[rgb(var(--color-accent-primary))] text-white rounded-lg hover:bg-[rgb(var(--color-accent-hover))] font-medium"
+                    >
+                      Go to Dashboard
+                    </Link>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center justify-between">
+                  <p className="text-[rgb(var(--color-text-primary))]">
+                    {isLocked
+                      ? "Predictions are locked for this tournament."
+                      : "You haven't created a bracket yet."}
+                  </p>
                   {!isLocked && (
                     <Link
                       href="/"
-                      className="px-4 py-2 border border-[rgb(var(--color-accent-primary))] text-[rgb(var(--color-accent-primary))] rounded-lg hover:bg-[rgb(var(--color-accent-light))] font-medium"
+                      className="px-4 py-2 bg-[rgb(var(--color-accent-primary))] text-white rounded-lg hover:bg-[rgb(var(--color-accent-hover))] font-medium"
                     >
-                      Create Another
+                      Create Your Bracket
                     </Link>
                   )}
-                  <Link
-                    href="/"
-                    className="px-4 py-2 bg-[rgb(var(--color-accent-primary))] text-white rounded-lg hover:bg-[rgb(var(--color-accent-hover))] font-medium"
-                  >
-                    Go to Dashboard
-                  </Link>
                 </div>
-              </div>
-            ) : (
-              <div className="flex items-center justify-between">
-                <p className="text-[rgb(var(--color-text-primary))]">
-                  {isLocked
-                    ? "Predictions are locked for this tournament."
-                    : "You haven't created a bracket yet."}
-                </p>
-                {!isLocked && (
-                  <Link
-                    href="/"
-                    className="px-4 py-2 bg-[rgb(var(--color-accent-primary))] text-white rounded-lg hover:bg-[rgb(var(--color-accent-hover))] font-medium"
-                  >
-                    Create Your Bracket
-                  </Link>
-                )}
-              </div>
-            )}
-          </div>
-        ) : (
-          <div className="p-4 bg-[rgb(var(--color-accent-light))] border border-[rgb(var(--color-accent-primary))] rounded-lg">
-            <p className="text-[rgb(var(--color-accent-text))]">
-              <Link href="/login" className="font-medium hover:underline">
-                Log in
-              </Link>{" "}
-              or{" "}
-              <Link href="/signup" className="font-medium hover:underline">
-                sign up
-              </Link>{" "}
-              to create your bracket prediction!
-            </p>
-          </div>
-        )}
-      </div>
+              )}
+            </div>
+          ) : (
+            <div className="p-4 bg-[rgb(var(--color-accent-light))] border border-[rgb(var(--color-accent-primary))] rounded-lg">
+              <p className="text-[rgb(var(--color-accent-text))]">
+                <Link href="/login" className="font-medium hover:underline">
+                  Log in
+                </Link>{" "}
+                or{" "}
+                <Link href="/signup" className="font-medium hover:underline">
+                  sign up
+                </Link>{" "}
+                to create your bracket prediction!
+              </p>
+            </div>
+          )}
+        </div>
 
-      {/* Leaderboard */}
-      <Leaderboard entries={entries} currentUserId={user?.id || null} />
+        {/* Leaderboard */}
+        <Leaderboard entries={entries} currentUserId={user?.id || null} />
+      </div>
     </main>
   );
 }

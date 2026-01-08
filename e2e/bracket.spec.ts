@@ -25,7 +25,7 @@ test.describe('Bracket', () => {
       await expect(page.getByRole('heading', { name: 'Create New Bracket' })).toBeVisible()
 
       const stateDropdown = page.locator('select').first()
-      await stateDropdown.selectOption({ label: 'MI' })
+      await stateDropdown.selectOption({ label: 'Michigan' })
 
       const tournamentDropdown = page.locator('select').nth(1)
       await tournamentDropdown.selectOption({ index: 1 })
@@ -33,7 +33,7 @@ test.describe('Bracket', () => {
       // Wait for bracket name to be auto-populated or fill manually
       const bracketNameInput = page.getByPlaceholder('Enter bracket name')
       try {
-        await expect(bracketNameInput).toHaveValue(/MI.*#\d+/, { timeout: 5000 })
+        await expect(bracketNameInput).toHaveValue(/Michigan.*#\d+/, { timeout: 5000 })
       } catch {
         // If auto-generation fails, fill in a name manually
         await bracketNameInput.fill('Test Bracket')
@@ -65,7 +65,7 @@ test.describe('Bracket', () => {
     } else {
       // Create a new bracket via wizard
       const stateDropdown = page.locator('select').first()
-      await stateDropdown.selectOption({ label: 'MI' })
+      await stateDropdown.selectOption({ label: 'Michigan' })
 
       const tournamentDropdown = page.locator('select').nth(1)
       await tournamentDropdown.selectOption({ index: 1 })
@@ -104,7 +104,7 @@ test.describe('Bracket', () => {
     } else {
       // Create a new bracket via wizard
       const stateDropdown = page.locator('select').first()
-      await stateDropdown.selectOption({ label: 'MI' })
+      await stateDropdown.selectOption({ label: 'Michigan' })
 
       const tournamentDropdown = page.locator('select').nth(1)
       await tournamentDropdown.selectOption({ index: 1 })

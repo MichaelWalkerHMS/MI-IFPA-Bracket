@@ -25,7 +25,7 @@ test.describe('Mobile', () => {
 
     // Select state and tournament via wizard
     const stateDropdown = page.locator('select').first()
-    await stateDropdown.selectOption({ label: 'MI' })
+    await stateDropdown.selectOption({ label: 'Michigan' })
 
     const tournamentDropdown = page.locator('select').nth(1)
     await tournamentDropdown.selectOption({ index: 1 })
