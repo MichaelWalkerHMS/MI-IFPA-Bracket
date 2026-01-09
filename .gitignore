@@ -46,6 +46,13 @@ testing/
 # Future Feature Plans
 feature-plans/
 
+# Project Planning & Review Documents
+mobile-project-plan.md
+mobile-pr*.md
+code-review-agent.md
+pr-review-comments.md
+ui-implementation-guidelines.md.md
+
 # Playwright
 test-results/
 playwright-report/
