@@ -3,8 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Tournament, Player, Bracket, Pick } from "@/lib/types";
 import BracketView from "@/components/bracket/Bracket";
-import SettingsButton from "@/components/SettingsButton";
-import NavLinks from "@/components/NavLinks";
+import ResponsiveHeader from "@/components/ResponsiveHeader";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -34,21 +33,21 @@ export default async function BracketPage({ params }: PageProps) {
   const isOwner = user?.id === bracket.user_id;
   if (!bracket.is_public && !isOwner) {
     return (
-      <main className="min-h-screen flex flex-col items-center justify-center p-8">
-        <div className="absolute top-4 right-4 flex items-center gap-2">
-          <NavLinks />
-          <SettingsButton />
+      <main className="min-h-screen flex flex-col items-center justify-center p-4 sm:p-8 pt-16">
+        <div className="absolute top-4 right-4">
+          <ResponsiveHeader />
         </div>
         <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Private Bracket</h1>
-          <p className="text-[rgb(var(--color-text-secondary))] mb-6">
+          <h1 className="text-xl sm:text-2xl font-bold mb-4">Private Bracket</h1>
+          <p className="text-sm sm:text-base text-[rgb(var(--color-text-secondary))] mb-6">
             This bracket is private and can only be viewed by its owner.
           </p>
           <Link
             href={`/tournament/${bracket.tournament_id}`}
             className="text-[rgb(var(--color-accent-primary))] hover:underline"
           >
-            &larr; Back to Tournament
+            <span className="hidden sm:inline">&larr; Back to Tournament</span>
+            <span className="sm:hidden">&larr; Back</span>
           </Link>
         </div>
       </main>
@@ -108,33 +107,29 @@ export default async function BracketPage({ params }: PageProps) {
 
   return (
     <main className="min-h-screen p-4 md:p-8">
-      {/* Navigation and Settings */}
-      <div className="absolute top-4 right-4 flex items-center gap-2">
-        <NavLinks />
-        <SettingsButton />
-      </div>
-
       {/* Header */}
-      <div className="mb-6">
-        <Link
-          href={`/tournament/${bracket.tournament_id}`}
-          className="text-[rgb(var(--color-accent-primary))] hover:underline text-sm mb-2 inline-block"
-        >
-          &larr; Back to Tournament
-        </Link>
-
-        {/* Bracket title */}
-        <h1 className="text-2xl md:text-3xl font-bold">
-          {bracketName || `${ownerName}'s Bracket`}
-        </h1>
-        {bracketName && (
-          <p className="text-[rgb(var(--color-text-secondary))]">by {ownerName}</p>
-        )}
-
-        {/* Tournament info */}
-        <p className="text-[rgb(var(--color-text-muted))] text-sm mt-1">
-          {tournament.name}
-        </p>
+      <div className="flex justify-between items-start gap-4 mb-6">
+        <div className="min-w-0 flex-1">
+          <Link
+            href={`/tournament/${bracket.tournament_id}`}
+            className="text-[rgb(var(--color-accent-primary))] hover:underline text-sm mb-2 inline-block"
+          >
+            <span className="hidden sm:inline">&larr; Back to Tournament</span>
+            <span className="sm:hidden">&larr; Back</span>
+          </Link>
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold">
+            {bracketName || `${ownerName}'s Bracket`}
+          </h1>
+          {bracketName && (
+            <p className="text-sm text-[rgb(var(--color-text-secondary))]">by {ownerName}</p>
+          )}
+          <p className="text-xs sm:text-sm text-[rgb(var(--color-text-muted))] mt-1">
+            {tournament.name}
+          </p>
+        </div>
+        <div className="flex-shrink-0">
+          <ResponsiveHeader />
+        </div>
       </div>
 
       {/* Bracket */}
