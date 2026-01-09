@@ -107,8 +107,14 @@ export default function BracketView({
   const roundSubtotals = useMemo(() => {
     const subtotals: Record<number, { earned: number; max: number }> = {};
     const scoringConfig = tournament.scoring_config;
+    const is16Player = tournament.player_count === 16;
 
-    for (const round of [ROUNDS.OPENING, ROUNDS.ROUND_OF_16, ROUNDS.QUARTERS, ROUNDS.SEMIS, ROUNDS.FINALS, ROUNDS.CONSOLATION]) {
+    // Skip OPENING round for 16-player tournaments
+    const rounds = is16Player
+      ? [ROUNDS.ROUND_OF_16, ROUNDS.QUARTERS, ROUNDS.SEMIS, ROUNDS.FINALS, ROUNDS.CONSOLATION]
+      : [ROUNDS.OPENING, ROUNDS.ROUND_OF_16, ROUNDS.QUARTERS, ROUNDS.SEMIS, ROUNDS.FINALS, ROUNDS.CONSOLATION];
+
+    for (const round of rounds) {
       const matchCount = MATCHES_PER_ROUND[round] || 0;
       const pointsPerMatch = getPointsForRound(round, scoringConfig);
       const maxPoints = matchCount * pointsPerMatch;
@@ -125,7 +131,7 @@ export default function BracketView({
     }
 
     return subtotals;
-  }, [pickCorrectnessMap, tournament.scoring_config]);
+  }, [pickCorrectnessMap, tournament.scoring_config, tournament.player_count]);
 
   const handleCopyUrl = async () => {
     if (!shareUrl) return;
@@ -156,9 +162,9 @@ export default function BracketView({
 
   const getMatchLoser = useCallback(
     (round: number, position: number): number | null => {
-      return getLoser(picks, round, position);
+      return getLoser(picks, round, position, tournament.player_count as 16 | 24);
     },
-    [picks]
+    [picks, tournament.player_count]
   );
 
   const getMatchParticipants = useCallback(
@@ -166,9 +172,9 @@ export default function BracketView({
       round: number,
       position: number
     ): { topSeed: number | null; bottomSeed: number | null } => {
-      return getParticipants(picks, round, position);
+      return getParticipants(picks, round, position, tournament.player_count as 16 | 24);
     },
-    [picks]
+    [picks, tournament.player_count]
   );
 
   // Handle picking a winner - uses pure logic function for cascade behavior
@@ -434,26 +440,30 @@ export default function BracketView({
       {/* Bracket container with horizontal scroll */}
       <div className="overflow-x-auto pb-4">
         <div className="flex gap-2 min-w-max items-start">
-          {/* Opening Round */}
-          <Round
-            round={ROUNDS.OPENING}
-            roundName={ROUND_NAMES[ROUNDS.OPENING]}
-            matches={buildRoundMatches(ROUNDS.OPENING)}
-            playerMap={playerMap}
-            onPick={handlePick}
-            isLocked={isLocked}
-            isLoggedIn={isLoggedIn}
-            affectedSeeds={affectedSeeds}
-            pickCorrectnessMap={pickCorrectnessMap}
-            subtotal={roundSubtotals[ROUNDS.OPENING]}
-          />
+          {/* Opening Round - 24-player only */}
+          {tournament.player_count === 24 && (
+            <>
+              <Round
+                round={ROUNDS.OPENING}
+                roundName={ROUND_NAMES[ROUNDS.OPENING]}
+                matches={buildRoundMatches(ROUNDS.OPENING)}
+                playerMap={playerMap}
+                onPick={handlePick}
+                isLocked={isLocked}
+                isLoggedIn={isLoggedIn}
+                affectedSeeds={affectedSeeds}
+                pickCorrectnessMap={pickCorrectnessMap}
+                subtotal={roundSubtotals[ROUNDS.OPENING]}
+              />
 
-          {/* Connector: Opening → R16 */}
-          <BracketConnector
-            sourceRound={ROUNDS.OPENING}
-            sourceMatchCount={MATCHES_PER_ROUND[ROUNDS.OPENING]}
-            destMatchCount={MATCHES_PER_ROUND[ROUNDS.ROUND_OF_16]}
-          />
+              {/* Connector: Opening → R16 */}
+              <BracketConnector
+                sourceRound={ROUNDS.OPENING}
+                sourceMatchCount={MATCHES_PER_ROUND[ROUNDS.OPENING]}
+                destMatchCount={MATCHES_PER_ROUND[ROUNDS.ROUND_OF_16]}
+              />
+            </>
+          )}
 
           {/* Round of 16 */}
           <Round

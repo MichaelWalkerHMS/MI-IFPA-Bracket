@@ -5,6 +5,31 @@ import { revalidatePath } from "next/cache";
 import type { TournamentFormData } from "@/lib/types";
 
 /**
+ * Get scoring configuration based on player count.
+ * 24-player: Opening(1) + R16(2) + Quarters(3) + Semis(4) + Finals(5) = 53 max
+ * 16-player: R16(1) + Quarters(2) + Semis(3) + Finals(4) = 29 max
+ */
+function getScoringConfig(playerCount: 16 | 24) {
+  if (playerCount === 16) {
+    return {
+      opening: 0, // No opening round in 16-player
+      round_of_16: 1,
+      quarters: 2,
+      semis: 3,
+      finals: 4,
+    };
+  }
+  // 24-player (default)
+  return {
+    opening: 1,
+    round_of_16: 2,
+    quarters: 3,
+    semis: 4,
+    finals: 5,
+  };
+}
+
+/**
  * Verify the current user is an admin.
  * Returns the user if admin, or an error object if not.
  */
@@ -56,13 +81,7 @@ export async function createTournament(data: TournamentFormData) {
     matchplay_id: data.matchplay_id || null,
     status: "upcoming" as const,
     is_active: true,
-    scoring_config: {
-      opening: 1,
-      round_of_16: 2,
-      quarters: 3,
-      semis: 4,
-      finals: 5,
-    },
+    scoring_config: getScoringConfig(data.player_count),
   };
 
   const { data: tournament, error } = await supabase
@@ -100,8 +119,10 @@ export async function updateTournament(
   if (data.name !== undefined) updateData.name = data.name;
   if (data.state !== undefined) updateData.state = data.state;
   if (data.year !== undefined) updateData.year = data.year;
-  if (data.player_count !== undefined)
+  if (data.player_count !== undefined) {
     updateData.player_count = data.player_count;
+    updateData.scoring_config = getScoringConfig(data.player_count);
+  }
   if (data.timezone !== undefined) updateData.timezone = data.timezone;
   if (data.matchplay_id !== undefined)
     updateData.matchplay_id = data.matchplay_id || null;

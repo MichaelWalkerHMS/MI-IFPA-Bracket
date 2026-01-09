@@ -8,6 +8,7 @@ import {
   MATCHES_PER_ROUND,
   OPENING_ROUND_MATCHES,
   ROUND_OF_16_MATCHES,
+  ROUND_OF_16_MATCHES_16P,
   QUARTERS_MATCHES,
   SEMIS_MATCHES,
   FINALS_MATCH,
@@ -29,19 +30,31 @@ export function getMatchWinner(
 /**
  * Get the two participants for a match based on round and position.
  * For rounds after Opening, this looks up winners from previous rounds.
+ * @param playerCount - Tournament format (16 or 24 players). Defaults to 24 for backwards compatibility.
  */
 export function getMatchParticipants(
   picks: Map<string, number>,
   round: number,
-  position: number
+  position: number,
+  playerCount: 16 | 24 = 24
 ): { topSeed: number | null; bottomSeed: number | null } {
   switch (round) {
     case ROUNDS.OPENING: {
+      // 16-player tournaments have no opening round
+      if (playerCount === 16) {
+        return { topSeed: null, bottomSeed: null };
+      }
       const match = OPENING_ROUND_MATCHES[position];
       return { topSeed: match.topSeed, bottomSeed: match.bottomSeed };
     }
 
     case ROUNDS.ROUND_OF_16: {
+      // 16-player: direct seed pairings
+      if (playerCount === 16) {
+        const match = ROUND_OF_16_MATCHES_16P[position];
+        return { topSeed: match.topSeed, bottomSeed: match.bottomSeed };
+      }
+      // 24-player: bye seed + opening round winner
       const match = ROUND_OF_16_MATCHES[position];
       const openingWinner = getMatchWinner(
         picks,
@@ -121,13 +134,14 @@ export function getMatchParticipants(
 export function getMatchLoser(
   picks: Map<string, number>,
   round: number,
-  position: number
+  position: number,
+  playerCount: 16 | 24 = 24
 ): number | null {
   const winner = getMatchWinner(picks, round, position);
   if (winner === null) return null;
 
   // Find who was in that match
-  const participants = getMatchParticipants(picks, round, position);
+  const participants = getMatchParticipants(picks, round, position, playerCount);
   if (participants.topSeed === winner) return participants.bottomSeed;
   if (participants.bottomSeed === winner) return participants.topSeed;
   return null;

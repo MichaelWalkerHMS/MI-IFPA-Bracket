@@ -180,6 +180,9 @@ export default function TournamentForm({
             <span>16 players</span>
           </label>
         </div>
+        <p className="text-xs text-[rgb(var(--color-text-muted))] mt-1">
+          Max points: {formData.player_count === 16 ? "29" : "53"}
+        </p>
       </div>
 
       {/* Dates */}

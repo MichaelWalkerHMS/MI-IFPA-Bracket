@@ -60,6 +60,23 @@ export const ROUND_OF_16_MATCHES: Array<{
   { position: 7, byeSeed: 6, openingWinnerPosition: 5 }, // 6 vs winner of 14/19
 ];
 
+// 16-player Round of 16: Direct seed pairings (no opening round)
+// Ordered to maintain compatibility with QUARTERS_MATCHES flow
+export const ROUND_OF_16_MATCHES_16P: Array<{
+  position: number;
+  topSeed: number;
+  bottomSeed: number;
+}> = [
+  { position: 0, topSeed: 1, bottomSeed: 16 },
+  { position: 1, topSeed: 8, bottomSeed: 9 },
+  { position: 2, topSeed: 4, bottomSeed: 13 },
+  { position: 3, topSeed: 5, bottomSeed: 12 },
+  { position: 4, topSeed: 2, bottomSeed: 15 },
+  { position: 5, topSeed: 7, bottomSeed: 10 },
+  { position: 6, topSeed: 3, bottomSeed: 14 },
+  { position: 7, topSeed: 6, bottomSeed: 11 },
+];
+
 // Quarterfinals: winners from pairs of R16 matches
 export const QUARTERS_MATCHES: Array<{
   position: number;

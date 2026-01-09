@@ -8,6 +8,7 @@ import {
   MATCHES_PER_ROUND,
   OPENING_ROUND_MATCHES,
   ROUND_OF_16_MATCHES,
+  ROUND_OF_16_MATCHES_16P,
   QUARTERS_MATCHES,
   SEMIS_MATCHES,
   FINALS_MATCH,
@@ -28,7 +29,10 @@ export default function ResultsEntry({
   results: initialResults,
 }: ResultsEntryProps) {
   const [results, setResults] = useState(initialResults);
-  const [activeRound, setActiveRound] = useState<number>(ROUNDS.OPENING);
+  // Default to first available round (OPENING for 24-player, R16 for 16-player)
+  const [activeRound, setActiveRound] = useState<number>(
+    tournament.player_count === 16 ? ROUNDS.ROUND_OF_16 : ROUNDS.OPENING
+  );
   const [saving, setSaving] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -65,11 +69,21 @@ export default function ResultsEntry({
   ): { topSeed: number | null; bottomSeed: number | null } {
     switch (round) {
       case ROUNDS.OPENING: {
+        // 16-player tournaments have no opening round
+        if (tournament.player_count === 16) {
+          return { topSeed: null, bottomSeed: null };
+        }
         const match = OPENING_ROUND_MATCHES[position];
         return { topSeed: match.topSeed, bottomSeed: match.bottomSeed };
       }
 
       case ROUNDS.ROUND_OF_16: {
+        // 16-player: direct seed pairings
+        if (tournament.player_count === 16) {
+          const match = ROUND_OF_16_MATCHES_16P[position];
+          return { topSeed: match.topSeed, bottomSeed: match.bottomSeed };
+        }
+        // 24-player: bye seed + opening round winner
         const match = ROUND_OF_16_MATCHES[position];
         const openingWinner = getResultWinner(
           ROUNDS.OPENING,

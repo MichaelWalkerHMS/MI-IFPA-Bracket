@@ -22,7 +22,7 @@ Bracket prediction app for IFPA pinball tournaments.
 - Finals: 5pt (1 match = 5pts)
 - Consolation: 4pt (1 match = 4pts) ← same as semis
 
-**16-player bracket (35 points max):**
+**16-player bracket (29 points max):**
 - Round of 16: 1pt (8 matches = 8pts)
 - Quarters: 2pt (4 matches = 8pts)
 - Semis: 3pt (2 matches = 6pts)
@@ -46,6 +46,27 @@ Bracket prediction app for IFPA pinball tournaments.
 - Local + Vercel Preview → Dev Supabase; Production → Prod Supabase
 
 ## Dev-to-Prod Workflow
+
+### Pre-Push Code Review
+
+All code must pass automated review before being pushed to GitHub.
+
+**After completing a feature and committing locally:**
+
+1. Invoke the review subagent:
+   ```
+   Task: Review this branch using code-review-agent.md
+   Context: [brief summary of what you changed]
+   ```
+
+2. Handle the response:
+   - `CHANGES_REQUESTED` → Fix the blocking issues, amend your commit, re-invoke the review
+   - `APPROVED` → Push to GitHub and open the PR
+   - `ESCALATE_TO_HUMAN` → Stop and notify the user; do not push
+
+3. Maximum 5 review iterations. If you can't resolve issues after 5 cycles, escalate.
+
+**Never push code that hasn't been approved by the review subagent.**
 
 ### Code changes
 Feature branch → PR → Preview deployment (dev DB) → User reviews → Merge to main
@@ -110,16 +131,8 @@ When starting the dev server, first kill any existing process on port 3000:
 - Phase 4: Admin interface & results (including seeding change warnings)
 
 **Backlog:**
-- Fix seed script URL output
 - Accommodate 16 player tournaments
-- Improve UI for selecting which tournament you want to create a bracket for
-- User dashboard for the tournaments they have predicted
-- Allow for multiple brackets per user
-- Remove ability to manually add more than 4 wins on final match results page
-- Improve Leaderboard UI - at minimum, Score needs better highlighting or visibility
-- Review E2E setup for cloned repos (graceful handling when secrets/test user unavailable)
-- Fix CI lint job (next lint has unexplained issues in GitHub Actions)
-- Fix Turbopack Windows bug (dev server broken due to "nul" reserved name issue)
+
 
 ## PR Requirements
 
