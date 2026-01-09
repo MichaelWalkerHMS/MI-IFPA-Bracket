@@ -74,9 +74,11 @@ test.describe('Score Indicators', () => {
     // Navigate to bracket editor via dashboard
     await navigateToBracketEditor(page)
 
-    // The round headers should be visible
-    const openingRoundHeader = page.getByRole('heading', { name: 'Opening Round' }).locator('..')
-    await expect(openingRoundHeader).toBeVisible()
+    // The round headers should be visible - check for either Opening Round (24-player) or Round of 16 (both formats)
+    const openingRound = page.getByRole('heading', { name: 'Opening Round' })
+    const roundOf16 = page.getByRole('heading', { name: 'Round of 16' })
+    const roundHeader = openingRound.or(roundOf16).locator('..')
+    await expect(roundHeader).toBeVisible()
 
     // Without is_correct values set on picks, subtotals should not appear
     // The text "X/Y pts" should not be visible in round headers
@@ -94,7 +96,7 @@ test.describe('Score Indicators', () => {
 
     // Reload to get fresh data
     await page.reload()
-    await expect(page.getByRole('heading', { name: 'Opening Round' })).toBeVisible()
+    await expect(openingRound.or(roundOf16)).toBeVisible()
 
     // Note: Round subtotals (e.g., "6/8 pts") will only appear after recalculateScores()
     // has run, which sets is_correct on picks. Without admin result entry, subtotals

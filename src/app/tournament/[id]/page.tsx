@@ -3,9 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getLeaderboard } from "./actions";
 import Leaderboard from "@/components/leaderboard/Leaderboard";
-import AuthHeader from "@/components/AuthHeader";
-import SettingsButton from "@/components/SettingsButton";
-import NavLinks from "@/components/NavLinks";
+import ResponsiveHeader from "@/components/ResponsiveHeader";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -52,16 +50,17 @@ export default async function TournamentHubPage({ params }: PageProps) {
   return (
     <main className="min-h-screen p-4 md:p-8">
       {/* Header */}
-      <div className="flex justify-between items-start mb-6">
-        <div>
+      <div className="flex justify-between items-start gap-4 mb-6">
+        <div className="min-w-0 flex-1">
           <Link
             href="/"
             className="text-[rgb(var(--color-accent-primary))] hover:underline text-sm mb-2 inline-block"
           >
-            &larr; Back to Tournaments
+            <span className="hidden sm:inline">&larr; Back to Tournaments</span>
+            <span className="sm:hidden">&larr; Back</span>
           </Link>
-          <h1 className="text-2xl md:text-3xl font-bold">{tournament.name}</h1>
-          <p className="text-[rgb(var(--color-text-secondary))]">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold">{tournament.name}</h1>
+          <p className="text-sm text-[rgb(var(--color-text-secondary))]">
             {tournament.player_count} players &bull;{" "}
             <span
               className={
@@ -72,17 +71,13 @@ export default async function TournamentHubPage({ params }: PageProps) {
             </span>
           </p>
           {!isLocked && (
-            <p className="text-sm text-[rgb(var(--color-text-muted))] mt-1">
+            <p className="text-xs sm:text-sm text-[rgb(var(--color-text-muted))] mt-1">
               Lock date: {formattedLockDate}
             </p>
           )}
         </div>
-
-        {/* Auth status */}
-        <div className="flex items-center gap-2">
-          <NavLinks />
-          <SettingsButton />
-          <AuthHeader />
+        <div className="flex-shrink-0">
+          <ResponsiveHeader />
         </div>
       </div>
 
@@ -93,30 +88,30 @@ export default async function TournamentHubPage({ params }: PageProps) {
           {user ? (
             <div className="p-4 bg-[rgb(var(--color-bg-secondary))] border border-[rgb(var(--color-border-primary))] rounded-lg">
               {userBracketIds.length > 0 ? (
-                <div className="flex items-center justify-between flex-wrap gap-3">
-                  <p className="text-[rgb(var(--color-text-primary))]">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <p className="text-sm sm:text-base text-[rgb(var(--color-text-primary))]">
                     You have {userBracketIds.length} bracket{userBracketIds.length > 1 ? "s" : ""} for this tournament.
                   </p>
-                  <div className="flex gap-2">
+                  <div className="flex flex-col sm:flex-row gap-2">
                     {!isLocked && (
                       <Link
                         href="/"
-                        className="px-4 py-2 border border-[rgb(var(--color-accent-primary))] text-[rgb(var(--color-accent-primary))] rounded-lg hover:bg-[rgb(var(--color-accent-light))] font-medium"
+                        className="px-4 py-2 border border-[rgb(var(--color-accent-primary))] text-[rgb(var(--color-accent-primary))] rounded-lg hover:bg-[rgb(var(--color-accent-light))] font-medium text-center"
                       >
                         Create Another
                       </Link>
                     )}
                     <Link
                       href="/"
-                      className="px-4 py-2 bg-[rgb(var(--color-accent-primary))] text-white rounded-lg hover:bg-[rgb(var(--color-accent-hover))] font-medium"
+                      className="px-4 py-2 bg-[rgb(var(--color-accent-primary))] text-white rounded-lg hover:bg-[rgb(var(--color-accent-hover))] font-medium text-center"
                     >
                       Go to Dashboard
                     </Link>
                   </div>
                 </div>
               ) : (
-                <div className="flex items-center justify-between">
-                  <p className="text-[rgb(var(--color-text-primary))]">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <p className="text-sm sm:text-base text-[rgb(var(--color-text-primary))]">
                     {isLocked
                       ? "Predictions are locked for this tournament."
                       : "You haven't created a bracket yet."}
@@ -124,7 +119,7 @@ export default async function TournamentHubPage({ params }: PageProps) {
                   {!isLocked && (
                     <Link
                       href="/"
-                      className="px-4 py-2 bg-[rgb(var(--color-accent-primary))] text-white rounded-lg hover:bg-[rgb(var(--color-accent-hover))] font-medium"
+                      className="px-4 py-2 bg-[rgb(var(--color-accent-primary))] text-white rounded-lg hover:bg-[rgb(var(--color-accent-hover))] font-medium text-center"
                     >
                       Create Your Bracket
                     </Link>

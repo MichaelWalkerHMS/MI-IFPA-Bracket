@@ -206,8 +206,10 @@ test.describe('Dashboard', () => {
     // Should navigate to bracket edit page
     await expect(page).toHaveURL(/\/bracket\/.*\/edit/, { timeout: 10000 })
 
-    // Should see bracket editor
-    await expect(page.getByRole('heading', { name: 'Opening Round' })).toBeVisible()
+    // Should see bracket editor - check for either Opening Round (24-player) or Round of 16 (both formats)
+    const openingRound = page.getByRole('heading', { name: 'Opening Round' })
+    const roundOf16 = page.getByRole('heading', { name: 'Round of 16' })
+    await expect(openingRound.or(roundOf16)).toBeVisible()
   })
 })
 
@@ -218,16 +220,19 @@ test.describe('Dashboard - My Brackets Table', () => {
   })
 
   test('shows empty state when no brackets', async ({ page }) => {
+    // Wait for the My Brackets section to load
+    await expect(page.getByRole('heading', { name: 'My Brackets' })).toBeVisible({ timeout: 10000 })
+
     // Note: This test may show brackets if the test user already has some
-    // The empty state text should be visible if no brackets exist
-    const emptyMessage = page.getByText("You haven't created any brackets yet.")
-    const tableHeaders = page.getByText('Tournament')
+    // Check for empty state message OR Leaderboard button (appears when brackets exist)
+    const emptyMessage = page.getByText(/haven't created any brackets/i)
+    const leaderboardButton = page.getByRole('link', { name: 'Leaderboard' }).first()
 
-    // Either empty message or table should be visible
+    // Either empty message or brackets list should be visible
     const hasEmptyState = await emptyMessage.isVisible().catch(() => false)
-    const hasTable = await tableHeaders.isVisible().catch(() => false)
+    const hasBrackets = await leaderboardButton.isVisible().catch(() => false)
 
-    expect(hasEmptyState || hasTable).toBe(true)
+    expect(hasEmptyState || hasBrackets).toBe(true)
   })
 
   test('shows action links for existing brackets', async ({ page }) => {

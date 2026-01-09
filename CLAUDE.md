@@ -49,9 +49,15 @@ Bracket prediction app for IFPA pinball tournaments.
 
 ### Pre-Push Code Review
 
-All code must pass automated review before being pushed to GitHub.
+**CRITICAL: All code must pass automated review before being pushed to GitHub. This applies to:**
+- Initial commits
+- Bug fixes
+- Amendments after user feedback
+- Any code change, no matter how small
 
-**After completing a feature and committing locally:**
+**Exception:** Changes that ONLY modify `.md` files (documentation) do not require code review.
+
+**Before EVERY push (including force pushes after amendments):**
 
 1. Invoke the review subagent:
    ```
@@ -60,13 +66,13 @@ All code must pass automated review before being pushed to GitHub.
    ```
 
 2. Handle the response:
-   - `CHANGES_REQUESTED` → Fix the blocking issues, amend your commit, re-invoke the review
+   - `CHANGES_REQUESTED` → Fix all identified issues medium or higher unless there is a very strong reason to not fix it, amend your commit, re-invoke the review
    - `APPROVED` → Push to GitHub and open the PR
    - `ESCALATE_TO_HUMAN` → Stop and notify the user; do not push
 
 3. Maximum 5 review iterations. If you can't resolve issues after 5 cycles, escalate.
 
-**Never push code that hasn't been approved by the review subagent.**
+**Never push code that hasn't been approved by the review subagent. No exceptions.**
 
 ### Code changes
 Feature branch → PR → Preview deployment (dev DB) → User reviews → Merge to main

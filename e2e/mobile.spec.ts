@@ -39,7 +39,11 @@ test.describe('Mobile', () => {
 
   test('bracket is accessible on mobile', async ({ page }) => {
     await login(page)
+    // On mobile, Log Out is inside hamburger menu - open it first
+    await page.getByRole('button', { name: 'Menu' }).click()
     await expect(page.getByRole('button', { name: /log out/i })).toBeVisible({ timeout: 10000 })
+    // Close menu before continuing
+    await page.getByRole('button', { name: 'Menu' }).click()
 
     // Navigate to bracket editor via dashboard
     await navigateToBracketEditor(page)
@@ -49,7 +53,11 @@ test.describe('Mobile', () => {
 
   test('can make picks on mobile', async ({ page }) => {
     await login(page)
+    // On mobile, Log Out is inside hamburger menu - open it first
+    await page.getByRole('button', { name: 'Menu' }).click()
     await expect(page.getByRole('button', { name: /log out/i })).toBeVisible({ timeout: 10000 })
+    // Close menu before continuing
+    await page.getByRole('button', { name: 'Menu' }).click()
 
     // Navigate to bracket editor via dashboard
     await navigateToBracketEditor(page)

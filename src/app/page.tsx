@@ -1,8 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
-import AuthHeader from "@/components/AuthHeader";
-import SettingsButton from "@/components/SettingsButton";
-import NavLinks from "@/components/NavLinks";
+import ResponsiveHeader from "@/components/ResponsiveHeader";
 import { MyBracketsTable, CreateBracketWizard } from "@/components/dashboard";
 import { loadUserBrackets } from "@/app/tournament/[id]/actions";
 import TournamentWizard from "@/components/landing/TournamentWizard";
@@ -31,17 +29,15 @@ export default async function Home() {
         <PendingBracketHandler userId={user.id} />
 
         {/* Header */}
-        <div className="flex justify-between items-start mb-6">
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold">IFPA Bracket Predictor</h1>
-            <p className="text-[rgb(var(--color-text-secondary))]">
+        <div className="flex justify-between items-start gap-4 mb-6">
+          <div className="min-w-0 flex-1">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold">IFPA Bracket Predictor</h1>
+            <p className="text-sm sm:text-base text-[rgb(var(--color-text-secondary))]">
               Predict the outcomes of IFPA Pinball State Championships
             </p>
           </div>
-          <div className="flex items-center gap-2">
-            <NavLinks />
-            <SettingsButton />
-            <AuthHeader />
+          <div className="flex-shrink-0">
+            <ResponsiveHeader />
           </div>
         </div>
 
@@ -84,15 +80,13 @@ export default async function Home() {
 
   // Logged-out user sees landing page with tournament wizard
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center p-8">
+    <main className="min-h-screen flex flex-col items-center justify-center p-4 sm:p-8 pt-16">
       {/* Auth status bar */}
-      <div className="absolute top-4 right-4 flex items-center gap-2">
-        <NavLinks />
-        <SettingsButton />
-        <AuthHeader />
+      <div className="absolute top-4 right-4">
+        <ResponsiveHeader />
       </div>
 
-      <h1 className="text-4xl font-bold mb-4">
+      <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 text-center">
         IFPA Bracket Predictor
       </h1>
       <p className="text-lg text-[rgb(var(--color-text-secondary))] mb-8">
