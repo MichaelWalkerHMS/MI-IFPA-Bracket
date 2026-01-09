@@ -115,15 +115,19 @@ describe("MyBracketsTable", () => {
     it("renders rank for ranked brackets", () => {
       render(<MyBracketsTable brackets={mockBrackets} />);
 
-      expect(screen.getByText("#3")).toBeInTheDocument();
-      expect(screen.getByText("#5")).toBeInTheDocument();
+      // Rank text is split across elements for responsive display
+      // Mobile shows "#3", desktop shows "Rank #3"
+      expect(screen.getByText("3")).toBeInTheDocument(); // Rank value
+      expect(screen.getByText("5")).toBeInTheDocument(); // Rank value
     });
 
     it("renders scores for scored brackets", () => {
       render(<MyBracketsTable brackets={mockBrackets} />);
 
-      expect(screen.getByText("42 pts")).toBeInTheDocument();
-      expect(screen.getByText("28 pts")).toBeInTheDocument();
+      // Score text is split across elements for responsive display
+      // Mobile shows "42", desktop shows "42 pts"
+      expect(screen.getByText("42")).toBeInTheDocument();
+      expect(screen.getByText("28")).toBeInTheDocument();
     });
 
     it("renders Private badge for private brackets", () => {

@@ -37,27 +37,35 @@ export default function LeaderboardRow({
         isCurrentUser ? "bg-[rgb(var(--color-accent-light))] hover:bg-[rgb(var(--color-accent-light))]" : ""
       }`}
     >
-      <div className="flex items-center justify-between py-3 px-4">
-        <div className="flex items-center gap-3">
-          <span className="text-[rgb(var(--color-text-muted))] text-sm w-6">{rank}</span>
-          <div className="flex items-center gap-2 flex-wrap">
+      <div className="flex items-center justify-between py-3 px-3 sm:px-4 gap-2 sm:gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+          {/* Rank - fixed width */}
+          <span className="text-[rgb(var(--color-text-muted))] text-sm w-5 sm:w-6 flex-shrink-0 text-center">
+            {rank}
+          </span>
+
+          {/* Name section */}
+          <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
             {isCurrentUser && (
-              <span className="text-[rgb(var(--color-accent-primary))] text-sm">★</span>
+              <span className="text-[rgb(var(--color-accent-primary))] text-sm flex-shrink-0">★</span>
             )}
-            <span className={`font-medium ${isCurrentUser ? "text-[rgb(var(--color-accent-text))]" : "text-[rgb(var(--color-text-primary))]"}`}>
+            <span className={`font-medium truncate ${isCurrentUser ? "text-[rgb(var(--color-accent-text))]" : "text-[rgb(var(--color-text-primary))]"}`}>
               {displayName.primary}
             </span>
+            {/* Secondary text - hide on mobile */}
             {displayName.secondary && (
-              <span className="text-sm text-[rgb(var(--color-text-muted))]">
+              <span className="hidden sm:inline text-sm text-[rgb(var(--color-text-muted))] truncate">
                 {displayName.secondary}
               </span>
             )}
             {isCurrentUser && !entry.is_public && (
-              <span className="text-xs font-normal text-[rgb(var(--color-text-muted))]">(private)</span>
+              <span className="text-xs text-[rgb(var(--color-text-muted))] flex-shrink-0">(private)</span>
             )}
           </div>
         </div>
-        <div className="font-mono text-lg font-bold px-3 py-1 rounded bg-[rgb(var(--color-bg-secondary))] text-[rgb(var(--color-text-primary))]">
+
+        {/* Score - fixed size */}
+        <div className="font-mono text-base sm:text-lg font-bold px-2 sm:px-3 py-1 rounded bg-[rgb(var(--color-bg-secondary))] text-[rgb(var(--color-text-primary))] flex-shrink-0">
           {entry.score !== null ? entry.score : "--"}
         </div>
       </div>

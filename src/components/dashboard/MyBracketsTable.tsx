@@ -127,64 +127,72 @@ export default function MyBracketsTable({ brackets }: MyBracketsTableProps) {
                 {group.brackets.map((bracket) => (
                   <div
                     key={bracket.id}
-                    className="px-4 py-3 bg-[rgb(var(--color-bg-primary))] flex items-center justify-between gap-4"
+                    className="px-3 sm:px-4 py-3 bg-[rgb(var(--color-bg-primary))]"
                   >
-                    {/* Bracket Info */}
-                    <div className="flex items-center gap-3 min-w-0 flex-1">
-                      {/* Indent indicator */}
-                      <div className="w-5 flex justify-center">
-                        <div className="w-1.5 h-1.5 rounded-full bg-[rgb(var(--color-border-secondary))]" />
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
+                      {/* Row 1 on mobile: Name + badges */}
+                      <div className="flex items-center gap-2 min-w-0 flex-1">
+                        {/* Indent indicator - hide on mobile to save space */}
+                        <div className="hidden sm:flex w-5 justify-center flex-shrink-0">
+                          <div className="w-1.5 h-1.5 rounded-full bg-[rgb(var(--color-border-secondary))]" />
+                        </div>
+
+                        {/* Bracket name - allow truncation */}
+                        <Link
+                          href={`/bracket/${bracket.id}`}
+                          className="font-medium text-[rgb(var(--color-accent-primary))] hover:underline truncate min-w-0"
+                        >
+                          {bracket.name || "Unnamed Bracket"}
+                        </Link>
+
+                        {/* Badges - prevent shrinking */}
+                        <div className="flex items-center gap-1.5 flex-shrink-0">
+                          <BracketStatusBadge isComplete={bracket.is_complete} />
+                          {!bracket.is_public && (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-[rgb(var(--color-bg-tertiary))] text-[rgb(var(--color-text-secondary))] border border-[rgb(var(--color-border-secondary))]">
+                              Private
+                            </span>
+                          )}
+                        </div>
                       </div>
 
-                      {/* Bracket name as link */}
-                      <Link
-                        href={`/bracket/${bracket.id}`}
-                        className="font-medium text-[rgb(var(--color-accent-primary))] hover:underline truncate"
-                      >
-                        {bracket.name || "Unnamed Bracket"}
-                      </Link>
+                      {/* Row 2 on mobile: Score + Actions */}
+                      <div className="flex items-center justify-between sm:justify-end gap-3 sm:gap-4">
+                        {/* Score/Rank - abbreviated on mobile */}
+                        <div className="flex items-center gap-2 sm:gap-4 text-sm">
+                          {bracket.rank !== null && (
+                            <span className="text-[rgb(var(--color-text-secondary))]">
+                              <span className="sm:hidden">#</span>
+                              <span className="hidden sm:inline">Rank #</span>
+                              <span className="font-semibold text-[rgb(var(--color-text-primary))]">{bracket.rank}</span>
+                            </span>
+                          )}
+                          {bracket.score > 0 && (
+                            <span className="font-semibold text-[rgb(var(--color-accent-primary))]">
+                              {bracket.score}
+                              <span className="hidden sm:inline"> pts</span>
+                            </span>
+                          )}
+                        </div>
 
-                      {/* Status badge */}
-                      <BracketStatusBadge isComplete={bracket.is_complete} />
-
-                      {/* Private badge */}
-                      {!bracket.is_public && (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[rgb(var(--color-bg-tertiary))] text-[rgb(var(--color-text-secondary))] border border-[rgb(var(--color-border-secondary))]">
-                          Private
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Score/Rank */}
-                    <div className="flex items-center gap-4 text-sm shrink-0">
-                      {bracket.rank !== null && (
-                        <span className="text-[rgb(var(--color-text-secondary))]">
-                          Rank <span className="font-semibold text-[rgb(var(--color-text-primary))]">#{bracket.rank}</span>
-                        </span>
-                      )}
-                      {bracket.score > 0 && (
-                        <span className="font-semibold text-[rgb(var(--color-accent-primary))]">
-                          {bracket.score} pts
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Action Buttons */}
-                    <div className="flex items-center gap-2 shrink-0">
-                      {!bracket.is_locked && (
-                        <Link
-                          href={`/bracket/${bracket.id}/edit`}
-                          className="px-3 py-1.5 text-sm font-medium rounded-md bg-[rgb(var(--color-accent-primary))] text-white hover:bg-[rgb(var(--color-accent-hover))] transition-colors"
-                        >
-                          Edit
-                        </Link>
-                      )}
-                      <Link
-                        href={`/bracket/${bracket.id}`}
-                        className="px-3 py-1.5 text-sm font-medium rounded-md bg-[rgb(var(--color-bg-tertiary))] border border-[rgb(var(--color-border-primary))] text-[rgb(var(--color-text-primary))] hover:bg-[rgb(var(--color-border-secondary))] transition-colors"
-                      >
-                        View
-                      </Link>
+                        {/* Action Buttons */}
+                        <div className="flex items-center gap-2 flex-shrink-0">
+                          {!bracket.is_locked && (
+                            <Link
+                              href={`/bracket/${bracket.id}/edit`}
+                              className="px-3 py-1.5 text-sm font-medium rounded-md bg-[rgb(var(--color-accent-primary))] text-white hover:bg-[rgb(var(--color-accent-hover))] transition-colors"
+                            >
+                              Edit
+                            </Link>
+                          )}
+                          <Link
+                            href={`/bracket/${bracket.id}`}
+                            className="px-3 py-1.5 text-sm font-medium rounded-md bg-[rgb(var(--color-bg-tertiary))] border border-[rgb(var(--color-border-primary))] text-[rgb(var(--color-text-primary))] hover:bg-[rgb(var(--color-border-secondary))] transition-colors"
+                          >
+                            View
+                          </Link>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 ))}
