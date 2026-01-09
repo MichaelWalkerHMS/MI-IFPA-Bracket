@@ -1,7 +1,5 @@
 import Link from "next/link";
-import SettingsButton from "@/components/SettingsButton";
-import AuthHeader from "@/components/AuthHeader";
-import NavLinks from "@/components/NavLinks";
+import ResponsiveHeader from "@/components/ResponsiveHeader";
 
 interface FAQItem {
   question: string;
@@ -88,14 +86,13 @@ export default function FAQPage() {
   return (
     <main className="min-h-screen p-4 md:p-8">
       {/* Header */}
-      <div className="flex justify-between items-start mb-6">
+      <div className="flex justify-between items-start gap-4 mb-6">
         <Link href="/" className="text-[rgb(var(--color-accent-primary))] hover:underline">
-          &larr; Back to Home
+          <span className="hidden sm:inline">&larr; Back to Home</span>
+          <span className="sm:hidden">&larr; Back</span>
         </Link>
-        <div className="flex items-center gap-2">
-          <NavLinks />
-          <SettingsButton />
-          <AuthHeader />
+        <div className="flex-shrink-0">
+          <ResponsiveHeader />
         </div>
       </div>
 

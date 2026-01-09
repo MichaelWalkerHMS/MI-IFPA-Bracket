@@ -3,9 +3,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import type { Tournament, Player, Bracket, Pick } from "@/lib/types";
 import BracketView from "@/components/bracket/Bracket";
-import AuthHeader from "@/components/AuthHeader";
-import SettingsButton from "@/components/SettingsButton";
-import NavLinks from "@/components/NavLinks";
+import ResponsiveHeader from "@/components/ResponsiveHeader";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -85,16 +83,17 @@ export default async function BracketEditPage({ params }: PageProps) {
   return (
     <main className="min-h-screen p-4 md:p-8">
       {/* Header */}
-      <div className="flex justify-between items-start mb-6">
-        <div>
+      <div className="flex justify-between items-start gap-4 mb-6">
+        <div className="min-w-0 flex-1">
           <Link
             href="/"
             className="text-[rgb(var(--color-accent-primary))] hover:underline text-sm mb-2 inline-block"
           >
-            &larr; Back to Dashboard
+            <span className="hidden sm:inline">&larr; Back to Dashboard</span>
+            <span className="sm:hidden">&larr; Back</span>
           </Link>
-          <h1 className="text-2xl md:text-3xl font-bold">{tournament.name}</h1>
-          <p className="text-[rgb(var(--color-text-secondary))]">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold truncate">{tournament.name}</h1>
+          <p className="text-sm sm:text-base text-[rgb(var(--color-text-secondary))]">
             {bracketDisplayName} &bull; {tournament.player_count} players &bull;{" "}
             <span
               className={
@@ -105,17 +104,15 @@ export default async function BracketEditPage({ params }: PageProps) {
             </span>
           </p>
           {!isLocked && (
-            <p className="text-sm text-[rgb(var(--color-text-muted))] mt-1">
+            <p className="text-xs sm:text-sm text-[rgb(var(--color-text-muted))] mt-1">
               Lock date: {formattedLockDate}
             </p>
           )}
         </div>
 
-        {/* Auth status */}
-        <div className="flex items-center gap-2">
-          <NavLinks />
-          <SettingsButton />
-          <AuthHeader />
+        {/* Navigation */}
+        <div className="flex-shrink-0">
+          <ResponsiveHeader />
         </div>
       </div>
 
