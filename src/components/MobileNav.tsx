@@ -2,15 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { useTheme } from "./ThemeProvider";
 import { NAV_LINKS } from "@/lib/constants/navigation";
-import { Theme } from "@/lib/theme/constants";
-
-const themeOptions: { value: Theme; label: string }[] = [
-  { value: "system", label: "System" },
-  { value: "light", label: "Light" },
-  { value: "dark", label: "Dark" },
-];
 
 interface MobileNavProps {
   children: React.ReactNode; // Receives auth header content (server component)
@@ -18,8 +10,6 @@ interface MobileNavProps {
 
 export default function MobileNav({ children }: MobileNavProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [showDisplayOptions, setShowDisplayOptions] = useState(false);
-  const { theme, setTheme } = useTheme();
   const menuRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const firstLinkRef = useRef<HTMLAnchorElement>(null);
@@ -99,38 +89,6 @@ export default function MobileNav({ children }: MobileNavProps) {
               </Link>
             ))}
           </nav>
-
-          {/* Display settings */}
-          <div className="p-3 border-b border-[rgb(var(--color-border-primary))]">
-            <button
-              onClick={() => setShowDisplayOptions(!showDisplayOptions)}
-              className="block w-full text-left px-3 py-2 text-sm text-[rgb(var(--color-text-secondary))] hover:text-[rgb(var(--color-text-primary))] hover:bg-[rgb(var(--color-bg-tertiary))] rounded-lg"
-            >
-              Change Display
-            </button>
-            {showDisplayOptions && (
-              <div className="mt-1 ml-3 space-y-1">
-                {themeOptions.map((option) => (
-                  <label
-                    key={option.value}
-                    className="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-[rgb(var(--color-bg-tertiary))] rounded-lg"
-                  >
-                    <input
-                      type="radio"
-                      name="theme"
-                      value={option.value}
-                      checked={theme === option.value}
-                      onChange={() => setTheme(option.value)}
-                      className="w-4 h-4 text-[rgb(var(--color-accent-primary))] focus:ring-[rgb(var(--color-accent-primary))]"
-                    />
-                    <span className="text-sm text-[rgb(var(--color-text-primary))]">
-                      {option.label}
-                    </span>
-                  </label>
-                ))}
-              </div>
-            )}
-          </div>
 
           {/* Auth section - receives server-rendered AuthHeader */}
           <div className="p-3">
