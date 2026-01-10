@@ -18,6 +18,19 @@ export default function PrivacyPage() {
       <div className="max-w-3xl mx-auto">
         <h1 className="text-3xl font-bold mb-6">Privacy Policy</h1>
 
+        <section className="mb-8 p-4 bg-[rgb(var(--color-bg-secondary))] rounded-lg border border-[rgb(var(--color-border-primary))]">
+          <h2 className="text-xl font-semibold mb-3">In Plain English</h2>
+          <p className="text-[rgb(var(--color-text-secondary))] mb-4">
+            This is a bracket app, not a banking application - I have no interest nor reason to grab a bunch of data from you, so I&apos;m not.
+          </p>
+          <p className="text-[rgb(var(--color-text-secondary))] mb-4">
+            I&apos;ve had Claude write up more detail below based on the actual code, but this is how I would say it: this site collects your name (which you could fake, I don&apos;t care), your email address (which could be fake, it&apos;ll just make it impossible to reset your password), and your bracket predictions (which is the whole point of the site). Any other data that&apos;s collected is only there to facilitate the function of the site.
+          </p>
+          <p className="text-[rgb(var(--color-text-secondary))] mb-4">
+            I&apos;m never going to sell or give away any of this incredibly limited data. I&apos;m not going to email you or spam you - the only emails I&apos;m aware you could even receive is if you want to reset your password.
+          </p>
+        </section>
+
         <section className="mb-8">
           <h2 className="text-xl font-semibold mb-3">Data We Collect</h2>
           <p className="text-[rgb(var(--color-text-secondary))] mb-4">
