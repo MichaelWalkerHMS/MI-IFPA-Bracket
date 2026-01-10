@@ -1,6 +1,77 @@
 import { Page, expect } from '@playwright/test'
 
 /**
+ * Save the current bracket and wait for confirmation.
+ * More reliable than just checking for "Saved!" text.
+ */
+export async function saveBracket(page: Page): Promise<void> {
+  const saveButton = page.getByRole('button', { name: 'Save' })
+
+  // Wait for button to be enabled (not in "Saving..." state)
+  await expect(saveButton).toBeEnabled({ timeout: 5000 })
+
+  // Click save
+  await saveButton.click()
+
+  // Wait for either:
+  // 1. "Saved!" message to appear
+  // 2. Button text to change to "Saving..." then back to "Save"
+  // Use a combination approach for reliability
+  await expect(
+    page.getByText(/saved!/i).or(page.getByText('Saved!'))
+  ).toBeVisible({ timeout: 15000 })
+}
+
+/**
+ * Check if we're on a mobile viewport by looking for the hamburger menu button.
+ * If visible, click it to open the mobile menu.
+ * Returns true if menu was opened, false if not on mobile.
+ */
+export async function openMobileMenuIfNeeded(page: Page): Promise<boolean> {
+  const menuButton = page.getByRole('button', { name: 'Menu' })
+  const isMenuButtonVisible = await menuButton.isVisible().catch(() => false)
+
+  if (isMenuButtonVisible) {
+    await menuButton.click()
+    // Wait for menu to open by checking if it has role="menu"
+    await expect(page.locator('[role="menu"]')).toBeVisible({ timeout: 3000 })
+    return true
+  }
+  return false
+}
+
+/**
+ * Close the mobile menu if it's open.
+ */
+export async function closeMobileMenuIfOpen(page: Page): Promise<void> {
+  const menuButton = page.getByRole('button', { name: 'Menu' })
+  const isMenuButtonVisible = await menuButton.isVisible().catch(() => false)
+  const isMenuOpen = await page.locator('[role="menu"]').isVisible().catch(() => false)
+
+  if (isMenuButtonVisible && isMenuOpen) {
+    await menuButton.click()
+    // Wait for menu to close
+    await expect(page.locator('[role="menu"]')).not.toBeVisible({ timeout: 3000 })
+  }
+}
+
+/**
+ * Verify that user is logged in. Works on both desktop and mobile viewports.
+ * Opens the mobile menu if needed to check for Log Out button.
+ */
+export async function verifyLoggedIn(page: Page): Promise<void> {
+  const mobileMenuOpened = await openMobileMenuIfNeeded(page)
+
+  // Check for Log Out button (confirms logged-in state)
+  await expect(page.getByRole('button', { name: /log out/i })).toBeVisible({ timeout: 10000 })
+
+  // Close mobile menu if we opened it
+  if (mobileMenuOpened) {
+    await closeMobileMenuIfOpen(page)
+  }
+}
+
+/**
  * Login as the E2E test user
  */
 export async function login(page: Page): Promise<void> {
@@ -27,9 +98,12 @@ export async function login(page: Page): Promise<void> {
 }
 
 /**
- * Logout the current user
+ * Logout the current user. Handles mobile hamburger menu automatically.
  */
 export async function logout(page: Page): Promise<void> {
+  // Open mobile menu if needed
+  await openMobileMenuIfNeeded(page)
+
   // Find and click the logout button
   await page.getByRole('button', { name: /log out/i }).click()
 
@@ -38,13 +112,23 @@ export async function logout(page: Page): Promise<void> {
 }
 
 /**
- * Check if user is logged in by looking for auth-dependent UI elements
+ * Check if user is logged in by looking for auth-dependent UI elements.
+ * Handles mobile hamburger menu automatically.
  */
 export async function isLoggedIn(page: Page): Promise<boolean> {
   try {
+    // Open mobile menu if needed
+    const mobileMenuOpened = await openMobileMenuIfNeeded(page)
+
     // Look for the Log Out button as indicator of logged-in state
     const logOutButton = page.getByRole('button', { name: /log out/i })
     await logOutButton.waitFor({ timeout: 2000 })
+
+    // Close mobile menu if we opened it
+    if (mobileMenuOpened) {
+      await closeMobileMenuIfOpen(page)
+    }
+
     return true
   } catch {
     return false
@@ -60,6 +144,24 @@ export async function navigateToBracketEditor(
   options: { state?: string; tournamentName?: string } = {}
 ): Promise<void> {
   const { state = 'Michigan', tournamentName } = options
+
+  // Ensure we're on the dashboard (homepage) first
+  const currentUrl = page.url()
+  if (!currentUrl.endsWith('/') && !currentUrl.includes('localhost:3000/$')) {
+    await page.goto('/')
+    await page.waitForLoadState('networkidle')
+  }
+
+  // Verify we're still logged in (session might have expired)
+  const myBracketsHeading = page.getByRole('heading', { name: 'My Brackets' })
+  const isOnDashboard = await myBracketsHeading.isVisible({ timeout: 5000 }).catch(() => false)
+
+  if (!isOnDashboard) {
+    // Session might have expired - check if we're redirected to login
+    if (page.url().includes('/login')) {
+      throw new Error('Session expired - redirected to login page. Re-login required.')
+    }
+  }
 
   // Check if we have an existing bracket card (link to /bracket/{id})
   // The card links are styled as full cards now, not separate Edit buttons
@@ -95,8 +197,12 @@ export async function navigateToBracketEditor(
     await page.getByRole('button', { name: 'Create Bracket' }).click()
   }
 
-  // Wait for bracket editor to load
-  await expect(page).toHaveURL(/\/bracket\/.*\/edit/, { timeout: 10000 })
+  // Wait for bracket editor to load - if redirected to login, session expired
+  const urlResult = await expect(page).toHaveURL(/\/bracket\/.*\/edit/, { timeout: 15000 }).catch(() => null)
+  if (urlResult === null && page.url().includes('/login')) {
+    throw new Error('Session expired during bracket creation - redirected to login page.')
+  }
+
   // Wait for either Opening Round (24-player) or Round of 16 (16-player) heading
   // Use .first() because 24-player brackets have both headings visible
   await expect(

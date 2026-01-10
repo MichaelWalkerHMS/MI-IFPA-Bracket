@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { login } from './fixtures/auth'
+import { login, logout, verifyLoggedIn } from './fixtures/auth'
 
 test.describe('Authentication', () => {
   test('can login with valid credentials', async ({ page }) => {
@@ -8,8 +8,8 @@ test.describe('Authentication', () => {
     // Should be on homepage after login
     await expect(page).toHaveURL('/')
 
-    // Should see logout option
-    await expect(page.getByRole('button', { name: /log out/i })).toBeVisible()
+    // Should see logout option (verifyLoggedIn handles mobile menu)
+    await verifyLoggedIn(page)
   })
 
   test('shows error with invalid credentials', async ({ page }) => {
@@ -29,10 +29,10 @@ test.describe('Authentication', () => {
   test('can logout after login', async ({ page }) => {
     await login(page)
 
-    // Click logout
-    await page.getByRole('button', { name: /log out/i }).click()
+    // Click logout (logout() handles mobile hamburger menu automatically)
+    await logout(page)
 
-    // Should redirect to login or homepage
+    // Logout function already verifies redirect, but double-check URL
     await expect(page).toHaveURL(/\/(login)?$/, { timeout: 10000 })
   })
 })
