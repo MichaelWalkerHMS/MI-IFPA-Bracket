@@ -57,3 +57,6 @@ ui-implementation-guidelines.md.md
 test-results/
 playwright-report/
 playwright/.cache/
+
+# UI reference screenshots
+ui-changes/

@@ -8,10 +8,11 @@ interface PlayerSlotProps {
   isPicked: boolean; // User picked this player as winner
   isClickable: boolean;
   onClick: () => void;
-  position: "top" | "bottom";
   isAffected?: boolean;
   isActualWinner?: boolean; // This player actually won (from results)
   isUnexpectedWinner?: boolean; // This player won but user expected someone else entirely
+  isUnexpectedParticipant?: boolean; // This player is here due to earlier result, but user expected someone else
+  expectedSeed?: number | null; // Who the user expected in this slot (for showing "Expected X" message)
   isCorrect?: boolean | null; // undefined = not picked, null = no result yet, true/false = correct/incorrect
 }
 
@@ -24,6 +25,8 @@ export default function PlayerSlot({
   isAffected,
   isActualWinner,
   isUnexpectedWinner,
+  isUnexpectedParticipant,
+  expectedSeed,
   isCorrect,
 }: PlayerSlotProps) {
   const player = seed !== null ? playerMap.get(seed) : null;
@@ -37,9 +40,9 @@ export default function PlayerSlot({
     );
   }
 
-  // Background: orange if unexpected winner, green if expected winner, otherwise default
-  const bgClass = isUnexpectedWinner
-    ? "bg-[rgb(var(--color-warning-bg))]"
+  // Background: dark charcoal if unexpected (winner or participant), green if expected winner, otherwise default
+  const bgClass = isUnexpectedWinner || isUnexpectedParticipant
+    ? "bg-[rgb(var(--color-unexpected-bg))]"
     : isActualWinner
     ? "bg-[rgb(var(--color-success-bg))]"
     : "bg-[rgb(var(--color-bg-primary))]";
@@ -51,14 +54,22 @@ export default function PlayerSlot({
     : "";
 
   // Determine pick indicator visibility and color
-  // Green bar: picked and (no result yet OR correct)
+  // Green bar: picked and (no result yet OR correct) and expected participant
   // Red bar: picked and incorrect
+  // Amber bar: picked but unexpected participant (user expected someone else in this slot)
   const showPickIndicator = isPicked;
   const pickIndicatorIsRed = isPicked && isCorrect === false;
+  const pickIndicatorIsAmber = isPicked && isUnexpectedParticipant;
+
+  // Get expected player name for "Expected X" display
+  const expectedPlayer = expectedSeed !== null && expectedSeed !== undefined
+    ? playerMap.get(expectedSeed)
+    : null;
+  const showExpectedMessage = isUnexpectedParticipant && expectedSeed !== null && expectedSeed !== undefined;
 
   return (
     <div
-      className={`${baseClasses} ${pickedClasses} ${clickableClasses}`}
+      className={`${baseClasses} ${pickedClasses} ${clickableClasses} ${showExpectedMessage ? 'flex-col !items-start !py-1 !h-auto min-h-9' : ''}`}
       onClick={isClickable ? onClick : undefined}
       role={isClickable ? "button" : undefined}
       tabIndex={isClickable ? 0 : undefined}
@@ -73,21 +84,31 @@ export default function PlayerSlot({
           : undefined
       }
     >
-      <span className="text-[rgb(var(--color-text-muted))] font-mono text-xs w-5">
-        {seed}
-      </span>
-      {isAffected && (
-        <span className="text-[rgb(var(--color-warning-icon))] text-xs" title="Seeding changed">&#9888;</span>
+      <div className="flex items-center gap-2">
+        <span className="text-[rgb(var(--color-text-muted))] font-mono text-xs w-5">
+          {seed}
+        </span>
+        {isAffected && (
+          <span className="text-[rgb(var(--color-warning-icon))] text-xs" title="Seeding changed">&#9888;</span>
+        )}
+        <span className="text-[rgb(var(--color-text-primary))]">
+          {player?.name || `Seed ${seed}`}
+        </span>
+      </div>
+      {/* Expected player message when this slot has an unexpected participant */}
+      {showExpectedMessage && (
+        <div className="text-xs text-[rgb(var(--color-unexpected-text))] pt-1 border-t border-[rgb(var(--color-unexpected-border))] mt-1 w-full">
+          Expected {expectedPlayer?.name || `Seed ${expectedSeed}`}
+        </div>
       )}
-      <span className="text-[rgb(var(--color-text-primary))]">
-        {player?.name || `Seed ${seed}`}
-      </span>
       {/* Pick indicator - bar on right edge showing user's pick */}
       {showPickIndicator && (
         <span
           className={`absolute right-0 top-0 bottom-0 w-1 ${
             pickIndicatorIsRed
               ? "bg-[rgb(var(--color-error-icon))]"
+              : pickIndicatorIsAmber
+              ? "bg-[rgb(var(--color-unexpected-text))]"
               : "bg-[rgb(var(--color-pick-bg))]"
           }`}
           aria-hidden="true"

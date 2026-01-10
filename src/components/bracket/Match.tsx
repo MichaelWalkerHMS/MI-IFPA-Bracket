@@ -7,15 +7,17 @@ import PlayerSlot from "./PlayerSlot";
 interface MatchProps {
   round: number;
   position: number;
-  topSeed: number | null;
-  bottomSeed: number | null;
-  winnerSeed: number | null;
+  topSeed: number | null; // User's expected top seed (based on their picks)
+  bottomSeed: number | null; // User's expected bottom seed (based on their picks)
+  winnerSeed: number | null; // User's picked winner for this match
   playerMap: PlayerMap;
   onPick: (round: number, position: number, winnerSeed: number) => void;
   isLocked: boolean;
   isLoggedIn: boolean;
   affectedSeeds?: number[];
   pickResultInfo?: PickResultInfo;
+  actualTopSeed?: number | null; // Actual top seed from cascading results (null = TBD)
+  actualBottomSeed?: number | null; // Actual bottom seed from cascading results (null = TBD)
 }
 
 export default function Match({
@@ -30,6 +32,8 @@ export default function Match({
   isLoggedIn,
   affectedSeeds,
   pickResultInfo,
+  actualTopSeed,
+  actualBottomSeed,
 }: MatchProps) {
   const handlePickTop = () => {
     if (topSeed !== null) {
@@ -43,23 +47,35 @@ export default function Match({
     }
   };
 
-  // Check if this match involves any affected seeds
+  // Determine if actual participants differ from expected (cascading from earlier results)
+  // actualTopSeed/actualBottomSeed come from cascading results
+  // topSeed/bottomSeed are user's expected participants based on their picks
+  const hasActualTop = actualTopSeed !== undefined && actualTopSeed !== null;
+  const hasActualBottom = actualBottomSeed !== undefined && actualBottomSeed !== null;
+  const topIsUnexpected = hasActualTop && actualTopSeed !== topSeed;
+  const bottomIsUnexpected = hasActualBottom && actualBottomSeed !== bottomSeed;
+
+  // For display: show actual participants if we have results from feeders, otherwise show expected
+  const displayTopSeed = hasActualTop ? actualTopSeed : topSeed;
+  const displayBottomSeed = hasActualBottom ? actualBottomSeed : bottomSeed;
+
+  // Check if this match involves any affected seeds (seeding changes warning)
   const isAffected = affectedSeeds?.some(
-    (seed) => seed === topSeed || seed === bottomSeed
+    (seed) => seed === displayTopSeed || seed === displayBottomSeed
   );
 
   // User's pick (who they selected as winner)
   const isTopPicked = winnerSeed === topSeed && topSeed !== null;
   const isBottomPicked = winnerSeed === bottomSeed && bottomSeed !== null;
 
-  // Actual result info
+  // Actual result info for THIS match (not feeders)
   const hasResult = pickResultInfo?.actualWinner !== null && pickResultInfo?.actualWinner !== undefined;
   const actualWinner = pickResultInfo?.actualWinner ?? null;
   const actualLoser = pickResultInfo?.actualLoser ?? null;
   const isCorrect = pickResultInfo?.isCorrect ?? null;
   const pickedWinner = pickResultInfo?.pickedWinner ?? null;
 
-  // Determine result bar content and whether winner was expected
+  // Determine result bar content
   let resultBarText: string | null = null;
   let resultBarColor: "green" | "red" | "orange" | null = null;
   let winnerWasUnexpected = false; // True if actual winner wasn't expected to be in this match
@@ -82,6 +98,8 @@ export default function Match({
       winnerWasUnexpected = true;
     }
   }
+  // Note: "Expected X" for unexpected participants (without result) is now shown
+  // inline in each PlayerSlot, so we don't need a result bar for that case
 
   // Determine border and rounding based on whether result bar is shown
   const hasResultBar = !!resultBarText;
@@ -97,28 +115,30 @@ export default function Match({
     <div className="flex flex-col">
       <div className={matchContainerClasses}>
         <PlayerSlot
-          seed={topSeed}
+          seed={displayTopSeed}
           playerMap={playerMap}
           isPicked={isTopPicked}
           isClickable={!isLocked && isLoggedIn && topSeed !== null}
           onClick={handlePickTop}
-          position="top"
-          isAffected={topSeed !== null && affectedSeeds?.includes(topSeed)}
-          isActualWinner={hasResult && topSeed === actualWinner}
-          isUnexpectedWinner={hasResult && topSeed === actualWinner && winnerWasUnexpected}
+          isAffected={displayTopSeed !== null && affectedSeeds?.includes(displayTopSeed)}
+          isActualWinner={hasResult && displayTopSeed === actualWinner}
+          isUnexpectedWinner={hasResult && displayTopSeed === actualWinner && winnerWasUnexpected}
+          isUnexpectedParticipant={topIsUnexpected}
+          expectedSeed={topIsUnexpected ? topSeed : undefined}
           isCorrect={isTopPicked ? isCorrect : undefined}
         />
         <div className="border-t border-[rgb(var(--color-border-primary))]" />
         <PlayerSlot
-          seed={bottomSeed}
+          seed={displayBottomSeed}
           playerMap={playerMap}
           isPicked={isBottomPicked}
           isClickable={!isLocked && isLoggedIn && bottomSeed !== null}
           onClick={handlePickBottom}
-          position="bottom"
-          isAffected={bottomSeed !== null && affectedSeeds?.includes(bottomSeed)}
-          isActualWinner={hasResult && bottomSeed === actualWinner}
-          isUnexpectedWinner={hasResult && bottomSeed === actualWinner && winnerWasUnexpected}
+          isAffected={displayBottomSeed !== null && affectedSeeds?.includes(displayBottomSeed)}
+          isActualWinner={hasResult && displayBottomSeed === actualWinner}
+          isUnexpectedWinner={hasResult && displayBottomSeed === actualWinner && winnerWasUnexpected}
+          isUnexpectedParticipant={bottomIsUnexpected}
+          expectedSeed={bottomIsUnexpected ? bottomSeed : undefined}
           isCorrect={isBottomPicked ? isCorrect : undefined}
         />
       </div>

@@ -81,12 +81,10 @@ export async function recalculateScores(
     total_correct: number;
   }> = [];
 
-  // Track pick updates: { pickId, isCorrect, actualWinnerSeed, actualLoserSeed }
+  // Track pick updates for is_correct field
   const pickUpdates: Array<{
     id: string;
     is_correct: boolean | null;
-    actual_winner_seed: number | null;
-    actual_loser_seed: number | null;
   }> = [];
 
   for (const bracket of brackets as unknown as BracketWithPicks[]) {
@@ -114,26 +112,22 @@ export async function recalculateScores(
       pickResultsMap.set(`${pr.round}-${pr.matchPosition}`, pr.isCorrect);
     }
 
-    // Update is_correct and actual result seeds for each pick
+    // Update is_correct for each pick
     for (const pick of bracket.picks || []) {
       const key = `${pick.round}-${pick.match_position}`;
       const result = resultMap.get(key);
       if (result) {
-        // There's a result for this match - update all cached fields
+        // There's a result for this match - update is_correct
         const isCorrect = pickResultsMap.get(key) ?? false;
         pickUpdates.push({
           id: pick.id,
           is_correct: isCorrect,
-          actual_winner_seed: result.winner_seed,
-          actual_loser_seed: result.loser_seed,
         });
-      } else if (pick.is_correct !== null || pick.actual_winner_seed !== null) {
-        // Result was deleted, reset all cached fields to null
+      } else if (pick.is_correct !== null) {
+        // Result was deleted, reset is_correct to null
         pickUpdates.push({
           id: pick.id,
           is_correct: null,
-          actual_winner_seed: null,
-          actual_loser_seed: null,
         });
       }
     }
@@ -153,14 +147,12 @@ export async function recalculateScores(
       .eq('id', update.id)
   );
 
-  // 6. Batch update all picks with is_correct and actual result seeds
+  // 6. Batch update all picks with is_correct
   const pickPromises = pickUpdates.map((update) =>
     supabase
       .from('picks')
       .update({
         is_correct: update.is_correct,
-        actual_winner_seed: update.actual_winner_seed,
-        actual_loser_seed: update.actual_loser_seed,
       })
       .eq('id', update.id)
   );

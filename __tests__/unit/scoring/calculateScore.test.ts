@@ -20,8 +20,6 @@ function createPick(round: number, matchPosition: number, winnerSeed: number): P
     match_position: matchPosition,
     winner_seed: winnerSeed,
     is_correct: null,
-    actual_winner_seed: null,
-    actual_loser_seed: null,
     created_at: new Date().toISOString(),
   }
 }

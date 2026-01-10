@@ -2,8 +2,13 @@
 
 import { useState, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import type { Tournament, Player, Bracket, Pick, PlayerMap } from "@/lib/types";
+import type { Tournament, Player, Bracket, Pick, PlayerMap, Result } from "@/lib/types";
 import { getPointsForRound } from "@/lib/scoring/calculateScore";
+import {
+  buildResultMap,
+  computeAllActualParticipants,
+  getMatchResultInfo,
+} from "@/lib/bracket/actualParticipants";
 
 // Get base URL for share links
 function getBaseUrl() {
@@ -35,6 +40,7 @@ interface BracketViewProps {
   players: Player[];
   existingBracket: Bracket | null;
   existingPicks: Pick[];
+  results?: Result[];
   isLocked: boolean;
   isLoggedIn: boolean;
   // Optional props for shared bracket view
@@ -50,6 +56,7 @@ export default function BracketView({
   players,
   existingBracket,
   existingPicks,
+  results = [],
   isLocked,
   isLoggedIn,
   bracketName,
@@ -94,8 +101,17 @@ export default function BracketView({
     ? `${getBaseUrl()}/bracket/${bracketId}`
     : null;
 
+  // Build result map for looking up actual winners/losers
+  const resultMap = useMemo(() => buildResultMap(results), [results]);
+
+  // Compute actual participants for all matches based on cascading results
+  const actualParticipantsMap = useMemo(
+    () => computeAllActualParticipants(results, tournament.player_count as 16 | 24),
+    [results, tournament.player_count]
+  );
+
   // Build a map of pick results from existingPicks for display
-  // Includes correctness and actual result info for winner highlight and result bar
+  // Combines pick info with result info for winner highlight and result bar
   const pickResultMap = useMemo(() => {
     const map = new Map<string, {
       isCorrect: boolean | null;
@@ -104,15 +120,17 @@ export default function BracketView({
       actualLoser: number | null;
     }>();
     for (const pick of existingPicks) {
-      map.set(`${pick.round}-${pick.match_position}`, {
+      const key = `${pick.round}-${pick.match_position}`;
+      const resultInfo = getMatchResultInfo(resultMap, pick.round, pick.match_position);
+      map.set(key, {
         isCorrect: pick.is_correct,
         pickedWinner: pick.winner_seed,
-        actualWinner: pick.actual_winner_seed,
-        actualLoser: pick.actual_loser_seed,
+        actualWinner: resultInfo?.winnerSeed ?? null,
+        actualLoser: resultInfo?.loserSeed ?? null,
       });
     }
     return map;
-  }, [existingPicks]);
+  }, [existingPicks, resultMap]);
 
   // For backwards compatibility with subtotal calculation
   const pickCorrectnessMap = useMemo(() => {
@@ -490,6 +508,7 @@ export default function BracketView({
                 isLoggedIn={isLoggedIn}
                 affectedSeeds={affectedSeeds}
                 pickResultMap={pickResultMap}
+                actualParticipantsMap={actualParticipantsMap}
                 subtotal={roundSubtotals[ROUNDS.OPENING]}
               />
 
@@ -513,6 +532,7 @@ export default function BracketView({
             isLoggedIn={isLoggedIn}
             affectedSeeds={affectedSeeds}
             pickResultMap={pickResultMap}
+            actualParticipantsMap={actualParticipantsMap}
             subtotal={roundSubtotals[ROUNDS.ROUND_OF_16]}
           />
 
@@ -534,6 +554,7 @@ export default function BracketView({
             isLoggedIn={isLoggedIn}
             affectedSeeds={affectedSeeds}
             pickResultMap={pickResultMap}
+            actualParticipantsMap={actualParticipantsMap}
             subtotal={roundSubtotals[ROUNDS.QUARTERS]}
           />
 
@@ -554,6 +575,7 @@ export default function BracketView({
             isLoggedIn={isLoggedIn}
             affectedSeeds={affectedSeeds}
             pickResultMap={pickResultMap}
+            actualParticipantsMap={actualParticipantsMap}
             subtotal={roundSubtotals[ROUNDS.SEMIS]}
           />
 
@@ -575,6 +597,7 @@ export default function BracketView({
               isLoggedIn={isLoggedIn}
               affectedSeeds={affectedSeeds}
               pickResultMap={pickResultMap}
+              actualParticipantsMap={actualParticipantsMap}
               subtotal={roundSubtotals[ROUNDS.FINALS]}
             />
 
@@ -613,6 +636,7 @@ export default function BracketView({
                 isLoggedIn={isLoggedIn}
                 affectedSeeds={affectedSeeds}
                 pickResultMap={pickResultMap}
+                actualParticipantsMap={actualParticipantsMap}
                 subtotal={roundSubtotals[ROUNDS.CONSOLATION]}
               />
             </div>

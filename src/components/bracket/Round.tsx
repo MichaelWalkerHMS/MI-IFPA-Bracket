@@ -1,6 +1,7 @@
 "use client";
 
 import type { PlayerMap } from "@/lib/types";
+import type { ActualParticipants } from "@/lib/bracket/actualParticipants";
 import Match from "./Match";
 import { ROUNDS } from "@/lib/bracket/constants";
 import { ROUND_PADDING, ROUND_GAP, MATCH_GAP } from "@/lib/bracket/layout";
@@ -30,6 +31,7 @@ interface RoundProps {
   isLoggedIn: boolean;
   affectedSeeds?: number[];
   pickResultMap?: Map<string, PickResultInfo>; // key: "round-position", value: pick result info
+  actualParticipantsMap?: Map<string, ActualParticipants>; // key: "round-position", value: actual participants
   subtotal?: { earned: number; max: number }; // Points earned / max for this round
 }
 
@@ -43,6 +45,7 @@ export default function Round({
   isLoggedIn,
   affectedSeeds,
   pickResultMap,
+  actualParticipantsMap,
   subtotal,
 }: RoundProps) {
   // Get gap and padding from shared layout constants
@@ -82,22 +85,28 @@ export default function Round({
         className="flex flex-col"
         style={{ ...getGapStyle(), ...getPaddingStyle() }}
       >
-        {matches.map((match) => (
-          <Match
-            key={`${round}-${match.position}`}
-            round={round}
-            position={match.position}
-            topSeed={match.topSeed}
-            bottomSeed={match.bottomSeed}
-            winnerSeed={match.winnerSeed}
-            playerMap={playerMap}
-            onPick={onPick}
-            isLocked={isLocked}
-            isLoggedIn={isLoggedIn}
-            affectedSeeds={affectedSeeds}
-            pickResultInfo={pickResultMap?.get(`${round}-${match.position}`)}
-          />
-        ))}
+        {matches.map((match) => {
+          const key = `${round}-${match.position}`;
+          const actualParticipants = actualParticipantsMap?.get(key);
+          return (
+            <Match
+              key={key}
+              round={round}
+              position={match.position}
+              topSeed={match.topSeed}
+              bottomSeed={match.bottomSeed}
+              winnerSeed={match.winnerSeed}
+              playerMap={playerMap}
+              onPick={onPick}
+              isLocked={isLocked}
+              isLoggedIn={isLoggedIn}
+              affectedSeeds={affectedSeeds}
+              pickResultInfo={pickResultMap?.get(key)}
+              actualTopSeed={actualParticipants?.actualTop}
+              actualBottomSeed={actualParticipants?.actualBottom}
+            />
+          );
+        })}
       </div>
     </div>
   );
