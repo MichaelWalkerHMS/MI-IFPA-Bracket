@@ -31,6 +31,7 @@ export default function ChangelogPage() {
             <li>Auto import results from Matchplay tournaments (where available)</li>
             <li>Add additional states (likely prioritizing states with brackets on Matchplay)</li>
             <li>Improve bracket creation on mobile - wizard view instead of scrollable bracket</li>
+            <li>Improve text that displays when links are shared - it&apos;s dull today, needs to be more personalized</li>
           </ul>
         </section>
       </div>
