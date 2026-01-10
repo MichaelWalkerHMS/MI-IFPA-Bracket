@@ -32,6 +32,10 @@
     --color-success-text: 22 101 52;      /* green-800 */
     --color-success-icon: 22 163 74;      /* green-600 */
 
+    /* Pick indicator */
+    --color-pick-bg: 21 128 61;           /* green-700 */
+    --color-pick-text: 187 247 208;       /* green-200 */
+
     /* Status colors - Warning */
     --color-warning-bg: 254 249 195;      /* yellow-100 */
     --color-warning-bg-light: 254 252 232; /* yellow-50 */
@@ -72,6 +76,10 @@
     --color-success-bg: 20 83 45;         /* green-900 */
     --color-success-text: 134 239 172;    /* green-300 */
     --color-success-icon: 74 222 128;     /* green-400 */
+
+    /* Pick indicator */
+    --color-pick-bg: 22 163 74;           /* green-600 */
+    --color-pick-text: 220 252 231;       /* green-100 */
 
     /* Status colors - Warning */
     --color-warning-bg: 113 63 18;        /* yellow-900 */

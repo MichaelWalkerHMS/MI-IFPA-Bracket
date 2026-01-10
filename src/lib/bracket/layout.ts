@@ -1,31 +1,34 @@
 import { ROUNDS } from "./constants";
 
 // Base layout units for bracket display
-export const MATCH_HEIGHT = 72; // Each match card is 72px tall (two 36px player slots)
+// Match height = 2 PlayerSlots (36px each) + 1px divider + 2px border (top/bottom)
+export const MATCH_HEIGHT = 75;
 export const MATCH_GAP = 8; // Small gap between adjacent matches
-export const BASE_UNIT = MATCH_HEIGHT + MATCH_GAP; // 80px - fundamental spacing unit
+export const BASE_UNIT = MATCH_HEIGHT + MATCH_GAP; // 83px - fundamental spacing unit
 
 // Round header height (title + match count + margins + padding + border)
-// Calculated from: py-2 (16px) + text-sm title (~20px) + text-xs count (~16px) + border (1px)
+// Calculated from: text-sm title (20px) + text-xs count (16px) + pb-2 (8px) + border (1px) + mb-2 (8px)
 export const HEADER_HEIGHT = 53;
 
 // Top padding for each round to center matches with their source matches from the previous round
+// Formula: padding = (center of first pair from previous round) - (MATCH_HEIGHT / 2)
 export const ROUND_PADDING: Record<number, number> = {
   [ROUNDS.OPENING]: 0,
   [ROUNDS.ROUND_OF_16]: 0,
-  [ROUNDS.QUARTERS]: BASE_UNIT / 2, // 40px - center between pairs
-  [ROUNDS.SEMIS]: BASE_UNIT / 2 + BASE_UNIT, // 120px - center between QF pairs
-  [ROUNDS.FINALS]: BASE_UNIT / 2 + BASE_UNIT + BASE_UNIT * 2, // 280px - center between SF pairs
+  [ROUNDS.QUARTERS]: Math.round(BASE_UNIT / 2), // 42px - center between R16 pairs
+  [ROUNDS.SEMIS]: 125, // center between QF pairs
+  [ROUNDS.FINALS]: 291, // center between SF pairs
   [ROUNDS.CONSOLATION]: 0,
 };
 
 // Gap between matches for each round
-// Each round's gap increases to maintain alignment with previous round's match pairs
+// Formula: GAP_N = MATCH_HEIGHT + 2 * GAP_{N-1}
+// This ensures each match is vertically centered between its two feeder matches
 export const ROUND_GAP: Record<number, number> = {
   [ROUNDS.OPENING]: MATCH_GAP, // 8px
   [ROUNDS.ROUND_OF_16]: MATCH_GAP, // 8px
-  [ROUNDS.QUARTERS]: BASE_UNIT, // 80px - gap = 1 base unit
-  [ROUNDS.SEMIS]: BASE_UNIT * 3, // 240px - gap = 3 base units
+  [ROUNDS.QUARTERS]: MATCH_HEIGHT + 2 * MATCH_GAP, // 91px - centered between R16 pairs
+  [ROUNDS.SEMIS]: MATCH_HEIGHT + 2 * (MATCH_HEIGHT + 2 * MATCH_GAP), // 257px - centered between QF pairs
   [ROUNDS.FINALS]: MATCH_GAP, // 8px (single match)
   [ROUNDS.CONSOLATION]: MATCH_GAP, // 8px (single match)
 };

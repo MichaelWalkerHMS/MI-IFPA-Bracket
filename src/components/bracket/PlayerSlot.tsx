@@ -33,11 +33,14 @@ export default function PlayerSlot({
     );
   }
 
-  const baseClasses = "px-3 py-2 h-9 flex items-center gap-2 text-sm transition-colors bg-[rgb(var(--color-bg-primary))]";
+  const baseClasses = "px-3 py-2 h-9 flex items-center gap-2 text-sm transition-colors bg-[rgb(var(--color-bg-primary))] relative overflow-hidden";
   const winnerClasses = isWinner ? "font-semibold" : "";
   const clickableClasses = isClickable
     ? "cursor-pointer hover:bg-[rgb(var(--color-accent-light))]"
     : "";
+
+  // Show pick indicator when player is selected but no result exists yet
+  const showPickIndicator = isWinner && (isCorrect === undefined || isCorrect === null);
 
   return (
     <div
@@ -65,6 +68,13 @@ export default function PlayerSlot({
       <span className="text-[rgb(var(--color-text-primary))]">
         {player?.name || `Seed ${seed}`}
       </span>
+      {/* Pick indicator - green bar on right edge when selected but no result yet */}
+      {showPickIndicator && (
+        <span
+          className="absolute right-0 top-0 bottom-0 w-1 bg-[rgb(var(--color-pick-bg))]"
+          aria-hidden="true"
+        />
+      )}
       {/* Score badge - only show on winner when result exists */}
       {isWinner && isCorrect !== undefined && isCorrect !== null && (
         <span
