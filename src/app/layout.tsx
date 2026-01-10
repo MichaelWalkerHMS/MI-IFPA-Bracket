@@ -5,7 +5,7 @@ import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
   title: "Pinball Brackets",
-  description: "Predict the outcomes of IFPA Pinball State Championships",
+  description: "Think you know who will win the IFPA State Championship this year? Prove it by making free March Madness-style brackets!",
 };
 
 export const viewport = {

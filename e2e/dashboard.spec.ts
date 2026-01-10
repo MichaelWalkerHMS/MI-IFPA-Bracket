@@ -68,9 +68,10 @@ test.describe('Dashboard', () => {
     // Click Create Bracket
     await page.getByRole('button', { name: 'Create Bracket' }).click()
 
-    // Should see auth modal with login tab active by default
+    // Should see auth modal with signup tab active by default
     await expect(page.getByRole('dialog')).toBeVisible()
-    await expect(page.getByRole('heading', { name: 'Welcome Back' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Create an Account' })).toBeVisible()
+    await expect(page.getByLabel('Your Name')).toBeVisible()
     await expect(page.getByLabel('Email')).toBeVisible()
     await expect(page.getByLabel('Password')).toBeVisible()
   })
@@ -89,16 +90,16 @@ test.describe('Dashboard', () => {
     await page.getByRole('button', { name: 'Create Bracket' }).click()
     await expect(page.getByRole('dialog')).toBeVisible()
 
-    // Should start on login tab (default changed from signup)
-    await expect(page.getByRole('heading', { name: 'Welcome Back' })).toBeVisible()
-
-    // Switch to signup tab
-    await page.getByRole('button', { name: 'Sign Up' }).click()
+    // Should start on signup tab (default for Create Bracket flow)
     await expect(page.getByRole('heading', { name: 'Create an Account' })).toBeVisible()
 
-    // Switch back to login tab
+    // Switch to login tab
     await page.getByRole('button', { name: 'Log In' }).click()
     await expect(page.getByRole('heading', { name: 'Welcome Back' })).toBeVisible()
+
+    // Switch back to signup tab
+    await page.getByRole('button', { name: 'Sign Up' }).click()
+    await expect(page.getByRole('heading', { name: 'Create an Account' })).toBeVisible()
   })
 
   test('auth modal can be closed', async ({ page }) => {

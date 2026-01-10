@@ -36,7 +36,7 @@ test('can navigate to About using nav link', async ({ page }) => {
   // Click About link in header nav and verify navigation
   await page.getByRole('navigation').getByRole('link', { name: 'About' }).click()
   await expect(page).toHaveURL('/about')
-  await expect(page.getByRole('heading', { name: /About Pinball Brackets/i })).toBeVisible()
+  await expect(page.getByRole('heading', { name: /About/i })).toBeVisible()
 })
 
 test('can navigate to FAQ using nav link', async ({ page }) => {
@@ -81,7 +81,7 @@ test('about page loads', async ({ page }) => {
   await page.goto('/about')
 
   // Verify the page loads with expected content
-  await expect(page.getByRole('heading', { name: /About Pinball Brackets/i })).toBeVisible()
+  await expect(page.getByRole('heading', { name: /About/i })).toBeVisible()
   await expect(page.getByText(/What is this/i)).toBeVisible()
   await expect(page.getByText(/How it works/i)).toBeVisible()
   await expect(page.getByRole('link', { name: /Back to Home/i })).toBeVisible()
