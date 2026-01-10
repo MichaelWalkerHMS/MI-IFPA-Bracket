@@ -1,6 +1,7 @@
 import NavLinks from "./NavLinks";
 import SettingsButton from "./SettingsButton";
 import AuthHeader from "./AuthHeader";
+import MobileAuthHeader from "./MobileAuthHeader";
 import MobileNav from "./MobileNav";
 
 export default async function ResponsiveHeader() {
@@ -15,7 +16,7 @@ export default async function ResponsiveHeader() {
 
       {/* Mobile navigation - visible only on small screens */}
       <MobileNav>
-        <AuthHeader />
+        <MobileAuthHeader />
       </MobileNav>
     </>
   );

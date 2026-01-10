@@ -21,7 +21,7 @@ export default function PrivacyPage() {
         <section className="mb-8">
           <h2 className="text-xl font-semibold mb-3">Data We Collect</h2>
           <p className="text-[rgb(var(--color-text-secondary))] mb-4">
-            When you create an account and use the IFPA Bracket Predictor, we collect:
+            When you create an account and use Pinball Brackets, we collect:
           </p>
           <ul className="list-disc list-inside text-[rgb(var(--color-text-secondary))] space-y-1">
             <li>Email address (for authentication)</li>

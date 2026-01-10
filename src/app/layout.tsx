@@ -4,7 +4,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: "IFPA Bracket Predictor",
+  title: "Pinball Brackets",
   description: "Predict the outcomes of IFPA Pinball State Championships",
 };
 
