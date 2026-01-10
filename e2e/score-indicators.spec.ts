@@ -75,9 +75,10 @@ test.describe('Score Indicators', () => {
     await navigateToBracketEditor(page)
 
     // The round headers should be visible - check for either Opening Round (24-player) or Round of 16 (both formats)
+    // Use .first() because 24-player brackets have both headings visible
     const openingRound = page.getByRole('heading', { name: 'Opening Round' })
     const roundOf16 = page.getByRole('heading', { name: 'Round of 16' })
-    const roundHeader = openingRound.or(roundOf16).locator('..')
+    const roundHeader = openingRound.or(roundOf16).first().locator('..')
     await expect(roundHeader).toBeVisible()
 
     // Without is_correct values set on picks, subtotals should not appear
@@ -96,7 +97,7 @@ test.describe('Score Indicators', () => {
 
     // Reload to get fresh data
     await page.reload()
-    await expect(openingRound.or(roundOf16)).toBeVisible()
+    await expect(openingRound.or(roundOf16).first()).toBeVisible()
 
     // Note: Round subtotals (e.g., "6/8 pts") will only appear after recalculateScores()
     // has run, which sets is_correct on picks. Without admin result entry, subtotals

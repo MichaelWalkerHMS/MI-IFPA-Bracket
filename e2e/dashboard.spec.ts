@@ -207,9 +207,10 @@ test.describe('Dashboard', () => {
     await expect(page).toHaveURL(/\/bracket\/.*\/edit/, { timeout: 10000 })
 
     // Should see bracket editor - check for either Opening Round (24-player) or Round of 16 (both formats)
+    // Use .first() because 24-player brackets have both headings visible
     const openingRound = page.getByRole('heading', { name: 'Opening Round' })
     const roundOf16 = page.getByRole('heading', { name: 'Round of 16' })
-    await expect(openingRound.or(roundOf16)).toBeVisible()
+    await expect(openingRound.or(roundOf16).first()).toBeVisible()
   })
 })
 
