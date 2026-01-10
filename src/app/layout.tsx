@@ -8,6 +8,26 @@ import Footer from "@/components/Footer";
 export const metadata: Metadata = {
   title: "Pinball Brackets",
   description: "Think you know who will win the IFPA State Championship this year? Prove it by making free March Madness-style brackets!",
+  metadataBase: new URL("https://www.pinballbrackets.com"),
+  openGraph: {
+    title: "Pinball Brackets",
+    description: "Think you know who will win the IFPA State Championship this year? Prove it by making free March Madness-style brackets!",
+    url: "https://www.pinballbrackets.com",
+    siteName: "Pinball Brackets",
+    images: [
+      {
+        url: "/logo.png",
+        alt: "Pinball Brackets",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Pinball Brackets",
+    description: "Think you know who will win the IFPA State Championship this year? Prove it by making free March Madness-style brackets!",
+    images: ["/logo.png"],
+  },
 };
 
 export const viewport = {
