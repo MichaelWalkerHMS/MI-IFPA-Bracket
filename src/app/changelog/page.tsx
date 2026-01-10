@@ -18,9 +18,12 @@ export default function ChangelogPage() {
       <div className="max-w-3xl mx-auto">
         <h1 className="text-3xl font-bold mb-6">Changelog</h1>
 
-        <p className="text-[rgb(var(--color-text-secondary))]">
-          Coming soon - check back for recent changes and future ideas.
-        </p>
+        <section className="mb-8">
+          <h2 className="text-xl font-semibold mb-3">1.0</h2>
+          <ul className="list-disc list-inside text-[rgb(var(--color-text-secondary))] space-y-1">
+            <li>Initial launch with Michigan Open and Women&apos;s brackets</li>
+          </ul>
+        </section>
       </div>
     </main>
   );
