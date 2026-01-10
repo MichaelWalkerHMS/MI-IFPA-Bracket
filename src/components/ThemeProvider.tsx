@@ -3,15 +3,11 @@
 import {
   createContext,
   useContext,
-  useEffect,
-  useState,
   type ReactNode,
 } from "react";
 import {
   Theme,
   ResolvedTheme,
-  THEME_STORAGE_KEY,
-  DEFAULT_THEME,
 } from "@/lib/theme/constants";
 
 interface ThemeContextValue {
@@ -20,53 +16,19 @@ interface ThemeContextValue {
   resolvedTheme: ResolvedTheme;
 }
 
+// Dark mode is enforced - theme switching disabled
+// Original implementation kept in git history for future use
 const ThemeContext = createContext<ThemeContextValue>({
-  theme: DEFAULT_THEME,
+  theme: "dark",
   setTheme: () => {},
-  resolvedTheme: "light",
+  resolvedTheme: "dark",
 });
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>(DEFAULT_THEME);
-  const [resolvedTheme, setResolvedTheme] = useState<ResolvedTheme>("light");
-  const [mounted, setMounted] = useState(false);
-
-  // Read from localStorage on mount
-  useEffect(() => {
-    const stored = localStorage.getItem(THEME_STORAGE_KEY) as Theme | null;
-    if (stored && ["system", "light", "dark"].includes(stored)) {
-      setThemeState(stored);
-    }
-    setMounted(true);
-  }, []);
-
-  // Apply theme class and listen for system preference changes
-  useEffect(() => {
-    if (!mounted) return;
-
-    const root = document.documentElement;
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-
-    function applyTheme() {
-      const isDark =
-        theme === "dark" || (theme === "system" && mediaQuery.matches);
-
-      root.classList.toggle("dark", isDark);
-      setResolvedTheme(isDark ? "dark" : "light");
-    }
-
-    applyTheme();
-    mediaQuery.addEventListener("change", applyTheme);
-    return () => mediaQuery.removeEventListener("change", applyTheme);
-  }, [theme, mounted]);
-
-  function setTheme(newTheme: Theme) {
-    setThemeState(newTheme);
-    localStorage.setItem(THEME_STORAGE_KEY, newTheme);
-  }
-
+  // Dark mode enforced - no state management needed
+  // Theme is always "dark", resolvedTheme is always "dark"
   return (
-    <ThemeContext.Provider value={{ theme, setTheme, resolvedTheme }}>
+    <ThemeContext.Provider value={{ theme: "dark", setTheme: () => {}, resolvedTheme: "dark" }}>
       {children}
     </ThemeContext.Provider>
   );

@@ -96,6 +96,13 @@ export default function AboutPage() {
             <li>3rd/4th Place: 3 points</li>
           </ul>
         </section>
+
+        <section className="mb-8 p-4 bg-[rgb(var(--color-bg-secondary))] rounded-lg border border-[rgb(var(--color-border-primary))]">
+          <h2 className="text-xl font-semibold mb-3">Disclaimer</h2>
+          <p className="text-[rgb(var(--color-text-secondary))]">
+            This application is not officially affiliated with the IFPA (International Flipper Pinball Association), nor is it sponsored or approved by them. It{"'"}s a fun project - get out and play some pinball!
+          </p>
+        </section>
       </div>
     </main>
   );
