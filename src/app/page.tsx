@@ -85,8 +85,10 @@ export default async function Home() {
       <h1 className="mb-4 text-center">
         <SiteLogo size="lg" />
       </h1>
-      <p className="text-lg text-[rgb(var(--color-text-secondary))] mb-8">
-        Predict the outcomes of IFPA Pinball State Championships
+      <p className="text-lg text-[rgb(var(--color-text-secondary))] mb-8 text-center">
+        Think you know who will win the IFPA State Championship this year?
+        <br />
+        Prove it by making free March Madness-style brackets!
       </p>
 
       {/* Tournament wizard */}

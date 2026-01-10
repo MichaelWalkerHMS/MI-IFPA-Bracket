@@ -81,17 +81,9 @@ export default function PrivacyPage() {
           <h2 className="text-xl font-semibold mb-3">Data Retention</h2>
           <p className="text-[rgb(var(--color-text-secondary))]">
             Your account and bracket data are retained as long as you maintain your account.
-            You may request deletion of your account and associated data by contacting us.
           </p>
         </section>
 
-        <section className="mb-8">
-          <h2 className="text-xl font-semibold mb-3">Contact</h2>
-          <p className="text-[rgb(var(--color-text-secondary))]">
-            For privacy-related questions or concerns, please reach out through the contact
-            information provided on the About page.
-          </p>
-        </section>
       </div>
     </main>
   );

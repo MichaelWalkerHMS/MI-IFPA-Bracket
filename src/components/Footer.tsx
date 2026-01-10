@@ -11,12 +11,20 @@ export default function Footer() {
     <footer className="mt-auto py-4 border-t border-[rgb(var(--color-border-primary))]">
       <div className="max-w-4xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-2 text-sm text-[rgb(var(--color-text-muted))]">
         <span>&copy; {currentYear} Pinball Brackets</span>
-        <Link
-          href="/privacy"
-          className="hover:text-[rgb(var(--color-accent-primary))] hover:underline"
-        >
-          Privacy Policy
-        </Link>
+        <div className="flex gap-4">
+          <Link
+            href="/changelog"
+            className="hover:text-[rgb(var(--color-accent-primary))] hover:underline"
+          >
+            Changelog
+          </Link>
+          <Link
+            href="/privacy"
+            className="hover:text-[rgb(var(--color-accent-primary))] hover:underline"
+          >
+            Privacy Policy
+          </Link>
+        </div>
       </div>
     </footer>
   );
