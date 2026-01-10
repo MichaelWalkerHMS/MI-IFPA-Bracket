@@ -76,9 +76,10 @@ test.describe('Bracket', () => {
     // Wait for bracket to load
     await expect(page).toHaveURL(/\/bracket\/.*\/edit/, { timeout: 10000 })
     // Check for either Opening Round (24-player) or Round of 16 (both formats)
+    // Use .first() because 24-player brackets have both headings visible
     const openingRound = page.getByRole('heading', { name: 'Opening Round' })
     const roundOf16 = page.getByRole('heading', { name: 'Round of 16' })
-    await expect(openingRound.or(roundOf16)).toBeVisible()
+    await expect(openingRound.or(roundOf16).first()).toBeVisible()
 
     // Find clickable player slots and make a pick
     // Player slots have click handlers for making picks
@@ -118,9 +119,10 @@ test.describe('Bracket', () => {
     // Wait for bracket to load
     await expect(page).toHaveURL(/\/bracket\/.*\/edit/, { timeout: 10000 })
     // Check for either Opening Round (24-player) or Round of 16 (both formats)
+    // Use .first() because 24-player brackets have both headings visible
     const openingRound = page.getByRole('heading', { name: 'Opening Round' })
     const roundOf16 = page.getByRole('heading', { name: 'Round of 16' })
-    await expect(openingRound.or(roundOf16)).toBeVisible()
+    await expect(openingRound.or(roundOf16).first()).toBeVisible()
 
     // Make a pick on the first match if possible
     const playerSlots = page.locator('[class*="cursor-pointer"]').filter({ hasText: /\d+\.\s+\w+/ })
@@ -139,7 +141,7 @@ test.describe('Bracket', () => {
       await page.reload()
 
       // Wait for bracket to load again
-      await expect(openingRound.or(roundOf16)).toBeVisible()
+      await expect(openingRound.or(roundOf16).first()).toBeVisible()
 
       // The pick should be reflected in the bracket state
       // (the selected player should still be shown as the winner)

@@ -602,7 +602,7 @@ export default function BracketView({
 
       {/* Share URL - only for logged in users with saved brackets */}
       {isLoggedIn && bracketId && (
-        <div className="mt-4 p-4 bg-[rgb(var(--color-bg-secondary))] rounded-lg">
+        <div className="mt-4 p-4 bg-[rgb(var(--color-bg-secondary))] rounded-lg max-w-md">
           <div className="text-sm font-medium mb-2">Share Your Bracket</div>
           {isPublic ? (
             <div className="flex gap-2">
@@ -634,7 +634,7 @@ export default function BracketView({
 
       {/* Delete button - at bottom of bracket */}
       {isLoggedIn && bracketId && (
-        <div className="mt-4">
+        <div className="mt-4 max-w-md">
           <button
             onClick={() => setShowDeleteModal(true)}
             className="w-full px-4 py-2 text-sm text-[rgb(var(--color-error-icon))] hover:bg-[rgb(var(--color-error-bg))] rounded-lg transition-colors border border-[rgb(var(--color-error-border))]"

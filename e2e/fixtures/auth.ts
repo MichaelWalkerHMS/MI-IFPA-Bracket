@@ -95,9 +95,10 @@ export async function navigateToBracketEditor(
   // Wait for bracket editor to load
   await expect(page).toHaveURL(/\/bracket\/.*\/edit/, { timeout: 10000 })
   // Wait for either Opening Round (24-player) or Round of 16 (16-player) heading
+  // Use .first() because 24-player brackets have both headings visible
   await expect(
     page.getByRole('heading', { name: 'Opening Round' }).or(
       page.getByRole('heading', { name: 'Round of 16' })
-    )
+    ).first()
   ).toBeVisible()
 }
