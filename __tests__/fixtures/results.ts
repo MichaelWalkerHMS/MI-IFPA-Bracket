@@ -58,12 +58,12 @@ export function createRoundOf16Results(tournamentId: string): Result[] {
   const matches = [
     { position: 0, winner: 1, loser: 16 },
     { position: 1, winner: 8, loser: 9 },
-    { position: 2, winner: 4, loser: 12 },
-    { position: 3, winner: 5, loser: 13 },
+    { position: 2, winner: 4, loser: 13 },
+    { position: 3, winner: 5, loser: 12 },
     { position: 4, winner: 2, loser: 15 },
     { position: 5, winner: 7, loser: 10 },
-    { position: 6, winner: 3, loser: 11 },
-    { position: 7, winner: 6, loser: 14 },
+    { position: 6, winner: 3, loser: 14 },
+    { position: 7, winner: 6, loser: 11 },
   ];
 
   return matches.map((m) =>

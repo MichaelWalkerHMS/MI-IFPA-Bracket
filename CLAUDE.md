@@ -10,8 +10,8 @@ Bracket prediction app for IFPA pinball tournaments.
 - **Quarterfinals → Semifinals → Finals** (includes 3rd/4th consolation)
 
 ### Bracket Pairings (24 Players)
-- **Opening Round:** 9v24, 10v23, 11v22, 12v21, 13v20, 14v19, 15v18, 16v17
-- **Round of 16:** 1v(16/17 winner), 2v(15/18 winner), etc.
+- **Opening Round (display order):** 16v17, 9v24, 13v20, 12v21, 15v18, 10v23, 14v19, 11v22
+- **Round of 16:** 1v(16/17), 8v(9/24), 4v(13/20), 5v(12/21), 2v(15/18), 7v(10/23), 3v(14/19), 6v(11/22)
 
 ### Scoring
 **24-player bracket (53 points max):**

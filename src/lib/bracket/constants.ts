@@ -52,12 +52,12 @@ export const ROUND_OF_16_MATCHES: Array<{
 }> = [
   { position: 0, byeSeed: 1, openingWinnerPosition: 7 }, // 1 vs winner of 16/17
   { position: 1, byeSeed: 8, openingWinnerPosition: 0 }, // 8 vs winner of 9/24
-  { position: 2, byeSeed: 4, openingWinnerPosition: 3 }, // 4 vs winner of 12/21
-  { position: 3, byeSeed: 5, openingWinnerPosition: 4 }, // 5 vs winner of 13/20
+  { position: 2, byeSeed: 4, openingWinnerPosition: 4 }, // 4 vs winner of 13/20
+  { position: 3, byeSeed: 5, openingWinnerPosition: 3 }, // 5 vs winner of 12/21
   { position: 4, byeSeed: 2, openingWinnerPosition: 6 }, // 2 vs winner of 15/18
   { position: 5, byeSeed: 7, openingWinnerPosition: 1 }, // 7 vs winner of 10/23
-  { position: 6, byeSeed: 3, openingWinnerPosition: 2 }, // 3 vs winner of 11/22
-  { position: 7, byeSeed: 6, openingWinnerPosition: 5 }, // 6 vs winner of 14/19
+  { position: 6, byeSeed: 3, openingWinnerPosition: 5 }, // 3 vs winner of 14/19
+  { position: 7, byeSeed: 6, openingWinnerPosition: 2 }, // 6 vs winner of 11/22
 ];
 
 // 16-player Round of 16: Direct seed pairings (no opening round)
@@ -122,7 +122,7 @@ export const TOTAL_PREDICTIONS = 24;
 // Display order for opening round matches to align with bracket flow
 // Maps display position (0-7) to actual match position
 // This ensures each opening match is visually adjacent to the R16 match it feeds
-export const OPENING_DISPLAY_ORDER = [7, 0, 3, 4, 6, 1, 2, 5];
+export const OPENING_DISPLAY_ORDER = [7, 0, 4, 3, 6, 1, 5, 2];
 
 // Helper to generate a pick key from round and position
 export function getPickKey(round: number, position: number): string {
