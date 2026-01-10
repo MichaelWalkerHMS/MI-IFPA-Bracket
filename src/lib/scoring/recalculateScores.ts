@@ -66,10 +66,10 @@ export async function recalculateScores(
     return { success: true, count: 0 };
   }
 
-  // Build a set of result keys to know which matches have results
-  const resultKeys = new Set<string>();
+  // Build a map of results by key for quick lookup
+  const resultMap = new Map<string, Result>();
   for (const result of results || []) {
-    resultKeys.add(`${result.round}-${result.match_position}`);
+    resultMap.set(`${result.round}-${result.match_position}`, result as Result);
   }
 
   // 4. Calculate scores for each bracket and prepare updates
@@ -81,8 +81,13 @@ export async function recalculateScores(
     total_correct: number;
   }> = [];
 
-  // Track pick updates: { pickId, isCorrect }
-  const pickUpdates: Array<{ id: string; is_correct: boolean | null }> = [];
+  // Track pick updates: { pickId, isCorrect, actualWinnerSeed, actualLoserSeed }
+  const pickUpdates: Array<{
+    id: string;
+    is_correct: boolean | null;
+    actual_winner_seed: number | null;
+    actual_loser_seed: number | null;
+  }> = [];
 
   for (const bracket of brackets as unknown as BracketWithPicks[]) {
     const scoringResult = calculateBracketScore(
@@ -109,16 +114,27 @@ export async function recalculateScores(
       pickResultsMap.set(`${pr.round}-${pr.matchPosition}`, pr.isCorrect);
     }
 
-    // Update is_correct for each pick
+    // Update is_correct and actual result seeds for each pick
     for (const pick of bracket.picks || []) {
       const key = `${pick.round}-${pick.match_position}`;
-      if (resultKeys.has(key)) {
-        // There's a result for this match
+      const result = resultMap.get(key);
+      if (result) {
+        // There's a result for this match - update all cached fields
         const isCorrect = pickResultsMap.get(key) ?? false;
-        pickUpdates.push({ id: pick.id, is_correct: isCorrect });
-      } else if (pick.is_correct !== null) {
-        // Result was deleted, reset to null
-        pickUpdates.push({ id: pick.id, is_correct: null });
+        pickUpdates.push({
+          id: pick.id,
+          is_correct: isCorrect,
+          actual_winner_seed: result.winner_seed,
+          actual_loser_seed: result.loser_seed,
+        });
+      } else if (pick.is_correct !== null || pick.actual_winner_seed !== null) {
+        // Result was deleted, reset all cached fields to null
+        pickUpdates.push({
+          id: pick.id,
+          is_correct: null,
+          actual_winner_seed: null,
+          actual_loser_seed: null,
+        });
       }
     }
   }
@@ -137,11 +153,15 @@ export async function recalculateScores(
       .eq('id', update.id)
   );
 
-  // 6. Batch update all picks with is_correct
+  // 6. Batch update all picks with is_correct and actual result seeds
   const pickPromises = pickUpdates.map((update) =>
     supabase
       .from('picks')
-      .update({ is_correct: update.is_correct })
+      .update({
+        is_correct: update.is_correct,
+        actual_winner_seed: update.actual_winner_seed,
+        actual_loser_seed: update.actual_loser_seed,
+      })
       .eq('id', update.id)
   );
 

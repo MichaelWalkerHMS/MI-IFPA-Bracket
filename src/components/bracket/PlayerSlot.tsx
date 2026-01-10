@@ -5,21 +5,25 @@ import type { PlayerMap } from "@/lib/types";
 interface PlayerSlotProps {
   seed: number | null;
   playerMap: PlayerMap;
-  isWinner: boolean;
+  isPicked: boolean; // User picked this player as winner
   isClickable: boolean;
   onClick: () => void;
   position: "top" | "bottom";
   isAffected?: boolean;
-  isCorrect?: boolean | null; // undefined = not winner, null = no result yet, true/false = correct/incorrect
+  isActualWinner?: boolean; // This player actually won (from results)
+  isUnexpectedWinner?: boolean; // This player won but user expected someone else entirely
+  isCorrect?: boolean | null; // undefined = not picked, null = no result yet, true/false = correct/incorrect
 }
 
 export default function PlayerSlot({
   seed,
   playerMap,
-  isWinner,
+  isPicked,
   isClickable,
   onClick,
   isAffected,
+  isActualWinner,
+  isUnexpectedWinner,
   isCorrect,
 }: PlayerSlotProps) {
   const player = seed !== null ? playerMap.get(seed) : null;
@@ -33,18 +37,28 @@ export default function PlayerSlot({
     );
   }
 
-  const baseClasses = "px-3 py-2 h-9 flex items-center gap-2 text-sm transition-colors bg-[rgb(var(--color-bg-primary))] relative overflow-hidden";
-  const winnerClasses = isWinner ? "font-semibold" : "";
+  // Background: orange if unexpected winner, green if expected winner, otherwise default
+  const bgClass = isUnexpectedWinner
+    ? "bg-[rgb(var(--color-warning-bg))]"
+    : isActualWinner
+    ? "bg-[rgb(var(--color-success-bg))]"
+    : "bg-[rgb(var(--color-bg-primary))]";
+
+  const baseClasses = `px-3 py-2 h-9 flex items-center gap-2 text-sm transition-colors ${bgClass} relative overflow-hidden`;
+  const pickedClasses = isPicked ? "font-semibold" : "";
   const clickableClasses = isClickable
     ? "cursor-pointer hover:bg-[rgb(var(--color-accent-light))]"
     : "";
 
-  // Show pick indicator when player is selected but no result exists yet
-  const showPickIndicator = isWinner && (isCorrect === undefined || isCorrect === null);
+  // Determine pick indicator visibility and color
+  // Green bar: picked and (no result yet OR correct)
+  // Red bar: picked and incorrect
+  const showPickIndicator = isPicked;
+  const pickIndicatorIsRed = isPicked && isCorrect === false;
 
   return (
     <div
-      className={`${baseClasses} ${winnerClasses} ${clickableClasses}`}
+      className={`${baseClasses} ${pickedClasses} ${clickableClasses}`}
       onClick={isClickable ? onClick : undefined}
       role={isClickable ? "button" : undefined}
       tabIndex={isClickable ? 0 : undefined}
@@ -68,25 +82,16 @@ export default function PlayerSlot({
       <span className="text-[rgb(var(--color-text-primary))]">
         {player?.name || `Seed ${seed}`}
       </span>
-      {/* Pick indicator - green bar on right edge when selected but no result yet */}
+      {/* Pick indicator - bar on right edge showing user's pick */}
       {showPickIndicator && (
         <span
-          className="absolute right-0 top-0 bottom-0 w-1 bg-[rgb(var(--color-pick-bg))]"
+          className={`absolute right-0 top-0 bottom-0 w-1 ${
+            pickIndicatorIsRed
+              ? "bg-[rgb(var(--color-error-icon))]"
+              : "bg-[rgb(var(--color-pick-bg))]"
+          }`}
           aria-hidden="true"
         />
-      )}
-      {/* Score badge - only show on winner when result exists */}
-      {isWinner && isCorrect !== undefined && isCorrect !== null && (
-        <span
-          className={`ml-auto text-xs font-bold px-1 rounded ${
-            isCorrect
-              ? "bg-[rgb(var(--color-success-icon))] text-white"
-              : "bg-[rgb(var(--color-error-icon))] text-white"
-          }`}
-          title={isCorrect ? "Correct prediction" : "Incorrect prediction"}
-        >
-          {isCorrect ? "✓" : "✗"}
-        </span>
       )}
     </div>
   );

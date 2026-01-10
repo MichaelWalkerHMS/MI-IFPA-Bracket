@@ -16,11 +16,18 @@ describe('Match', () => {
     isLoggedIn: true,
   }
 
+  // Helper to get the match container (inner div with border classes)
+  // Match structure: outer wrapper (flex flex-col) > match container (rounded-lg or rounded-t-lg, border) > player slots
+  const getMatchContainer = (container: HTMLElement) => {
+    // When no result bar: rounded-lg, when result bar present: rounded-t-lg
+    return (container.querySelector('.rounded-lg') || container.querySelector('.rounded-t-lg')) as HTMLElement
+  }
+
   describe('Affected Seeds Highlighting', () => {
     it('renders with normal border when no affected seeds', () => {
       const { container } = render(<Match {...defaultProps} />)
 
-      const matchDiv = container.firstChild as HTMLElement
+      const matchDiv = getMatchContainer(container)
       expect(matchDiv).toHaveClass('border-[rgb(var(--color-border-secondary))]')
       expect(matchDiv).not.toHaveClass('border-[rgb(var(--color-warning-border))]')
     })
@@ -28,7 +35,7 @@ describe('Match', () => {
     it('renders with normal border when affectedSeeds is empty', () => {
       const { container } = render(<Match {...defaultProps} affectedSeeds={[]} />)
 
-      const matchDiv = container.firstChild as HTMLElement
+      const matchDiv = getMatchContainer(container)
       expect(matchDiv).toHaveClass('border-[rgb(var(--color-border-secondary))]')
       expect(matchDiv).not.toHaveClass('border-[rgb(var(--color-warning-border))]')
     })
@@ -38,7 +45,7 @@ describe('Match', () => {
         <Match {...defaultProps} affectedSeeds={[9, 10, 11]} />
       )
 
-      const matchDiv = container.firstChild as HTMLElement
+      const matchDiv = getMatchContainer(container)
       expect(matchDiv).toHaveClass('border-[rgb(var(--color-warning-border))]')
       expect(matchDiv).toHaveClass('border-2')
       expect(matchDiv).not.toHaveClass('border-[rgb(var(--color-border-secondary))]')
@@ -49,7 +56,7 @@ describe('Match', () => {
         <Match {...defaultProps} affectedSeeds={[22, 23, 24]} />
       )
 
-      const matchDiv = container.firstChild as HTMLElement
+      const matchDiv = getMatchContainer(container)
       expect(matchDiv).toHaveClass('border-[rgb(var(--color-warning-border))]')
       expect(matchDiv).toHaveClass('border-2')
     })
@@ -59,7 +66,7 @@ describe('Match', () => {
         <Match {...defaultProps} affectedSeeds={[9, 24]} />
       )
 
-      const matchDiv = container.firstChild as HTMLElement
+      const matchDiv = getMatchContainer(container)
       expect(matchDiv).toHaveClass('border-[rgb(var(--color-warning-border))]')
     })
 
@@ -68,7 +75,7 @@ describe('Match', () => {
         <Match {...defaultProps} affectedSeeds={[1, 2, 3]} />
       )
 
-      const matchDiv = container.firstChild as HTMLElement
+      const matchDiv = getMatchContainer(container)
       expect(matchDiv).toHaveClass('border-[rgb(var(--color-border-secondary))]')
       expect(matchDiv).not.toHaveClass('border-[rgb(var(--color-warning-border))]')
     })
@@ -84,7 +91,7 @@ describe('Match', () => {
       )
 
       // Should not be affected when both seeds are null (TBD match)
-      const matchDiv = container.firstChild as HTMLElement
+      const matchDiv = getMatchContainer(container)
       expect(matchDiv).toHaveClass('border-[rgb(var(--color-border-secondary))]')
     })
   })

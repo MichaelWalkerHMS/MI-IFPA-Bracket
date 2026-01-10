@@ -12,6 +12,14 @@ interface MatchData {
   winnerSeed: number | null;
 }
 
+// Pick result info for display purposes
+export interface PickResultInfo {
+  isCorrect: boolean | null;
+  pickedWinner: number;
+  actualWinner: number | null;
+  actualLoser: number | null;
+}
+
 interface RoundProps {
   round: number;
   roundName: string;
@@ -21,7 +29,7 @@ interface RoundProps {
   isLocked: boolean;
   isLoggedIn: boolean;
   affectedSeeds?: number[];
-  pickCorrectnessMap?: Map<string, boolean | null>; // key: "round-position", value: is_correct
+  pickResultMap?: Map<string, PickResultInfo>; // key: "round-position", value: pick result info
   subtotal?: { earned: number; max: number }; // Points earned / max for this round
 }
 
@@ -34,7 +42,7 @@ export default function Round({
   isLocked,
   isLoggedIn,
   affectedSeeds,
-  pickCorrectnessMap,
+  pickResultMap,
   subtotal,
 }: RoundProps) {
   // Get gap and padding from shared layout constants
@@ -48,11 +56,11 @@ export default function Round({
     return { paddingTop: `${padding}px` };
   };
 
-  // Check if any picks in this round have been scored (is_correct is not null)
-  const hasAnyScored = pickCorrectnessMap && matches.some(m => {
+  // Check if any picks in this round have been scored (isCorrect is not null)
+  const hasAnyScored = pickResultMap && matches.some(m => {
     const key = `${round}-${m.position}`;
-    const isCorrect = pickCorrectnessMap.get(key);
-    return isCorrect !== undefined && isCorrect !== null;
+    const pickResult = pickResultMap.get(key);
+    return pickResult?.isCorrect !== undefined && pickResult?.isCorrect !== null;
   });
 
   return (
@@ -87,7 +95,7 @@ export default function Round({
             isLocked={isLocked}
             isLoggedIn={isLoggedIn}
             affectedSeeds={affectedSeeds}
-            isCorrect={pickCorrectnessMap?.get(`${round}-${match.position}`)}
+            pickResultInfo={pickResultMap?.get(`${round}-${match.position}`)}
           />
         ))}
       </div>

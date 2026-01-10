@@ -60,6 +60,8 @@ export interface Pick {
   match_position: number;
   winner_seed: number;
   is_correct: boolean | null; // Cached: whether pick matches result (null = no result yet)
+  actual_winner_seed: number | null; // Cached: actual winner from result (null = no result yet)
+  actual_loser_seed: number | null; // Cached: actual loser from result (null = no result yet)
   created_at: string;
 }
 

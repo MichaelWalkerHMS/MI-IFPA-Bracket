@@ -94,14 +94,34 @@ export default function BracketView({
     ? `${getBaseUrl()}/bracket/${bracketId}`
     : null;
 
-  // Build a map of pick correctness from existingPicks for score indicators
-  const pickCorrectnessMap = useMemo(() => {
-    const map = new Map<string, boolean | null>();
+  // Build a map of pick results from existingPicks for display
+  // Includes correctness and actual result info for winner highlight and result bar
+  const pickResultMap = useMemo(() => {
+    const map = new Map<string, {
+      isCorrect: boolean | null;
+      pickedWinner: number;
+      actualWinner: number | null;
+      actualLoser: number | null;
+    }>();
     for (const pick of existingPicks) {
-      map.set(`${pick.round}-${pick.match_position}`, pick.is_correct);
+      map.set(`${pick.round}-${pick.match_position}`, {
+        isCorrect: pick.is_correct,
+        pickedWinner: pick.winner_seed,
+        actualWinner: pick.actual_winner_seed,
+        actualLoser: pick.actual_loser_seed,
+      });
     }
     return map;
   }, [existingPicks]);
+
+  // For backwards compatibility with subtotal calculation
+  const pickCorrectnessMap = useMemo(() => {
+    const map = new Map<string, boolean | null>();
+    for (const [key, value] of pickResultMap) {
+      map.set(key, value.isCorrect);
+    }
+    return map;
+  }, [pickResultMap]);
 
   // Calculate round subtotals (points earned / max) for each round
   const roundSubtotals = useMemo(() => {
@@ -469,7 +489,7 @@ export default function BracketView({
                 isLocked={isLocked}
                 isLoggedIn={isLoggedIn}
                 affectedSeeds={affectedSeeds}
-                pickCorrectnessMap={pickCorrectnessMap}
+                pickResultMap={pickResultMap}
                 subtotal={roundSubtotals[ROUNDS.OPENING]}
               />
 
@@ -492,7 +512,7 @@ export default function BracketView({
             isLocked={isLocked}
             isLoggedIn={isLoggedIn}
             affectedSeeds={affectedSeeds}
-            pickCorrectnessMap={pickCorrectnessMap}
+            pickResultMap={pickResultMap}
             subtotal={roundSubtotals[ROUNDS.ROUND_OF_16]}
           />
 
@@ -513,7 +533,7 @@ export default function BracketView({
             isLocked={isLocked}
             isLoggedIn={isLoggedIn}
             affectedSeeds={affectedSeeds}
-            pickCorrectnessMap={pickCorrectnessMap}
+            pickResultMap={pickResultMap}
             subtotal={roundSubtotals[ROUNDS.QUARTERS]}
           />
 
@@ -533,7 +553,7 @@ export default function BracketView({
             isLocked={isLocked}
             isLoggedIn={isLoggedIn}
             affectedSeeds={affectedSeeds}
-            pickCorrectnessMap={pickCorrectnessMap}
+            pickResultMap={pickResultMap}
             subtotal={roundSubtotals[ROUNDS.SEMIS]}
           />
 
@@ -554,7 +574,7 @@ export default function BracketView({
               isLocked={isLocked}
               isLoggedIn={isLoggedIn}
               affectedSeeds={affectedSeeds}
-              pickCorrectnessMap={pickCorrectnessMap}
+              pickResultMap={pickResultMap}
               subtotal={roundSubtotals[ROUNDS.FINALS]}
             />
 
@@ -592,7 +612,7 @@ export default function BracketView({
                 isLocked={isLocked}
                 isLoggedIn={isLoggedIn}
                 affectedSeeds={affectedSeeds}
-                pickCorrectnessMap={pickCorrectnessMap}
+                pickResultMap={pickResultMap}
                 subtotal={roundSubtotals[ROUNDS.CONSOLATION]}
               />
             </div>
