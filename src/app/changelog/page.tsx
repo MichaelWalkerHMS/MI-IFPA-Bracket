@@ -24,6 +24,15 @@ export default function ChangelogPage() {
             <li>Initial launch with Michigan Open and Women&apos;s brackets</li>
           </ul>
         </section>
+
+        <section className="mb-8">
+          <h2 className="text-xl font-semibold mb-3">Future Ideas</h2>
+          <ul className="list-disc list-inside text-[rgb(var(--color-text-secondary))] space-y-1">
+            <li>Auto import results from Matchplay tournaments (where available)</li>
+            <li>Add additional states (likely prioritizing states with brackets on Matchplay)</li>
+            <li>Improve bracket creation on mobile - wizard view instead of scrollable bracket</li>
+          </ul>
+        </section>
       </div>
     </main>
   );
