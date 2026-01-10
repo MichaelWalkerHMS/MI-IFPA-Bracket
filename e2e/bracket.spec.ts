@@ -1,13 +1,13 @@
 import { test, expect } from '@playwright/test'
-import { login, logout, navigateToBracketEditor } from './fixtures/auth'
+import { login, logout, navigateToBracketEditor, verifyLoggedIn } from './fixtures/auth'
 
 test.describe('Bracket', () => {
   test.beforeEach(async ({ page }) => {
     await login(page)
     // Wait for page to fully load
     await page.waitForLoadState('networkidle')
-    // Verify login succeeded by checking for Log Out button
-    await expect(page.getByRole('button', { name: /log out/i })).toBeVisible({ timeout: 10000 })
+    // Verify login succeeded (handles mobile hamburger menu automatically)
+    await verifyLoggedIn(page)
     // Also verify we see the dashboard (logged-in view)
     await expect(page.getByRole('heading', { name: 'My Brackets' })).toBeVisible({ timeout: 10000 })
   })
@@ -252,6 +252,7 @@ test.describe('Bracket (logged out)', () => {
     // First login and create/navigate to a bracket
     await login(page)
     await page.waitForLoadState('networkidle')
+    await verifyLoggedIn(page)
     await navigateToBracketEditor(page)
 
     // Extract bracket ID from URL

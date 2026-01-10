@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test'
+import { openMobileMenuIfNeeded, closeMobileMenuIfOpen } from './fixtures/auth'
 
 test('homepage loads', async ({ page }) => {
   await page.goto('/')
@@ -25,16 +26,25 @@ test('footer appears on all pages with privacy link', async ({ page }) => {
 test('nav links appear in header on homepage', async ({ page }) => {
   await page.goto('/')
 
+  // On mobile, nav links are inside the hamburger menu
+  await openMobileMenuIfNeeded(page)
+
   // Verify About and FAQ links are visible
   await expect(page.getByRole('link', { name: 'About' })).toBeVisible()
   await expect(page.getByRole('link', { name: 'FAQ' })).toBeVisible()
+
+  // Close mobile menu if opened
+  await closeMobileMenuIfOpen(page)
 })
 
 test('can navigate to About using nav link', async ({ page }) => {
   await page.goto('/')
 
+  // On mobile, nav links are inside the hamburger menu
+  await openMobileMenuIfNeeded(page)
+
   // Click About link in header nav and verify navigation
-  await page.getByRole('navigation').getByRole('link', { name: 'About' }).click()
+  await page.getByRole('link', { name: 'About' }).click()
   await expect(page).toHaveURL('/about')
   await expect(page.getByRole('heading', { name: /About/i })).toBeVisible()
 })
@@ -42,8 +52,11 @@ test('can navigate to About using nav link', async ({ page }) => {
 test('can navigate to FAQ using nav link', async ({ page }) => {
   await page.goto('/')
 
+  // On mobile, nav links are inside the hamburger menu
+  await openMobileMenuIfNeeded(page)
+
   // Click FAQ link in header nav and verify navigation
-  await page.getByRole('navigation').getByRole('link', { name: 'FAQ' }).click()
+  await page.getByRole('link', { name: 'FAQ' }).click()
   await expect(page).toHaveURL('/faq')
   await expect(page.getByRole('heading', { name: /Frequently Asked Questions/i })).toBeVisible()
 })
@@ -84,7 +97,8 @@ test('about page loads', async ({ page }) => {
   await expect(page.getByRole('heading', { name: /About/i })).toBeVisible()
   await expect(page.getByText(/What is this/i)).toBeVisible()
   await expect(page.getByText(/How it works/i)).toBeVisible()
-  await expect(page.getByRole('link', { name: /Back to Home/i })).toBeVisible()
+  // On mobile shows "← Back", on desktop shows "← Back to Home"
+  await expect(page.getByRole('link', { name: /Back/i })).toBeVisible()
 })
 
 test('privacy page loads', async ({ page }) => {
@@ -93,7 +107,8 @@ test('privacy page loads', async ({ page }) => {
   // Verify the page loads with expected content
   await expect(page.getByRole('heading', { name: /Privacy Policy/i })).toBeVisible()
   await expect(page.getByText(/Data We Collect/i)).toBeVisible()
-  await expect(page.getByRole('link', { name: /Back to Home/i })).toBeVisible()
+  // On mobile shows "← Back", on desktop shows "← Back to Home"
+  await expect(page.getByRole('link', { name: /Back/i })).toBeVisible()
 })
 
 test('faq page loads', async ({ page }) => {
@@ -103,5 +118,6 @@ test('faq page loads', async ({ page }) => {
   await expect(page.getByRole('heading', { name: /Frequently Asked Questions/i })).toBeVisible()
   await expect(page.getByText(/How does scoring work/i)).toBeVisible()
   await expect(page.getByText(/What happens when a tournament locks/i)).toBeVisible()
-  await expect(page.getByRole('link', { name: /Back to Home/i })).toBeVisible()
+  // On mobile shows "← Back", on desktop shows "← Back to Home"
+  await expect(page.getByRole('link', { name: /Back/i })).toBeVisible()
 })

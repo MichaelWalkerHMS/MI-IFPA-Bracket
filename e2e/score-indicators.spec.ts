@@ -1,10 +1,10 @@
 import { test, expect } from '@playwright/test'
-import { login, navigateToBracketEditor } from './fixtures/auth'
+import { login, navigateToBracketEditor, verifyLoggedIn } from './fixtures/auth'
 
 test.describe('Score Indicators', () => {
   test.beforeEach(async ({ page }) => {
     await login(page)
-    await expect(page.getByRole('button', { name: /log out/i })).toBeVisible({ timeout: 10000 })
+    await verifyLoggedIn(page)
   })
 
   test('bracket renders with score indicator support', async ({ page }) => {

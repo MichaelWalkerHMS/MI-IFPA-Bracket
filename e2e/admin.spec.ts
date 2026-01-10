@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { login } from './fixtures/auth'
+import { login, verifyLoggedIn } from './fixtures/auth'
 
 test.describe('Admin', () => {
   test('admin button is NOT visible for non-admin users', async ({ page }) => {
@@ -13,7 +13,8 @@ test.describe('Admin', () => {
     await expect(page.getByRole('link', { name: 'Admin' })).not.toBeVisible()
 
     // But Log Out should be visible (confirming we're logged in)
-    await expect(page.getByRole('button', { name: /log out/i })).toBeVisible()
+    // Use verifyLoggedIn which handles mobile hamburger menu
+    await verifyLoggedIn(page)
   })
 
   test('non-admin user is blocked from admin pages', async ({ page }) => {

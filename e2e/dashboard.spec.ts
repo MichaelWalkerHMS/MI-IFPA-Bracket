@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { login } from './fixtures/auth'
+import { login, verifyLoggedIn } from './fixtures/auth'
 
 test.describe('Dashboard', () => {
   test('logged out user sees tournament wizard and CTA', async ({ page }) => {
@@ -123,7 +123,7 @@ test.describe('Dashboard', () => {
 
   test('logged in user sees dashboard with My Brackets section', async ({ page }) => {
     await login(page)
-    await expect(page.getByRole('button', { name: /log out/i })).toBeVisible({ timeout: 10000 })
+    await verifyLoggedIn(page)
 
     // Should see dashboard sections
     await expect(page.getByRole('heading', { name: 'My Brackets' })).toBeVisible()
@@ -132,7 +132,7 @@ test.describe('Dashboard', () => {
 
   test('logged in user sees Create Bracket wizard', async ({ page }) => {
     await login(page)
-    await expect(page.getByRole('button', { name: /log out/i })).toBeVisible({ timeout: 10000 })
+    await verifyLoggedIn(page)
 
     // Should see the wizard steps
     await expect(page.getByText('Select State')).toBeVisible()
@@ -147,7 +147,7 @@ test.describe('Dashboard', () => {
 
   test('can select state and tournament in wizard', async ({ page }) => {
     await login(page)
-    await expect(page.getByRole('button', { name: /log out/i })).toBeVisible({ timeout: 10000 })
+    await verifyLoggedIn(page)
 
     // Select a state
     const stateDropdown = page.locator('select').first()
@@ -171,7 +171,7 @@ test.describe('Dashboard', () => {
 
   test('tournament details appear when tournament selected', async ({ page }) => {
     await login(page)
-    await expect(page.getByRole('button', { name: /log out/i })).toBeVisible({ timeout: 10000 })
+    await verifyLoggedIn(page)
 
     // Select a state and tournament
     const stateDropdown = page.locator('select').first()
@@ -188,7 +188,7 @@ test.describe('Dashboard', () => {
 
   test('can create new bracket and navigate to edit page', async ({ page }) => {
     await login(page)
-    await expect(page.getByRole('button', { name: /log out/i })).toBeVisible({ timeout: 10000 })
+    await verifyLoggedIn(page)
 
     // Select a state and tournament
     const stateDropdown = page.locator('select').first()
@@ -218,7 +218,7 @@ test.describe('Dashboard', () => {
 test.describe('Dashboard - My Brackets Table', () => {
   test.beforeEach(async ({ page }) => {
     await login(page)
-    await expect(page.getByRole('button', { name: /log out/i })).toBeVisible({ timeout: 10000 })
+    await verifyLoggedIn(page)
   })
 
   test('shows empty state when no brackets', async ({ page }) => {

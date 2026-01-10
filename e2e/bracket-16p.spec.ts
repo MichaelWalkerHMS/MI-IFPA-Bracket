@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { login, logout, navigateToBracketEditor } from './fixtures/auth'
+import { login, logout, navigateToBracketEditor, verifyLoggedIn } from './fixtures/auth'
 
 /**
  * E2E tests for 16-player tournament brackets.
@@ -26,7 +26,7 @@ test.describe('16-Player Bracket', () => {
   test.beforeEach(async ({ page }) => {
     await login(page)
     await page.waitForLoadState('networkidle')
-    await expect(page.getByRole('button', { name: /log out/i })).toBeVisible({ timeout: 10000 })
+    await verifyLoggedIn(page)
   })
 
   test('16-player bracket does not show Opening Round heading', async ({ page }) => {

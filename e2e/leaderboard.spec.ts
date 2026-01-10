@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { login, navigateToBracketEditor } from './fixtures/auth'
+import { login, navigateToBracketEditor, verifyLoggedIn, saveBracket } from './fixtures/auth'
 
 test.describe('Leaderboard', () => {
   test('tournament page shows leaderboard section', async ({ page }) => {
@@ -23,20 +23,19 @@ test.describe('Leaderboard', () => {
 
   test('user bracket appears on leaderboard after creation', async ({ page }) => {
     await login(page)
-    await expect(page.getByRole('button', { name: /log out/i })).toBeVisible({ timeout: 10000 })
+    await verifyLoggedIn(page)
 
     // Navigate to bracket editor via dashboard
     await navigateToBracketEditor(page)
 
-    // Save the bracket (even empty)
-    await page.getByRole('button', { name: 'Save' }).click()
-    await expect(page.getByText(/saved/i)).toBeVisible({ timeout: 10000 })
+    // Save the bracket (even empty) using the reliable helper
+    await saveBracket(page)
 
-    // Go back to dashboard
-    await page.getByRole('link', { name: /back to dashboard/i }).click()
+    // Go back to dashboard (on mobile shows "← Back", on desktop shows "← Back to Dashboard")
+    await page.getByRole('link', { name: /back/i }).click()
 
     // Wait for dashboard to load with our brackets
-    await expect(page.getByRole('heading', { name: 'My Brackets' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'My Brackets' })).toBeVisible({ timeout: 10000 })
 
     // Click Leaderboard link to go to tournament page
     await page.getByRole('link', { name: 'Leaderboard' }).first().click()
@@ -66,17 +65,17 @@ test.describe('Leaderboard', () => {
 
   test('leaderboard displays bracket entries as clickable links', async ({ page }) => {
     await login(page)
-    await expect(page.getByRole('button', { name: /log out/i })).toBeVisible({ timeout: 10000 })
+    await verifyLoggedIn(page)
 
     // Navigate to bracket editor via dashboard
     await navigateToBracketEditor(page)
 
-    // Save the bracket (even empty)
-    await page.getByRole('button', { name: 'Save' }).click()
-    await expect(page.getByText(/saved/i)).toBeVisible({ timeout: 10000 })
+    // Save the bracket (even empty) using the reliable helper
+    await saveBracket(page)
 
-    // Go back to dashboard and click leaderboard
-    await page.getByRole('link', { name: /back to dashboard/i }).click()
+    // Go back to dashboard and click leaderboard (on mobile shows "← Back", on desktop shows "← Back to Dashboard")
+    await page.getByRole('link', { name: /back/i }).click()
+    await expect(page.getByRole('heading', { name: 'My Brackets' })).toBeVisible({ timeout: 10000 })
     await page.getByRole('link', { name: 'Leaderboard' }).first().click()
 
     // Wait for leaderboard to load

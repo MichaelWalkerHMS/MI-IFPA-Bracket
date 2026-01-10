@@ -2,6 +2,22 @@ import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 
 /**
+ * Validates the redirect path to prevent open redirect attacks.
+ * Only allows safe relative paths starting with a single slash.
+ */
+function getSafeRedirectPath(next: string | null): string {
+  if (!next) return "/";
+
+  // Must start with exactly one slash (relative path)
+  // Reject protocol-relative URLs (//evil.com) and URL username attacks (@evil.com)
+  if (!next.startsWith("/") || next.startsWith("//") || next.includes("@")) {
+    return "/";
+  }
+
+  return next;
+}
+
+/**
  * Auth callback route - handles code exchange from Supabase email links.
  *
  * When a user clicks a password reset (or email confirmation) link,
@@ -11,7 +27,7 @@ import { NextResponse } from "next/server";
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
-  const next = searchParams.get("next") ?? "/";
+  const next = getSafeRedirectPath(searchParams.get("next"));
 
   if (code) {
     const supabase = await createClient();
