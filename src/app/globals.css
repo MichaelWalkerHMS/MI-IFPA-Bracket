@@ -49,6 +49,11 @@
     --color-error-text: 153 27 27;        /* red-800 */
     --color-error-border: 254 202 202;    /* red-200 */
     --color-error-icon: 220 38 38;        /* red-600 */
+
+    /* Unexpected participant (cascading result mismatch) */
+    --color-unexpected-bg: 37 35 35;      /* #252323 */
+    --color-unexpected-text: 240 178 36;  /* #f0b224 */
+    --color-unexpected-border: 58 58 69;  /* #3a3a45 */
   }
 
   .dark {
@@ -94,5 +99,10 @@
     --color-error-text: 252 165 165;      /* red-300 */
     --color-error-border: 153 27 27;      /* red-800 */
     --color-error-icon: 248 113 113;      /* red-400 */
+
+    /* Unexpected participant (cascading result mismatch) - same in dark mode */
+    --color-unexpected-bg: 37 35 35;      /* #252323 */
+    --color-unexpected-text: 240 178 36;  /* #f0b224 */
+    --color-unexpected-border: 58 58 69;  /* #3a3a45 */
   }
 }

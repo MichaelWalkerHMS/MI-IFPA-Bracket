@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import type { Tournament, Player, Bracket, Pick } from "@/lib/types";
+import type { Tournament, Player, Bracket, Pick, Result } from "@/lib/types";
 import BracketView from "@/components/bracket/Bracket";
 import ResponsiveHeader from "@/components/ResponsiveHeader";
 
@@ -61,6 +61,12 @@ export default async function BracketEditPage({ params }: PageProps) {
     .eq("bracket_id", bracketId);
 
   const userPicks = (picks || []) as Pick[];
+
+  // Fetch results for this tournament (for display purposes)
+  const { data: results } = await supabase
+    .from("results")
+    .select("*")
+    .eq("tournament_id", bracket.tournament_id);
 
   // Check if predictions are locked
   const isLocked = new Date(tournament.lock_date) <= new Date();
@@ -122,6 +128,7 @@ export default async function BracketEditPage({ params }: PageProps) {
         players={(players || []) as Player[]}
         existingBracket={userBracket}
         existingPicks={userPicks}
+        results={(results || []) as Result[]}
         isLocked={isLocked}
         isLoggedIn={true}
       />

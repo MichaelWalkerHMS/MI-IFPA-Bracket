@@ -66,10 +66,10 @@ export async function recalculateScores(
     return { success: true, count: 0 };
   }
 
-  // Build a set of result keys to know which matches have results
-  const resultKeys = new Set<string>();
+  // Build a map of results by key for quick lookup
+  const resultMap = new Map<string, Result>();
   for (const result of results || []) {
-    resultKeys.add(`${result.round}-${result.match_position}`);
+    resultMap.set(`${result.round}-${result.match_position}`, result as Result);
   }
 
   // 4. Calculate scores for each bracket and prepare updates
@@ -81,8 +81,11 @@ export async function recalculateScores(
     total_correct: number;
   }> = [];
 
-  // Track pick updates: { pickId, isCorrect }
-  const pickUpdates: Array<{ id: string; is_correct: boolean | null }> = [];
+  // Track pick updates for is_correct field
+  const pickUpdates: Array<{
+    id: string;
+    is_correct: boolean | null;
+  }> = [];
 
   for (const bracket of brackets as unknown as BracketWithPicks[]) {
     const scoringResult = calculateBracketScore(
@@ -112,13 +115,20 @@ export async function recalculateScores(
     // Update is_correct for each pick
     for (const pick of bracket.picks || []) {
       const key = `${pick.round}-${pick.match_position}`;
-      if (resultKeys.has(key)) {
-        // There's a result for this match
+      const result = resultMap.get(key);
+      if (result) {
+        // There's a result for this match - update is_correct
         const isCorrect = pickResultsMap.get(key) ?? false;
-        pickUpdates.push({ id: pick.id, is_correct: isCorrect });
+        pickUpdates.push({
+          id: pick.id,
+          is_correct: isCorrect,
+        });
       } else if (pick.is_correct !== null) {
-        // Result was deleted, reset to null
-        pickUpdates.push({ id: pick.id, is_correct: null });
+        // Result was deleted, reset is_correct to null
+        pickUpdates.push({
+          id: pick.id,
+          is_correct: null,
+        });
       }
     }
   }
@@ -141,7 +151,9 @@ export async function recalculateScores(
   const pickPromises = pickUpdates.map((update) =>
     supabase
       .from('picks')
-      .update({ is_correct: update.is_correct })
+      .update({
+        is_correct: update.is_correct,
+      })
       .eq('id', update.id)
   );
 

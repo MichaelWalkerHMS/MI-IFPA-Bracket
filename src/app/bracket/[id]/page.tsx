@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import type { Tournament, Player, Bracket, Pick } from "@/lib/types";
+import type { Tournament, Player, Bracket, Pick, Result } from "@/lib/types";
 import BracketView from "@/components/bracket/Bracket";
 import ResponsiveHeader from "@/components/ResponsiveHeader";
 
@@ -78,6 +78,12 @@ export default async function BracketPage({ params }: PageProps) {
     .select("*")
     .eq("bracket_id", bracket.id);
 
+  // Fetch results for this tournament (for display purposes)
+  const { data: results } = await supabase
+    .from("results")
+    .select("*")
+    .eq("tournament_id", bracket.tournament_id);
+
   // Query seeding changes AFTER the bracket was last saved
   const { data: seedingChanges } = await supabase
     .from("seeding_change_log")
@@ -138,6 +144,7 @@ export default async function BracketPage({ params }: PageProps) {
         players={(players || []) as Player[]}
         existingBracket={bracket as Bracket}
         existingPicks={(picks || []) as Pick[]}
+        results={(results || []) as Result[]}
         isLocked={isLocked}
         isLoggedIn={isOwner}
         bracketName={bracketName}

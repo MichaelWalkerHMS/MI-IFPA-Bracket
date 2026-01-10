@@ -1,6 +1,7 @@
 "use client";
 
 import type { PlayerMap } from "@/lib/types";
+import type { ActualParticipants } from "@/lib/bracket/actualParticipants";
 import Match from "./Match";
 import { ROUNDS } from "@/lib/bracket/constants";
 import { ROUND_PADDING, ROUND_GAP, MATCH_GAP } from "@/lib/bracket/layout";
@@ -12,6 +13,14 @@ interface MatchData {
   winnerSeed: number | null;
 }
 
+// Pick result info for display purposes
+export interface PickResultInfo {
+  isCorrect: boolean | null;
+  pickedWinner: number;
+  actualWinner: number | null;
+  actualLoser: number | null;
+}
+
 interface RoundProps {
   round: number;
   roundName: string;
@@ -21,7 +30,8 @@ interface RoundProps {
   isLocked: boolean;
   isLoggedIn: boolean;
   affectedSeeds?: number[];
-  pickCorrectnessMap?: Map<string, boolean | null>; // key: "round-position", value: is_correct
+  pickResultMap?: Map<string, PickResultInfo>; // key: "round-position", value: pick result info
+  actualParticipantsMap?: Map<string, ActualParticipants>; // key: "round-position", value: actual participants
   subtotal?: { earned: number; max: number }; // Points earned / max for this round
 }
 
@@ -34,7 +44,8 @@ export default function Round({
   isLocked,
   isLoggedIn,
   affectedSeeds,
-  pickCorrectnessMap,
+  pickResultMap,
+  actualParticipantsMap,
   subtotal,
 }: RoundProps) {
   // Get gap and padding from shared layout constants
@@ -48,11 +59,11 @@ export default function Round({
     return { paddingTop: `${padding}px` };
   };
 
-  // Check if any picks in this round have been scored (is_correct is not null)
-  const hasAnyScored = pickCorrectnessMap && matches.some(m => {
+  // Check if any picks in this round have been scored (isCorrect is not null)
+  const hasAnyScored = pickResultMap && matches.some(m => {
     const key = `${round}-${m.position}`;
-    const isCorrect = pickCorrectnessMap.get(key);
-    return isCorrect !== undefined && isCorrect !== null;
+    const pickResult = pickResultMap.get(key);
+    return pickResult?.isCorrect !== undefined && pickResult?.isCorrect !== null;
   });
 
   return (
@@ -74,22 +85,28 @@ export default function Round({
         className="flex flex-col"
         style={{ ...getGapStyle(), ...getPaddingStyle() }}
       >
-        {matches.map((match) => (
-          <Match
-            key={`${round}-${match.position}`}
-            round={round}
-            position={match.position}
-            topSeed={match.topSeed}
-            bottomSeed={match.bottomSeed}
-            winnerSeed={match.winnerSeed}
-            playerMap={playerMap}
-            onPick={onPick}
-            isLocked={isLocked}
-            isLoggedIn={isLoggedIn}
-            affectedSeeds={affectedSeeds}
-            isCorrect={pickCorrectnessMap?.get(`${round}-${match.position}`)}
-          />
-        ))}
+        {matches.map((match) => {
+          const key = `${round}-${match.position}`;
+          const actualParticipants = actualParticipantsMap?.get(key);
+          return (
+            <Match
+              key={key}
+              round={round}
+              position={match.position}
+              topSeed={match.topSeed}
+              bottomSeed={match.bottomSeed}
+              winnerSeed={match.winnerSeed}
+              playerMap={playerMap}
+              onPick={onPick}
+              isLocked={isLocked}
+              isLoggedIn={isLoggedIn}
+              affectedSeeds={affectedSeeds}
+              pickResultInfo={pickResultMap?.get(key)}
+              actualTopSeed={actualParticipants?.actualTop}
+              actualBottomSeed={actualParticipants?.actualBottom}
+            />
+          );
+        })}
       </div>
     </div>
   );
