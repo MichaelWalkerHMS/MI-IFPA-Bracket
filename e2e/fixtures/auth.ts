@@ -70,8 +70,11 @@ export async function navigateToBracketEditor(
     // Get the bracket URL and navigate directly to edit
     const href = await bracketCard.getAttribute('href')
     if (href) {
-      // Navigate to the edit page by appending /edit to the bracket URL
-      await page.goto(href + '/edit')
+      // Navigate to the edit page
+      // If bracket is not locked, href already ends with /edit
+      // If bracket is locked, href is just /bracket/{id} and we need to append /edit
+      const editUrl = href.endsWith('/edit') ? href : href + '/edit'
+      await page.goto(editUrl)
     }
   } else {
     // Use the Create Bracket wizard
