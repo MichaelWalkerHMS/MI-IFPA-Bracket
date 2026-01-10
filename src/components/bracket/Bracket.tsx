@@ -255,152 +255,161 @@ export default function BracketView({
 
       {/* Controls bar - only for logged in users */}
       {isLoggedIn && (
-        <div className="mb-4 p-3 bg-[rgb(var(--color-bg-secondary))] rounded-lg flex flex-wrap items-center gap-3">
-          {/* Bracket name input */}
-          <input
-            type="text"
-            value={editableBracketName}
-            onChange={(e) => {
-              setEditableBracketName(e.target.value);
-              setIsDirty(true);
-              setSaveMessage(null);
-            }}
-            placeholder="Bracket name (optional)"
-            maxLength={50}
-            disabled={isLocked}
-            className="flex-1 min-w-[200px] max-w-sm px-3 py-2 border border-[rgb(var(--color-border-secondary))] rounded-md focus:ring-2 focus:ring-[rgb(var(--color-accent-primary))] focus:border-[rgb(var(--color-accent-primary))] text-sm bg-[rgb(var(--color-bg-primary))]"
-          />
-
-          {/* Public/Private toggle slider */}
-          <div className="relative flex items-center gap-3">
-            <span className="text-sm text-[rgb(var(--color-text-secondary))] whitespace-nowrap">
-              {isPublic ? "Public" : "Private"}
-            </span>
-            <button
-              type="button"
-              onClick={() => {
-                if (isLocked) return;
-                const newValue = !isPublic;
-                setIsPublic(newValue);
+        <div className="mb-4 p-3 bg-[rgb(var(--color-bg-secondary))] rounded-lg">
+          <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-3">
+            {/* Bracket name input - full width on mobile */}
+            <input
+              type="text"
+              value={editableBracketName}
+              onChange={(e) => {
+                setEditableBracketName(e.target.value);
                 setIsDirty(true);
                 setSaveMessage(null);
-                if (!newValue) {
-                  setShowPrivateExplainer(true);
-                }
               }}
+              placeholder="Bracket name (optional)"
+              maxLength={50}
               disabled={isLocked}
-              className={`relative w-12 h-6 rounded-full transition-colors ${
-                isPublic
-                  ? "bg-[rgb(var(--color-accent-primary))]"
-                  : "bg-[rgb(var(--color-border-secondary))]"
-              } ${isLocked ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
-              aria-label={isPublic ? "Make private" : "Make public"}
-            >
-              <div
-                className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${
-                  isPublic ? "left-7" : "left-1"
-                }`}
-              />
-            </button>
+              className="w-full sm:flex-1 sm:min-w-[200px] sm:max-w-sm px-3 py-2 border border-[rgb(var(--color-border-secondary))] rounded-md focus:ring-2 focus:ring-[rgb(var(--color-accent-primary))] focus:border-[rgb(var(--color-accent-primary))] text-sm bg-[rgb(var(--color-bg-primary))]"
+            />
 
-            {/* Private explainer popup */}
-            {showPrivateExplainer && (
-              <div className="absolute z-10 top-full mt-2 left-1/2 -translate-x-1/2 sm:left-0 sm:translate-x-0 w-72 p-4 bg-[rgb(var(--color-bg-primary))] border border-[rgb(var(--color-border-primary))] rounded-lg shadow-lg">
-                <p className="text-sm text-[rgb(var(--color-text-secondary))] mb-2">
-                  <strong>Private brackets:</strong>
-                </p>
-                <ul className="text-sm text-[rgb(var(--color-text-secondary))] list-disc pl-4 space-y-1">
-                  <li>Only visible to you</li>
-                  <li>Won&apos;t appear on public leaderboard</li>
-                  <li>You can make it public anytime</li>
-                </ul>
+            {/* Row 2 on mobile: Toggle + Save */}
+            <div className="flex items-center justify-between sm:justify-start gap-3">
+              {/* Public/Private toggle slider */}
+              <div className="relative flex items-center gap-2 sm:gap-3">
+                <span className="text-sm text-[rgb(var(--color-text-secondary))] whitespace-nowrap">
+                  {isPublic ? "Public" : "Private"}
+                </span>
                 <button
-                  onClick={() => setShowPrivateExplainer(false)}
-                  className="mt-3 text-sm text-[rgb(var(--color-accent-primary))] hover:underline"
+                  type="button"
+                  onClick={() => {
+                    if (isLocked) return;
+                    const newValue = !isPublic;
+                    setIsPublic(newValue);
+                    setIsDirty(true);
+                    setSaveMessage(null);
+                    if (!newValue) {
+                      setShowPrivateExplainer(true);
+                    }
+                  }}
+                  disabled={isLocked}
+                  className={`relative w-12 h-6 rounded-full transition-colors ${
+                    isPublic
+                      ? "bg-[rgb(var(--color-accent-primary))]"
+                      : "bg-[rgb(var(--color-border-secondary))]"
+                  } ${isLocked ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+                  aria-label={isPublic ? "Make private" : "Make public"}
                 >
-                  Got it
+                  <div
+                    className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${
+                      isPublic ? "left-7" : "left-1"
+                    }`}
+                  />
                 </button>
+
+                {/* Private explainer popup */}
+                {showPrivateExplainer && (
+                  <div className="absolute z-10 top-full mt-2 left-1/2 -translate-x-1/2 sm:left-0 sm:translate-x-0 w-72 p-4 bg-[rgb(var(--color-bg-primary))] border border-[rgb(var(--color-border-primary))] rounded-lg shadow-lg">
+                    <p className="text-sm text-[rgb(var(--color-text-secondary))] mb-2">
+                      <strong>Private brackets:</strong>
+                    </p>
+                    <ul className="text-sm text-[rgb(var(--color-text-secondary))] list-disc pl-4 space-y-1">
+                      <li>Only visible to you</li>
+                      <li>Won&apos;t appear on public leaderboard</li>
+                      <li>You can make it public anytime</li>
+                    </ul>
+                    <button
+                      onClick={() => setShowPrivateExplainer(false)}
+                      className="mt-3 text-sm text-[rgb(var(--color-accent-primary))] hover:underline"
+                    >
+                      Got it
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Save button */}
+              <button
+                onClick={async () => {
+                  setIsSaving(true);
+                  setSaveMessage(null);
+
+                  const { saveBracket } = await import(
+                    "@/app/tournament/[id]/actions"
+                  );
+
+                  const picksArray = Array.from(picks.entries()).map(
+                    ([key, winnerSeed]) => {
+                      const [round, matchPosition] = key.split("-").map(Number);
+                      return { round, matchPosition, winnerSeed };
+                    }
+                  );
+
+                  const result = await saveBracket({
+                    tournamentId: tournament.id,
+                    bracketId: bracketId, // Use state which updates after first save
+                    isPublic,
+                    bracketName: editableBracketName.trim(),
+                    picks: picksArray,
+                    finalWinnerGames,
+                    finalLoserGames,
+                  });
+
+                  setIsSaving(false);
+
+                  if (result.error) {
+                    setSaveMessage(`Error: ${result.error}`);
+                  } else {
+                    setSaveMessage("Saved!");
+                    setIsDirty(false);
+                    if (result.bracket?.id) {
+                      setBracketId(result.bracket.id);
+                    }
+                  }
+                }}
+                disabled={isLocked || isSaving}
+                className={`px-4 py-2 rounded-lg font-medium text-sm ${
+                  isLocked
+                    ? "bg-[rgb(var(--color-border-secondary))] text-[rgb(var(--color-text-muted))] cursor-not-allowed"
+                    : isDirty
+                    ? "bg-[rgb(var(--color-accent-primary))] text-white hover:bg-[rgb(var(--color-accent-hover))]"
+                    : "bg-[rgb(var(--color-bg-tertiary))] text-[rgb(var(--color-text-primary))] hover:bg-[rgb(var(--color-border-secondary))]"
+                }`}
+              >
+                {isSaving ? "Saving..." : "Save"}
+              </button>
+            </div>
+
+            {/* Status messages */}
+            {(saveMessage || isLocked) && (
+              <div className="flex items-center gap-2 sm:gap-3">
+                {saveMessage && (
+                  <span
+                    className={`text-sm ${
+                      saveMessage.startsWith("Error")
+                        ? "text-[rgb(var(--color-error-icon))]"
+                        : "text-[rgb(var(--color-success-icon))]"
+                    }`}
+                  >
+                    {saveMessage}
+                  </span>
+                )}
+
+                {isLocked && (
+                  <span className="text-sm text-[rgb(var(--color-error-icon))]">Locked</span>
+                )}
               </div>
             )}
+
+            {/* Delete button - right aligned on desktop, full width on mobile */}
+            {bracketId && (
+              <button
+                onClick={() => setShowDeleteModal(true)}
+                className="w-full sm:w-auto px-4 py-2 text-sm text-[rgb(var(--color-error-icon))] hover:bg-[rgb(var(--color-error-bg))] rounded-lg transition-colors sm:ml-auto"
+              >
+                Delete Bracket
+              </button>
+            )}
           </div>
-
-          {/* Save button */}
-          <button
-            onClick={async () => {
-              setIsSaving(true);
-              setSaveMessage(null);
-
-              const { saveBracket } = await import(
-                "@/app/tournament/[id]/actions"
-              );
-
-              const picksArray = Array.from(picks.entries()).map(
-                ([key, winnerSeed]) => {
-                  const [round, matchPosition] = key.split("-").map(Number);
-                  return { round, matchPosition, winnerSeed };
-                }
-              );
-
-              const result = await saveBracket({
-                tournamentId: tournament.id,
-                bracketId: bracketId, // Use state which updates after first save
-                isPublic,
-                bracketName: editableBracketName.trim(),
-                picks: picksArray,
-                finalWinnerGames,
-                finalLoserGames,
-              });
-
-              setIsSaving(false);
-
-              if (result.error) {
-                setSaveMessage(`Error: ${result.error}`);
-              } else {
-                setSaveMessage("Saved!");
-                setIsDirty(false);
-                if (result.bracket?.id) {
-                  setBracketId(result.bracket.id);
-                }
-              }
-            }}
-            disabled={isLocked || isSaving}
-            className={`px-4 py-2 rounded-lg font-medium text-sm ${
-              isLocked
-                ? "bg-[rgb(var(--color-border-secondary))] text-[rgb(var(--color-text-muted))] cursor-not-allowed"
-                : isDirty
-                ? "bg-[rgb(var(--color-accent-primary))] text-white hover:bg-[rgb(var(--color-accent-hover))]"
-                : "bg-[rgb(var(--color-bg-tertiary))] text-[rgb(var(--color-text-primary))] hover:bg-[rgb(var(--color-border-secondary))]"
-            }`}
-          >
-            {isSaving ? "Saving..." : "Save"}
-          </button>
-
-          {/* Status message */}
-          {saveMessage && (
-            <span
-              className={`text-sm ${
-                saveMessage.startsWith("Error")
-                  ? "text-[rgb(var(--color-error-icon))]"
-                  : "text-[rgb(var(--color-success-icon))]"
-              }`}
-            >
-              {saveMessage}
-            </span>
-          )}
-
-          {isLocked && (
-            <span className="text-sm text-[rgb(var(--color-error-icon))]">Locked</span>
-          )}
-
-          {/* Delete button (only for saved brackets) */}
-          {bracketId && (
-            <button
-              onClick={() => setShowDeleteModal(true)}
-              className="px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors ml-auto"
-            >
-              Delete Bracket
-            </button>
-          )}
         </div>
       )}
 
@@ -436,6 +445,17 @@ export default function BracketView({
           </div>
         </div>
       )}
+
+      {/* Scroll hint - mobile only */}
+      <div className="sm:hidden text-center text-sm text-[rgb(var(--color-text-muted))] mb-2 py-2 flex items-center justify-center gap-2 bg-[rgb(var(--color-bg-secondary))] rounded-lg">
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        <span>Swipe to see all rounds</span>
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+        </svg>
+      </div>
 
       {/* Bracket container with horizontal scroll */}
       <div className="overflow-x-auto pb-4">
