@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import ResponsiveHeader from "@/components/ResponsiveHeader";
+import SiteLogo from "@/components/SiteLogo";
 import { MyBracketsTable, CreateBracketWizard } from "@/components/dashboard";
 import { loadUserBrackets } from "@/app/tournament/[id]/actions";
 import TournamentWizard from "@/components/landing/TournamentWizard";
@@ -29,13 +30,8 @@ export default async function Home() {
         <PendingBracketHandler userId={user.id} />
 
         {/* Header */}
-        <div className="flex justify-between items-start gap-4 mb-6">
-          <div className="min-w-0 flex-1">
-            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold">IFPA Bracket Predictor</h1>
-            <p className="text-sm sm:text-base text-[rgb(var(--color-text-secondary))]">
-              Predict the outcomes of IFPA Pinball State Championships
-            </p>
-          </div>
+        <div className="flex justify-between items-center gap-4 mb-6">
+          <h1><SiteLogo size="md" /></h1>
           <div className="flex-shrink-0">
             <ResponsiveHeader />
           </div>
@@ -86,8 +82,8 @@ export default async function Home() {
         <ResponsiveHeader />
       </div>
 
-      <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 text-center">
-        IFPA Bracket Predictor
+      <h1 className="mb-4 text-center">
+        <SiteLogo size="lg" />
       </h1>
       <p className="text-lg text-[rgb(var(--color-text-secondary))] mb-8">
         Predict the outcomes of IFPA Pinball State Championships

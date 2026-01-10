@@ -6,7 +6,7 @@ test.describe('Dashboard', () => {
     await page.goto('/')
 
     // Should see the landing page with tournament wizard
-    await expect(page.getByRole('heading', { name: 'IFPA Bracket Predictor' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Pinball Brackets' })).toBeVisible()
     await expect(page.getByRole('heading', { name: 'Explore Tournaments' })).toBeVisible()
 
     // Should see the wizard dropdowns
@@ -235,10 +235,11 @@ test.describe('Dashboard - My Brackets Table', () => {
     expect(hasEmptyState || hasBrackets).toBe(true)
   })
 
-  test('shows action links for existing brackets', async ({ page }) => {
+  test('shows bracket cards for existing brackets', async ({ page }) => {
     // Check if we already have a bracket - if not, create one
-    const editLink = page.getByRole('link', { name: 'Edit' }).first()
-    const hasExistingBracket = await editLink.isVisible().catch(() => false)
+    // Cards are now links to the bracket, look for a link with /bracket/ in the href
+    const bracketCard = page.locator('a[href^="/bracket/"]').first()
+    const hasExistingBracket = await bracketCard.isVisible().catch(() => false)
 
     if (!hasExistingBracket) {
       // Create a bracket first to ensure we have one
@@ -259,8 +260,9 @@ test.describe('Dashboard - My Brackets Table', () => {
 
     await expect(page.getByRole('heading', { name: 'My Brackets' })).toBeVisible()
 
-    // Should see View and Leaderboard links
-    await expect(page.getByRole('link', { name: 'View' }).first()).toBeVisible()
+    // Should see clickable bracket card and Leaderboard link
+    // Bracket cards link to /bracket/{id}/edit for unlocked or /bracket/{id} for locked
+    await expect(page.locator('a[href^="/bracket/"]').first()).toBeVisible()
     await expect(page.getByRole('link', { name: 'Leaderboard' }).first()).toBeVisible()
   })
 })

@@ -53,7 +53,7 @@ export async function isLoggedIn(page: Page): Promise<boolean> {
 
 /**
  * Navigate to bracket editor for a specific tournament.
- * Uses the dashboard: either clicks Edit on existing bracket, or creates new via wizard.
+ * Uses the dashboard: either navigates to edit URL of existing bracket, or creates new via wizard.
  */
 export async function navigateToBracketEditor(
   page: Page,
@@ -61,12 +61,18 @@ export async function navigateToBracketEditor(
 ): Promise<void> {
   const { state = 'Michigan', tournamentName } = options
 
-  // Check if we already have an Edit button for an existing bracket
-  const editLink = page.getByRole('link', { name: 'Edit' }).first()
-  const hasEditLink = await editLink.isVisible().catch(() => false)
+  // Check if we have an existing bracket card (link to /bracket/{id})
+  // The card links are styled as full cards now, not separate Edit buttons
+  const bracketCard = page.locator('a[href^="/bracket/"]').first()
+  const hasExistingBracket = await bracketCard.isVisible().catch(() => false)
 
-  if (hasEditLink) {
-    await editLink.click()
+  if (hasExistingBracket) {
+    // Get the bracket URL and navigate directly to edit
+    const href = await bracketCard.getAttribute('href')
+    if (href) {
+      // Navigate to the edit page by appending /edit to the bracket URL
+      await page.goto(href + '/edit')
+    }
   } else {
     // Use the Create Bracket wizard
     const stateDropdown = page.locator('select').first()

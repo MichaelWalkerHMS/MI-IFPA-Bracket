@@ -16,12 +16,12 @@ export default function AboutPage() {
       </div>
 
       <div className="max-w-3xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6">About IFPA Bracket Predictor</h1>
+        <h1 className="text-3xl font-bold mb-6">About Pinball Brackets</h1>
 
         <section className="mb-8">
           <h2 className="text-xl font-semibold mb-3">What is this?</h2>
           <p className="text-[rgb(var(--color-text-secondary))] mb-4">
-            The IFPA Bracket Predictor is a fun, community-driven tool for competitive pinball
+            Pinball Brackets is a fun, community-driven tool for competitive pinball
             enthusiasts to predict the outcomes of IFPA (International Flipper Pinball Association)
             State Championship tournaments.
           </p>

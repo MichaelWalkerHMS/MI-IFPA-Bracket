@@ -308,22 +308,29 @@ export default function BracketView({
 
                 {/* Private explainer popup */}
                 {showPrivateExplainer && (
-                  <div className="absolute z-10 top-full mt-2 left-1/2 -translate-x-1/2 sm:left-0 sm:translate-x-0 w-72 p-4 bg-[rgb(var(--color-bg-primary))] border border-[rgb(var(--color-border-primary))] rounded-lg shadow-lg">
-                    <p className="text-sm text-[rgb(var(--color-text-secondary))] mb-2">
-                      <strong>Private brackets:</strong>
-                    </p>
-                    <ul className="text-sm text-[rgb(var(--color-text-secondary))] list-disc pl-4 space-y-1">
-                      <li>Only visible to you</li>
-                      <li>Won&apos;t appear on public leaderboard</li>
-                      <li>You can make it public anytime</li>
-                    </ul>
-                    <button
+                  <>
+                    {/* Backdrop to close on outside click */}
+                    <div
+                      className="fixed inset-0 z-40 sm:z-[5]"
                       onClick={() => setShowPrivateExplainer(false)}
-                      className="mt-3 text-sm text-[rgb(var(--color-accent-primary))] hover:underline"
-                    >
-                      Got it
-                    </button>
-                  </div>
+                    />
+                    <div className="fixed sm:absolute z-50 sm:z-10 left-4 right-4 sm:left-0 sm:right-auto top-1/2 sm:top-full -translate-y-1/2 sm:translate-y-0 sm:mt-2 w-auto sm:w-72 p-4 bg-[rgb(var(--color-bg-primary))] border border-[rgb(var(--color-border-primary))] rounded-lg shadow-lg">
+                      <p className="text-sm text-[rgb(var(--color-text-secondary))] mb-2">
+                        <strong>Private brackets:</strong>
+                      </p>
+                      <ul className="text-sm text-[rgb(var(--color-text-secondary))] list-disc pl-4 space-y-1">
+                        <li>Only visible to you</li>
+                        <li>Won&apos;t appear on public leaderboard</li>
+                        <li>You can make it public anytime</li>
+                      </ul>
+                      <button
+                        onClick={() => setShowPrivateExplainer(false)}
+                        className="mt-3 text-sm text-[rgb(var(--color-accent-primary))] hover:underline"
+                      >
+                        Got it
+                      </button>
+                    </div>
+                  </>
                 )}
               </div>
 
@@ -400,15 +407,6 @@ export default function BracketView({
               </div>
             )}
 
-            {/* Delete button - right aligned on desktop, full width on mobile */}
-            {bracketId && (
-              <button
-                onClick={() => setShowDeleteModal(true)}
-                className="w-full sm:w-auto px-4 py-2 text-sm text-[rgb(var(--color-error-icon))] hover:bg-[rgb(var(--color-error-bg))] rounded-lg transition-colors sm:ml-auto"
-              >
-                Delete Bracket
-              </button>
-            )}
           </div>
         </div>
       )}
@@ -632,6 +630,18 @@ export default function BracketView({
               Make your bracket public to share it with others.
             </p>
           )}
+        </div>
+      )}
+
+      {/* Delete button - at bottom of bracket */}
+      {isLoggedIn && bracketId && (
+        <div className="mt-4">
+          <button
+            onClick={() => setShowDeleteModal(true)}
+            className="w-full px-4 py-2 text-sm text-[rgb(var(--color-error-icon))] hover:bg-[rgb(var(--color-error-bg))] rounded-lg transition-colors border border-[rgb(var(--color-error-border))]"
+          >
+            Delete Bracket
+          </button>
         </div>
       )}
     </div>
