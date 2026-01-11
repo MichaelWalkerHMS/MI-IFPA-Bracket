@@ -15,6 +15,8 @@ nul
 
 # Miscellaneous Files
 IFPA State Championship Rules.md
+e2e-failures.log
+scripts/
 
 # ===========================================
 # Node.js / Next.js
